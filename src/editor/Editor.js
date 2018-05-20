@@ -29,13 +29,14 @@ class Editor extends Component {
     for (let i = 0; i < crossword.rows; i += 1) {
       const boxes = [];
       for (let j = 0; j < crossword.rows; j += 1) {
-        const blocked = get(crossword, `boxes.${i}.${j}.blocked`);
-        const circled = get(crossword, `boxes.${i}.${j}.circled`);
+        const { blocked, circled, shaded } = get(crossword, `boxes.${i}.${j}`, {});
+        const boxPath = `${path}/boxes/${i}/${j}`;
         boxes.push((
-          <div className={bem('box', { blocked, circled })}
+          <div className={bem('box', { blocked, circled, shaded })}
             key={`box-${i}-${j}`}>
-            <BoxControls onToggleBlock={() => set(`${path}/boxes/${i}/${j}/blocked`, !blocked)}
-              onToggleCircle={() => set(`${path}/boxes/${i}/${j}/circled`, !circled)}/>
+            <BoxControls onToggleBlock={() => set(`${boxPath}/blocked`, !blocked)}
+              onToggleCircle={() => set(`${boxPath}/circled`, !circled)}
+              onToggleShade={() => set(`${boxPath}/shaded`, !shaded)} />
           </div>
         ));
       }

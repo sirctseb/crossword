@@ -30,5 +30,14 @@ $block-class: 'box-controls';
       width: 30%;
       height: 30%;
     }
+
+    &__shade {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      background-color: #888;
+      width: 33%;
+      height: 33%;
+    }
   }
 }
