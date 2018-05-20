@@ -20,16 +20,21 @@ const enhance = compose(
   })),
 );
 
-const blockedUpdate = (row, column, { rows, symmetric }, blocked) => {
+const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
   const update = {
     [`boxes/${row}/${column}/blocked`]: blocked,
   };
 
+  const undoUpdate = {
+    [`boxes/${row}/${column}/blocked`]: !blocked,
+  };
+
   if (symmetric) {
     update[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = blocked;
+    undoUpdate[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = !blocked;
   }
 
-  return update;
+  return new FirebaseChange(crosswordRef, update, undoUpdate);
 };
 
 class Editor extends Component {
@@ -39,7 +44,7 @@ class Editor extends Component {
     const fbRef = this.props.firebase.ref();
 
     const {
-      firebase: { set, update }, path, crossword, editor,
+      firebase: { set }, path, crossword, editor,
     } = this.props;
 
     if (!crossword) {
@@ -120,9 +125,13 @@ class Editor extends Component {
             }
           }}>
             <BoxControls boxRef={fbRef.child(boxPath)} box={box}
-              onBlock={
-                () => update(path, blockedUpdate(row, column, crossword, !blocked))
-              }
+              onBlock={() => undoHistory.add(blockedChange(
+                row,
+                column,
+                crossword,
+                !blocked,
+                fbRef.child(path),
+              )) }
             />
             {
               indexBox &&
