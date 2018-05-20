@@ -55,5 +55,14 @@ $focus-color: #eee;
                 outline: none;
             }
         }
+
+        &__clue-index {
+            position: absolute;
+            font-size: 12px;
+            background-color: white;
+            z-index: 2;
+            left: 0;
+            top: 0;
+        }
     }
 }
