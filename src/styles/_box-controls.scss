@@ -1,5 +1,16 @@
 $block-class: 'box-controls';
 
+%unindicator {
+    position: absolute;
+    color: red;
+    height: 100%;
+    width: 100%;
+    content: 'x';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 @at-root {
     .#{$block-class} {
         position: absolute;
@@ -21,14 +32,7 @@ $block-class: 'box-controls';
             height: 33%;
 
             &--blocked::after {
-                position: absolute;
-                color: red;
-                height: 100%;
-                width: 100%;
-                content: 'x';
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                @extend %unindicator;
             }
         }
 
@@ -40,6 +44,10 @@ $block-class: 'box-controls';
             border-radius: 50%;
             width: 30%;
             height: 30%;
+
+            &--circled::after {
+                @extend %unindicator;
+            }
         }
 
         &__shade {
@@ -49,6 +57,10 @@ $block-class: 'box-controls';
             background-color: #888;
             width: 33%;
             height: 33%;
+
+            &--shaded::after {
+                @extend %unindicator;
+            }
         }
     }
 }
