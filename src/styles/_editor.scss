@@ -59,8 +59,17 @@ $focus-color: #eee;
             }
 
             &:focus {
-                background-color: $focus-color;
                 outline: none;
+
+                &::before {
+                    content: '';
+                    border-bottom: 1px dashed black;
+                    display: block;
+                    left: 4px;
+                    position: absolute;
+                    right: 4px;
+                    bottom: 2px;
+                }
             }
         }
 
