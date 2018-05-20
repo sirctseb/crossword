@@ -19,3 +19,8 @@ export const getSuggestions = pattern => (dispatch) => {
     matchingAnswers({ regex: pattern })
         .then(results => dispatch(getSuggestionsSuccess(pattern, results)));
 };
+
+export const setCursor = cursor => ({
+    type: actionTypes.SET_CURSOR,
+    cursor,
+});

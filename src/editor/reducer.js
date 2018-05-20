@@ -3,6 +3,7 @@ import update from 'immutability-helper';
 import * as actionTypes from './actionTypes';
 
 const initialState = {
+    cursor: null,
     clueInput: {
         row: null,
         column: null,
@@ -22,6 +23,10 @@ export default (state = initialState, action) => {
             suggestions: {
                 [action.pattern]: { $set: action.suggestions },
             },
+        });
+    case actionTypes.SET_CURSOR:
+        return update(state, {
+            cursor: { $set: action.cursor },
         });
     default:
         return state;
