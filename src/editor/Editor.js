@@ -68,7 +68,13 @@ class Editor extends Component {
                     className='editor__input'
                     value={crossword.rows}
                     onChange={evt => set(`${path}/rows`, evt.target.value)} />
-                {rows}
+                <input type='checkbox'
+                    className='editor__symmetric'
+                    value={crossword.symmetric}
+                    onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
+                <div className={bem('grid')}>
+                    {rows}
+                </div>
             </div>
         );
     }
