@@ -6,6 +6,7 @@ import { reactReduxFirebase, firebaseStateReducer } from 'react-redux-firebase';
 import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
+import thunk from 'redux-thunk';
 import firebase from 'firebase';
 
 import routes from './routes';
@@ -33,7 +34,7 @@ const store = createStore(
         editor: editorReducer,
     }),
     composeEnhancers(
-        applyMiddleware(createLogger()),
+        applyMiddleware(createLogger(), thunk),
         reactReduxFirebase(firebase),
     ),
 );
