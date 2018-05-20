@@ -36,8 +36,9 @@ $focus-color: #eee;
         background-color: $shade-color;
       }
 
-      &--focused {
+      &:focus {
         background-color: $focus-color;
+        outline: none;
       }
     }
   }
