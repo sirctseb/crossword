@@ -4,6 +4,7 @@ import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
+import { hotkeys } from 'react-keyboard-shortcuts';
 
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
@@ -18,6 +19,7 @@ const enhance = compose(
         path: `crosswords/${props.params.crosswordId}`,
         editor,
     })),
+    hotkeys,
 );
 
 const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
@@ -37,10 +39,24 @@ const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) 
     return new FirebaseChange(crosswordRef, update, undoUpdate);
 };
 
+const undoHistory = UndoHistory.getHistory('crossword');
+
 class Editor extends Component {
+    constructor(props) {
+        super(props);
+
+        this.hot_keys = {
+            'meta+z': {
+                handler: () => undoHistory.undo(),
+            },
+            'shift+meta+z': {
+                handler: () => undoHistory.redo(),
+            },
+        };
+    }
+
     render() {
         const bem = bemNamesFactory('editor');
-        const undoHistory = UndoHistory.getHistory('crossword');
         const fbRef = this.props.firebase.ref();
 
         const {
