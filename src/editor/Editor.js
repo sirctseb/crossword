@@ -42,10 +42,13 @@ class Editor extends Component {
       return 'WAIT!';
     }
 
+    const refRows = [];
+
     const rows = [];
     let clueIndex = 1;
     for (let row = 0; row < crossword.rows; row += 1) {
       const boxes = [];
+      const refBoxes = [];
       for (let column = 0; column < crossword.rows; column += 1) {
         const box = get(crossword, `boxes.${row}.${column}`, {});
         const {
@@ -69,7 +72,38 @@ class Editor extends Component {
           })}
           key={`box-${row}-${column}`}
           tabIndex={!blocked ? '0' : undefined}
-          onKeyPress={evt => set(`${boxPath}/content`, evt.key)}>
+          ref={ref => refBoxes.push(ref)}
+          onKeyPress={(evt) => {
+            if (/[A-z]/.test(evt.key)) {
+              set(`${boxPath}/content`, evt.key);
+            }
+          }}
+          onKeyDown={(evt) => {
+            switch (evt.key) {
+            case 'ArrowLeft':
+              if (column > 0) {
+                refRows[row][column - 1].focus();
+              }
+              break;
+            case 'ArrowRight':
+              if (column < crossword.rows - 1) {
+                refRows[row][column + 1].focus();
+              }
+              break;
+            case 'ArrowUp':
+              if (row > 0) {
+                refRows[row - 1][column].focus();
+              }
+              break;
+            case 'ArrowDown':
+              if (row < crossword.rows - 1) {
+                refRows[row + 1][column].focus();
+              }
+              break;
+            default:
+              break;
+            }
+          }}>
             <BoxControls set={set} boxPath={boxPath} box={box}
               onBlock={
                 () => update(path, blockedUpdate(row, column, crossword, !blocked))
@@ -89,6 +123,7 @@ class Editor extends Component {
           clueIndex += 1;
         }
       }
+      refRows.push(refBoxes);
       rows.push((
         <div className='editor__row'
           key={`row-${row}`}>
