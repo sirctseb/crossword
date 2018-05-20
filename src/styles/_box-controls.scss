@@ -9,14 +9,14 @@ $block-class: 'box-controls';
         z-index: 2;
 
         &:hover {
-            opacity: 0.5;
+            opacity: 1;
         }
 
         &__block {
             position: absolute;
             right: 0;
             bottom: 0;
-            background-color: gray;
+            background-color: #333;
             width: 33%;
             height: 33%;
         }
@@ -25,9 +25,10 @@ $block-class: 'box-controls';
             position: absolute;
             right: 0;
             top: 0;
-            background-color: red;
-            width: 33%;
-            height: 33%;
+            border: 1px solid black;
+            border-radius: 50%;
+            width: 30%;
+            height: 30%;
         }
     }
 }
