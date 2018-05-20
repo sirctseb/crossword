@@ -1,1 +1,2 @@
 export const CHANGE_CLUE = 'CHANGE_CLUE';
+export const GET_SUGGESTIONS = 'GET_SUGGESTIONS';
