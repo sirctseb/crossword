@@ -9,6 +9,7 @@ import { createLogger } from 'redux-logger';
 import firebase from 'firebase';
 
 import routes from './routes';
+import editorReducer from './editor/reducer';
 
 import './styles/main.scss';
 
@@ -27,6 +28,7 @@ const store = createStore(
   combineReducers({
     firebase: firebaseStateReducer,
     routing: routerReducer,
+    editor: editorReducer,
   }),
   compose(
     applyMiddleware(createLogger()),
