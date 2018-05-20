@@ -90,11 +90,35 @@ class Editor extends Component {
                 },
             },
         };
+
+        this.onClueBlur = this.onClueBlur.bind(this);
     }
 
     onBoxFocus(row, column) {
         this.props.actions.setCursor({ row, column });
         updateSuggestions(row, column, this.props.crossword, this.props.actions);
+    }
+
+    onClueBlur() {
+        const {
+            editor: {
+                clueInput: {
+                    direction, row, column, value,
+                },
+            }, path, crossword,
+        } = this.props;
+
+        undoHistory.add(FirebaseChange.FromValues(
+            this.props.firebase.ref().child(`${path}/clues/${direction}/${row}/${column}`),
+            value,
+            get(crossword, `clues.${direction}.${row}.${column}`),
+        ));
+        this.props.actions.changeClue({
+            value: null,
+            row: null,
+            column: null,
+            direction: null,
+        });
     }
 
     render() {
@@ -103,7 +127,6 @@ class Editor extends Component {
 
         const {
             firebase: { set }, path, crossword, editor,
-            actions: { changeClue },
         } = this.props;
 
         if (!crossword) {
@@ -233,61 +256,16 @@ class Editor extends Component {
                         clueData={crossword.clues.across}
                         clueInput={editor.clueInput}
                         actions={this.props.actions}
-                        onClueBlur={() => {
-                            undoHistory.add(FirebaseChange.FromValues(
-                                fbRef.child(`${path}/clues/across/${editor.clueInput.row}/${editor.clueInput.column}`),
-                                editor.clueInput.value,
-                                get(crossword, `clues.across.${editor.clueInput.row}.${editor.clueInput.column}`),
-                            ));
-                            changeClue({
-                                value: null,
-                                row: null,
-                                column: null,
-                                direction: null,
-                            });
-                        }} />
+                        onClueBlur={this.onClueBlur} />
                     <div className={bem('grid')}>
                         {rows}
                     </div>
-                    <div className={bem('down-clues')}>
-                        Down
-                        {
-                            downClues.map(({
-                                row, column, label,
-                            }) =>
-                                <div key={label}
-                                    className={bem('clue')}>
-                                    {label}.
-                                    <input type='text'
-                                        className={bem('clue-input')}
-                                        value={(
-                                            row === editor.clueInput.row &&
-                                            column === editor.clueInput.column &&
-                                            editor.clueInput.direction === 'down' &&
-                                            editor.clueInput.value
-                                        ) || get(crossword, `clues.down.${row}.${column}`, '')}
-                                        onChange={(evt) => {
-                                            changeClue({
-                                                value: evt.target.value, row, column, direction: 'down',
-                                            });
-                                        }}
-                                        onBlur={(evt) => {
-                                            undoHistory.add(FirebaseChange.FromValues(
-                                                fbRef.child(`${path}/clues/down/${row}/${column}`),
-                                                evt.target.value,
-                                                get(crossword, `clues.down.${row}.${column}`),
-                                            ));
-                                            changeClue({
-                                                value: null,
-                                                row: null,
-                                                column: null,
-                                                direction: null,
-                                            });
-                                        }}
-                                    />
-                                </div>)
-                        }
-                    </div>
+                    <ClueList direction='down'
+                        clueLabels={downClues}
+                        clueData={crossword.clues.down}
+                        clueInput={editor.clueInput}
+                        actions={this.props.actions}
+                        onClueBlur={this.onClueBlur} />
                 </div>
                 <div className={bem('suggestions')}>
                     Across<br />
