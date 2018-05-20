@@ -13,6 +13,10 @@ $block-class: 'editor';
       border-color: black;
       border-style: solid;
       border-width: 1px 1px 0 0;
+
+      &--blocked {
+        background-color: black;
+      }
     }
   }
 }
