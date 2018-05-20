@@ -51,10 +51,16 @@ class Editor extends Component {
 
     this.hot_keys = {
       'meta+z': {
-        handler: () => undoHistory.undo(),
+        handler: (evt) => {
+          undoHistory.undo();
+          evt.preventDefault();
+        },
       },
       'shift+meta+z': {
-        handler: () => undoHistory.redo(),
+        handler: (evt) => {
+          undoHistory.redo();
+          evt.preventDefault();
+        },
       },
     };
   }
