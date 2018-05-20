@@ -18,6 +18,10 @@ $focus-color: #eee;
             border-style: solid;
             border-width: 1px 1px 0 0;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
 
             &--blocked {
                 background-color: $block-color;
