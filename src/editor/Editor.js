@@ -19,6 +19,19 @@ const enhance = compose(
     connect(
         ({ firebase: { data: { crosswords } }, editor }, props) => ({
             crossword: crosswords && crosswords[props.params.crosswordId],
+            suggestions: (crosswords && editor.cursor) ? {
+                across: editor.suggestions[CrosswordModel.acrossPattern(
+                    crosswords[props.params.crosswordId],
+                    editor.cursor.row,
+                    editor.cursor.column,
+                )],
+                down: editor.suggestions[CrosswordModel.downPattern(
+                    crosswords[props.params.crosswordId],
+                    editor.cursor.row,
+                    editor.cursor.column,
+                )],
+            } :
+                { across: '', down: '' },
             path: `crosswords/${props.params.crosswordId}`,
             editor,
         }),
@@ -78,6 +91,11 @@ class Editor extends Component {
         };
     }
 
+    onBoxFocus(row, column) {
+        this.props.actions.setCursor({ row, column });
+        updateSuggestions(row, column, this.props.crossword, this.props.actions);
+    }
+
     render() {
         const bem = bemNamesFactory('editor');
         const fbRef = this.props.firebase.ref();
@@ -135,9 +153,7 @@ class Editor extends Component {
                             ));
                         }
                     }}
-                    onFocus={
-                        () => updateSuggestions(row, column, crossword, this.props.actions)
-                    }
+                    onFocus={() => this.onBoxFocus(row, column)}
                     onKeyDown={(evt) => {
                         switch (evt.key) {
                         case 'ArrowLeft':
@@ -292,6 +308,12 @@ class Editor extends Component {
                                 </div>)
                         }
                     </div>
+                </div>
+                <div className={bem('suggestions')}>
+                    Across<br />
+                    {this.props.suggestions.across}<br />
+                    Down<br />
+                    {this.props.suggestions.down}<br />
                 </div>
                 <button onClick={() => undoHistory.undo()}>Undo</button>
                 <button onClick={() => undoHistory.redo()}>Redo</button>
