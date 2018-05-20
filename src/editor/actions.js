@@ -17,5 +17,5 @@ export const getSuggestions = pattern => (dispatch) => {
   const matchingAnswers = firebaseApp.functions().httpsCallable('matchingAnswers');
 
   matchingAnswers({ regex: pattern })
-    .then(results => console.log(results) || dispatch(getSuggestionsSuccess(pattern, results)));
+    .then(results => dispatch(getSuggestionsSuccess(pattern, results)));
 };
