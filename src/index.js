@@ -24,13 +24,15 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
+// eslint-disable-next-line
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
     combineReducers({
         firebase: firebaseStateReducer,
         routing: routerReducer,
         editor: editorReducer,
     }),
-    compose(
+    composeEnhancers(
         applyMiddleware(createLogger()),
         reactReduxFirebase(firebase),
     ),
