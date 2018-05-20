@@ -43,6 +43,7 @@ class Editor extends Component {
     }
 
     const rows = [];
+    let clueIndex = 1;
     for (let row = 0; row < crossword.rows; row += 1) {
       const boxes = [];
       for (let column = 0; column < crossword.rows; column += 1) {
@@ -54,6 +55,13 @@ class Editor extends Component {
                     row === editor.cursor.row &&
                     column === editor.cursor.column;
         const boxPath = `${path}/boxes/${row}/${column}`;
+        const indexBox = !blocked &&
+                (
+                  row === 0 ||
+                    column === 0 ||
+                    get(crossword, `boxes.${row - 1}.${column}.blocked`) ||
+                    get(crossword, `boxes.${row}.${column - 1}.blocked`)
+                );
 
         boxes.push((
           <div className={bem('box', {
@@ -67,9 +75,19 @@ class Editor extends Component {
                 () => update(path, blockedUpdate(row, column, crossword, !blocked))
               }
             />
+            {
+              indexBox &&
+                            <div className={bem('clue-index')}>
+                              {clueIndex}
+                            </div>
+            }
             { content }
           </div>
         ));
+
+        if (indexBox) {
+          clueIndex += 1;
+        }
       }
       rows.push((
         <div className='editor__row'
