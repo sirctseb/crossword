@@ -8,8 +8,8 @@ export default class FirebaseChange {
     static FromValues(ref, newValue, oldValue) {
         return new FirebaseChange(
             ref.parent,
-            { [ref.key]: newValue || null },
-            { [ref.key]: oldValue || null },
+            { [ref.key]: newValue === undefined ? null : newValue },
+            { [ref.key]: oldValue === undefined ? null : oldValue },
         );
     }
 
