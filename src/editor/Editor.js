@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, bindActionCreators } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 import { hotkeys } from 'react-keyboard-shortcuts';
 
+import * as actions from './actions';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
@@ -14,11 +15,14 @@ const enhance = compose(
   firebaseConnect(props => ([
     `crosswords/${props.params.crosswordId}`,
   ])),
-  connect(({ firebase: { data: { crosswords } }, editor }, props) => ({
-    crossword: crosswords && crosswords[props.params.crosswordId],
-    path: `crosswords/${props.params.crosswordId}`,
-    editor,
-  })),
+  connect(
+    ({ firebase: { data: { crosswords } }, editor }, props) => ({
+      crossword: crosswords && crosswords[props.params.crosswordId],
+      path: `crosswords/${props.params.crosswordId}`,
+      editor,
+    }),
+    dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
+  ),
   hotkeys,
 );
 
@@ -61,6 +65,7 @@ class Editor extends Component {
 
     const {
       firebase: { set }, path, crossword, editor,
+      actions: { changeClue },
     } = this.props;
 
     if (!crossword) {
@@ -190,15 +195,33 @@ class Editor extends Component {
           <div className={bem('across-clues')}>
                         Across
             {
-              acrossClues.map(({ row, column, label }) =>
+              acrossClues.map(({
+                row, column, label,
+              }) =>
                 <div key={label}
                   className={bem('clue')}>
                   {label}.
                   <input type='text'
                     className={bem('clue-input')}
-                    value={get(crossword, `clues.across.${row}.${column}`, '')}
+                    value={(
+                      row === editor.clueInput.row &&
+                                            column === editor.clueInput.column &&
+                                            editor.clueInput.direction === 'across' &&
+                                            editor.clueInput.value
+                    ) || get(crossword, `clues.across.${row}.${column}`, '')}
                     onChange={(evt) => {
+                      changeClue({
+                        value: evt.target.value, row, column, direction: 'across',
+                      });
+                    }}
+                    onBlur={(evt) => {
                       set(`${path}/clues/across/${row}/${column}`, evt.target.value);
+                      changeClue({
+                        value: null,
+                        row: null,
+                        column: null,
+                        direction: null,
+                      });
                     }}
                   />
                 </div>)
@@ -210,15 +233,33 @@ class Editor extends Component {
           <div className={bem('down-clues')}>
                         Down
             {
-              downClues.map(({ row, column, label }) =>
+              downClues.map(({
+                row, column, label,
+              }) =>
                 <div key={label}
                   className={bem('clue')}>
                   {label}.
                   <input type='text'
                     className={bem('clue-input')}
-                    value={get(crossword, `clues.down.${row}.${column}`, '')}
+                    value={(
+                      row === editor.clueInput.row &&
+                                            column === editor.clueInput.column &&
+                                            editor.clueInput.direction === 'down' &&
+                                            editor.clueInput.value
+                    ) || get(crossword, `clues.down.${row}.${column}`, '')}
                     onChange={(evt) => {
+                      changeClue({
+                        value: evt.target.value, row, column, direction: 'down',
+                      });
+                    }}
+                    onBlur={(evt) => {
                       set(`${path}/clues/down/${row}/${column}`, evt.target.value);
+                      changeClue({
+                        value: null,
+                        row: null,
+                        column: null,
+                        direction: null,
+                      });
                     }}
                   />
                 </div>)
