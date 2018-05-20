@@ -5,6 +5,8 @@ import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 
+import UndoHistory from '../undo/UndoHistory';
+import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
 
 const enhance = compose(
@@ -33,6 +35,8 @@ const blockedUpdate = (row, column, { rows, symmetric }, blocked) => {
 class Editor extends Component {
     render() {
         const bem = bemNamesFactory('editor');
+        const undoHistory = UndoHistory.getHistory('crossword');
+        const fbRef = this.props.firebase.ref();
 
         const {
             firebase: { set, update }, path, crossword, editor,
@@ -82,7 +86,11 @@ class Editor extends Component {
                     ref={ref => refBoxes.push(ref)}
                     onKeyPress={(evt) => {
                         if (/[A-z]/.test(evt.key)) {
-                            set(`${boxPath}/content`, evt.key);
+                            undoHistory.add(FirebaseChange.FromValues(
+                                fbRef.child(`${boxPath}/content`),
+                                evt.key,
+                                box.content,
+                            ));
                         }
                     }}
                     onKeyDown={(evt) => {
@@ -173,6 +181,8 @@ class Editor extends Component {
                         }
                     </div>
                 </div>
+                <button onClick={() => undoHistory.undo()}>Undo</button>
+                <button onClick={() => undoHistory.redo()}>Redo</button>
             </div>
         );
     }
