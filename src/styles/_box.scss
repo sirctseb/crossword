@@ -1,0 +1,66 @@
+$block-class: 'box';
+
+@at-root {
+  .#{$block-class} {
+    width: 32px;
+    height: 32px;
+    border-color: black;
+    border-style: solid;
+    border-width: 1px 1px 0 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+
+    &--blocked {
+      background-color: $block-color;
+    }
+
+    &--circled::after {
+      content: '';
+      border: 1px solid black;
+      border-radius: 50%;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    &--shaded {
+      background-color: $shade-color;
+    }
+
+    &:focus {
+      outline: none;
+
+      &::before {
+        content: '';
+        border-bottom: 1px dashed black;
+        display: block;
+        left: 4px;
+        position: absolute;
+        right: 4px;
+        bottom: 2px;
+      }
+    }
+
+    &--circled:focus::after {
+      border-bottom: 1px dashed black;
+    }
+
+    &--circled:focus::before {
+      border-bottom: none;
+    }
+
+    &__clue-index {
+      position: absolute;
+      font-size: 12px;
+      background-color: white;
+      z-index: 2;
+      left: 0;
+      top: 0;
+    }
+  }
+}
