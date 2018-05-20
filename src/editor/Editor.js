@@ -52,13 +52,17 @@ class Editor extends Component {
         this.hot_keys = {
             'meta+z': {
                 handler: (evt) => {
-                    undoHistory.undo();
+                    if (document.activeElement.tagName !== 'INPUT') {
+                        undoHistory.undo();
+                    }
                     evt.preventDefault();
                 },
             },
             'shift+meta+z': {
                 handler: (evt) => {
-                    undoHistory.redo();
+                    if (document.activeElement.tagName !== 'INPUT') {
+                        undoHistory.redo();
+                    }
                     evt.preventDefault();
                 },
             },
