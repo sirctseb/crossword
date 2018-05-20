@@ -160,7 +160,12 @@ class Editor extends Component {
                 <input type='number'
                     className='editor__input'
                     value={crossword.rows}
-                    onChange={evt => set(`${path}/rows`, evt.target.value)} />
+                    onChange={evt =>
+                        undoHistory.add(FirebaseChange.FromValues(
+                            fbRef.child(`${path}/rows`),
+                            evt.target.value,
+                            crossword.rows,
+                        ))} />
                 <input type='checkbox'
                     className='editor__symmetric'
                     checked={crossword.symmetric}
