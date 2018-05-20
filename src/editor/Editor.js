@@ -119,7 +119,7 @@ class Editor extends Component {
                             break;
                         }
                     }}>
-                        <BoxControls set={set} boxPath={boxPath} box={box}
+                        <BoxControls boxRef={fbRef.child(boxPath)} box={box}
                             onBlock={
                                 () => update(path, blockedUpdate(row, column, crossword, !blocked))
                             }
