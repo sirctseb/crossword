@@ -106,9 +106,6 @@ class Editor extends Component {
                 const {
                     blocked, circled, shaded, content,
                 } = box;
-                const focused = editor.cursor &&
-                    row === editor.cursor.row &&
-                    column === editor.cursor.column;
                 const boxPath = `${path}/boxes/${row}/${column}`;
                 const leftBlocked = column === 0 ||
                     get(crossword, `boxes.${row}.${column - 1}.blocked`);
@@ -124,7 +121,7 @@ class Editor extends Component {
 
                 boxes.push((
                     <div className={bem('box', {
-                        blocked, circled, shaded, focused,
+                        blocked, circled, shaded,
                     })}
                     key={`box-${row}-${column}`}
                     tabIndex={!blocked ? '0' : undefined}
