@@ -10,6 +10,8 @@ import firebase from 'firebase';
 
 import routes from './routes';
 
+import './styles/main.scss';
+
 const firebaseConfig = {
   apiKey: 'AIzaSyCKj_BRXYrNVGLbTlYtq517O7hxpPnZBZ8',
   authDomain: 'crossword-dev.firebaseapp.com',
