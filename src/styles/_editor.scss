@@ -8,21 +8,50 @@ $block-class: 'editor';
 
         &__clues-and-grid {
             display: flex;
-            flex-direction: row;
+            flex-flow: row;
             justify-content: space-around;
             align-self: stretch;
             align-items: flex-start;
+        }
+
+        &__clues-wrapper {
+            width: 200px;
+
+            &:first-child {
+                order: 1;
+            }
+
+            &:last-child {
+                order: 3;
+            }
         }
 
         &__grid {
             border-color: black;
             border-style: solid;
             border-width: 0 0 1px 1px;
+            order: 2;
         }
 
         &__row {
             display: flex;
             flex-direction: row;
+        }
+
+        @for $size from 1 to 30 {
+            @media (max-width: 33px * $size + 440px) {
+                &--size-#{$size} {
+                    .#{$block-class}__clues-wrapper {
+                        order: 1;
+                        margin: 16px;
+                    }
+
+                    .#{$block-class}__clues-and-grid {
+                        flex-wrap: wrap;
+                        justify-content: center;
+                    }
+                }
+            }
         }
     }
 }

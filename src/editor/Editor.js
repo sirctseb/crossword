@@ -205,7 +205,7 @@ class Editor extends Component {
             ));
         }
         return (
-            <div className='editor'>
+            <div className={bem([`size-${crossword.rows}`])}>
                 <input type='number'
                     className='editor__input'
                     value={crossword.rows}
@@ -220,21 +220,25 @@ class Editor extends Component {
                     checked={crossword.symmetric}
                     onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
                 <div className={bem('clues-and-grid')}>
-                    <ClueList direction='across'
-                        clueLabels={acrossClues}
-                        clueData={crossword.clues.across}
-                        clueInput={editor.clueInput}
-                        actions={this.props.actions}
-                        onClueBlur={this.onClueBlur} />
+                    <div className={bem('clues-wrapper')}>
+                        <ClueList direction='across'
+                            clueLabels={acrossClues}
+                            clueData={crossword.clues.across}
+                            clueInput={editor.clueInput}
+                            actions={this.props.actions}
+                            onClueBlur={this.onClueBlur} />
+                    </div>
                     <div className={bem('grid')}>
                         {rows}
                     </div>
-                    <ClueList direction='down'
-                        clueLabels={downClues}
-                        clueData={crossword.clues.down}
-                        clueInput={editor.clueInput}
-                        actions={this.props.actions}
-                        onClueBlur={this.onClueBlur} />
+                    <div className={bem('clues-wrapper')}>
+                        <ClueList direction='down'
+                            clueLabels={downClues}
+                            clueData={crossword.clues.down}
+                            clueInput={editor.clueInput}
+                            actions={this.props.actions}
+                            onClueBlur={this.onClueBlur} />
+                    </div>
                 </div>
                 <div className={bem('suggestions')}>
                     Across<br />
