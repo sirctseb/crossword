@@ -228,7 +228,7 @@ class Editor extends Component {
                       undoHistory.add(FirebaseChange.FromValues(
                         fbRef.child(`${path}/clues/across/${row}/${column}`),
                         evt.target.value,
-                        get(crossword, `${path}.clues.across.${row}.${column}`),
+                        get(crossword, `clues.across.${row}.${column}`),
                       ));
                       changeClue({
                         value: null,
@@ -270,7 +270,7 @@ class Editor extends Component {
                       undoHistory.add(FirebaseChange.FromValues(
                         fbRef.child(`${path}/clues/down/${row}/${column}`),
                         evt.target.value,
-                        get(crossword, `${path}.clues.down.${row}.${column}`),
+                        get(crossword, `clues.down.${row}.${column}`),
                       ));
                       changeClue({
                         value: null,
