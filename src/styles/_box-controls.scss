@@ -1,0 +1,19 @@
+$block-class: 'box-controls';
+
+@at-root {
+  .#{$block-class} {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    opacity: 0.5;
+
+    &__block {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      background-color: gray;
+      width: 33%;
+      height: 33%;
+    }
+  }
+}
