@@ -11,6 +11,7 @@ import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
 import CrosswordModel from '../model/Crossword';
+import ClueList from './ClueList';
 
 const enhance = compose(
     firebaseConnect(props => ([
@@ -227,45 +228,24 @@ class Editor extends Component {
                     checked={crossword.symmetric}
                     onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
                 <div className={bem('clues-and-grid')}>
-                    <div className={bem('across-clues')}>
-                        Across
-                        {
-                            acrossClues.map(({
-                                row, column, label,
-                            }) =>
-                                <div key={label}
-                                    className={bem('clue')}>
-                                    {label}.
-                                    <input type='text'
-                                        className={bem('clue-input')}
-                                        value={(
-                                            row === editor.clueInput.row &&
-                                            column === editor.clueInput.column &&
-                                            editor.clueInput.direction === 'across' &&
-                                            editor.clueInput.value
-                                        ) || get(crossword, `clues.across.${row}.${column}`, '')}
-                                        onChange={(evt) => {
-                                            changeClue({
-                                                value: evt.target.value, row, column, direction: 'across',
-                                            });
-                                        }}
-                                        onBlur={(evt) => {
-                                            undoHistory.add(FirebaseChange.FromValues(
-                                                fbRef.child(`${path}/clues/across/${row}/${column}`),
-                                                evt.target.value,
-                                                get(crossword, `clues.across.${row}.${column}`),
-                                            ));
-                                            changeClue({
-                                                value: null,
-                                                row: null,
-                                                column: null,
-                                                direction: null,
-                                            });
-                                        }}
-                                    />
-                                </div>)
-                        }
-                    </div>
+                    <ClueList direction='across'
+                        clueLabels={acrossClues}
+                        clueData={crossword.clues.across}
+                        clueInput={editor.clueInput}
+                        actions={this.props.actions}
+                        onClueBlur={() => {
+                            undoHistory.add(FirebaseChange.FromValues(
+                                fbRef.child(`${path}/clues/across/${editor.clueInput.row}/${editor.clueInput.column}`),
+                                editor.clueInput.value,
+                                get(crossword, `clues.across.${editor.clueInput.row}.${editor.clueInput.column}`),
+                            ));
+                            changeClue({
+                                value: null,
+                                row: null,
+                                column: null,
+                                direction: null,
+                            });
+                        }} />
                     <div className={bem('grid')}>
                         {rows}
                     </div>
