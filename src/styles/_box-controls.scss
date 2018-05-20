@@ -6,6 +6,7 @@ $block-class: 'box-controls';
     height: 100%;
     width: 100%;
     opacity: 0;
+    z-index: 2;
 
     &:hover {
       opacity: 0.5;
@@ -16,6 +17,15 @@ $block-class: 'box-controls';
       right: 0;
       bottom: 0;
       background-color: gray;
+      width: 33%;
+      height: 33%;
+    }
+
+    &__circle {
+      position: absolute;
+      right: 0;
+      top: 0;
+      background-color: red;
       width: 33%;
       height: 33%;
     }
