@@ -73,6 +73,14 @@ $focus-color: #eee;
                     bottom: 2px;
                 }
             }
+
+            &--circled:focus::after {
+                border-bottom: 1px dashed black;
+            }
+
+            &--circled:focus::before {
+                border-bottom: none;
+            }
         }
 
         &__clue-index {
