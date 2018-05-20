@@ -5,6 +5,8 @@ import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 
+import BoxControls from './BoxControls';
+
 const enhance = compose(
     firebaseConnect(props => ([
         `crosswords/${props.params.crosswordId}`,
@@ -30,8 +32,8 @@ class Editor extends Component {
                 const blocked = get(crossword, `boxes.${i}.${j}.blocked`);
                 boxes.push((
                     <div className={bem('box', { blocked })}
-                        key={`box-${i}-${j}`}
-                        onClick={() => set(`${path}/boxes/${i}/${j}/blocked`, !blocked)}>
+                        key={`box-${i}-${j}`}>
+                        <BoxControls onToggleBlock={() => set(`${path}/boxes/${i}/${j}/blocked`, !blocked)} />
                     </div>
                 ));
             }
