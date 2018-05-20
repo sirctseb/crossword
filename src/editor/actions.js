@@ -13,11 +13,13 @@ const getSuggestionsSuccess = (pattern, suggestions) => ({
     suggestions,
 });
 
-export const getSuggestions = pattern => (dispatch) => {
-    const matchingAnswers = firebaseApp.functions().httpsCallable('matchingAnswers');
+export const getSuggestions = pattern => (dispatch, getState) => {
+    if (!(pattern in getState().editor.suggestions)) {
+        const matchingAnswers = firebaseApp.functions().httpsCallable('matchingAnswers');
 
-    matchingAnswers({ regex: pattern })
-        .then(results => dispatch(getSuggestionsSuccess(pattern, results.data)));
+        matchingAnswers({ regex: pattern })
+            .then(results => dispatch(getSuggestionsSuccess(pattern, results.data)));
+    }
 };
 
 export const setCursor = cursor => ({
