@@ -10,6 +10,8 @@ class BoxControls extends Component {
             <div className='box-controls'>
                 <div className={bem('block')}
                     onClick={this.props.onToggleBlock}/>
+                <div className={bem('circle')}
+                    onClick={this.props.onToggleCircle}/>
             </div>
         );
     }
@@ -17,6 +19,7 @@ class BoxControls extends Component {
 
 BoxControls.propTypes = {
     onToggleBlock: propTypes.func.isRequired,
+    onToggleCircle: propTypes.func.isRequired,
 };
 
 export default BoxControls;
