@@ -14,12 +14,12 @@ class BoxControls extends Component {
             set(`${boxPath}`, { blocked: !blocked });
             evt.stopPropagation();
           }}/>
-        <div className={bem('circle')}
+        <div className={bem('circle', { circled })}
           onClick={(evt) => {
             set(`${boxPath}/circled`, !circled);
             evt.stopPropagation();
           }}/>
-        <div className={bem('shade')}
+        <div className={bem('shade', { shaded })}
           onClick={(evt) => {
             set(`${boxPath}/shaded`, !shaded);
             evt.stopPropagation();
