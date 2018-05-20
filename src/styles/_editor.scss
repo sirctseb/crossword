@@ -1,5 +1,9 @@
 $block-class: 'editor';
 
+$block-color: black;
+$shade-color: #aaa;
+$focus-color: #eee;
+
 @at-root {
     .#{$block-class} {
         &__row {
@@ -16,7 +20,7 @@ $block-class: 'editor';
             position: relative;
 
             &--blocked {
-                background-color: black;
+                background-color: $block-color;
             }
 
             &--circled::after {
@@ -29,7 +33,11 @@ $block-class: 'editor';
             }
 
             &--shaded {
-                background-color: #aaa;
+                background-color: $shade-color;
+            }
+
+            &--focused {
+                background-color: $focus-color;
             }
         }
     }
