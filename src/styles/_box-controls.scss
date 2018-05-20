@@ -19,6 +19,17 @@ $block-class: 'box-controls';
             background-color: #333;
             width: 33%;
             height: 33%;
+
+            &--blocked::after {
+                position: absolute;
+                color: red;
+                height: 100%;
+                width: 100%;
+                content: 'x';
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
         }
 
         &__circle {
