@@ -28,12 +28,12 @@ export default class ClueList extends Component {
                 value={(
                   row === clueInput.row &&
                                     column === clueInput.column &&
-                                    clueInput.direction === 'across' &&
+                                    clueInput.direction === direction &&
                                     clueInput.value
                 ) || get(clueData, `${row}.${column}`, '')}
                 onChange={(evt) => {
                   changeClue({
-                    value: evt.target.value, row, column, direction: 'across',
+                    value: evt.target.value, row, column, direction,
                   });
                 }}
                 onBlur={this.props.onClueBlur}
