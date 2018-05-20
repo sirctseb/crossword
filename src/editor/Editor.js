@@ -92,10 +92,10 @@ class Editor extends Component {
                     get(crossword, `boxes.${row - 1}.${column}.blocked`);
         const indexBox = !blocked && (leftBlocked || topBlocked);
         if (indexBox && leftBlocked) {
-          acrossClues.push(clueIndex);
+          acrossClues.push({ row, column, label: clueIndex });
         }
         if (indexBox && topBlocked) {
-          downClues.push(clueIndex);
+          downClues.push({ row, column, label: clueIndex });
         }
 
         boxes.push((
@@ -190,10 +190,17 @@ class Editor extends Component {
           <div className={bem('across-clues')}>
                         Across
             {
-              acrossClues.map(clueLabel =>
-                <div key={clueLabel}
+              acrossClues.map(({ row, column, label }) =>
+                <div key={label}
                   className={bem('clue')}>
-                  {clueLabel}
+                  {label}.
+                  <input type='text'
+                    className={bem('clue-input')}
+                    value={get(crossword, `clues.across.${row}.${column}`, '')}
+                    onChange={(evt) => {
+                      set(`${path}/clues/across/${row}/${column}`, evt.target.value);
+                    }}
+                  />
                 </div>)
             }
           </div>
@@ -203,10 +210,17 @@ class Editor extends Component {
           <div className={bem('down-clues')}>
                         Down
             {
-              downClues.map(clueLabel =>
-                <div key={clueLabel}
+              downClues.map(({ row, column, label }) =>
+                <div key={label}
                   className={bem('clue')}>
-                  {clueLabel}
+                  {label}.
+                  <input type='text'
+                    className={bem('clue-input')}
+                    value={get(crossword, `clues.down.${row}.${column}`, '')}
+                    onChange={(evt) => {
+                      set(`${path}/clues/down/${row}/${column}`, evt.target.value);
+                    }}
+                  />
                 </div>)
             }
           </div>
