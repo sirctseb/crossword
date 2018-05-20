@@ -42,8 +42,8 @@ $block-class: 'box-controls';
       top: 0;
       border: 1px solid black;
       border-radius: 50%;
-      width: 30%;
-      height: 30%;
+      width: 9px;
+      height: 9px;
 
       &--circled::after {
         @extend %unindicator;
