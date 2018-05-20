@@ -1,27 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { compose, bindActionCreators } from 'redux';
+import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 
 import BoxControls from './BoxControls';
-import * as actions from './actions';
 
 const enhance = compose(
   firebaseConnect(props => ([
     `crosswords/${props.params.crosswordId}`,
   ])),
-  connect(
-    ({ firebase: { data: { crosswords } }, editor }, props) => ({
-      crossword: crosswords && crosswords[props.params.crosswordId],
-      path: `crosswords/${props.params.crosswordId}`,
-      editor,
-    }),
-    dispatch => ({
-      actions: bindActionCreators(actions, dispatch),
-    }),
-  ),
+  connect(({ firebase: { data: { crosswords } }, editor }, props) => ({
+    crossword: crosswords && crosswords[props.params.crosswordId],
+    path: `crosswords/${props.params.crosswordId}`,
+    editor,
+  })),
 );
 
 class Editor extends Component {
@@ -54,7 +48,6 @@ class Editor extends Component {
             blocked, circled, shaded, focused,
           })}
           key={`box-${row}-${column}`}
-          onClick={() => this.props.actions.setCursor({ row, column })}
           tabIndex='0'
           onKeyPress={
             (evt) => {
