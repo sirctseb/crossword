@@ -18,12 +18,24 @@ const enhance = compose(
     })),
 );
 
+const blockedUpdate = (row, column, { rows, symmetric }, blocked) => {
+    const update = {
+        [`boxes/${row}/${column}/blocked`]: blocked,
+    };
+
+    if (symmetric) {
+        update[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = blocked;
+    }
+
+    return update;
+};
+
 class Editor extends Component {
     render() {
         const bem = bemNamesFactory('editor');
 
         const {
-            firebase: { set }, path, crossword, editor,
+            firebase: { set, update }, path, crossword, editor,
         } = this.props;
 
         if (!crossword) {
@@ -50,7 +62,11 @@ class Editor extends Component {
                     key={`box-${row}-${column}`}
                     tabIndex='0'
                     onKeyPress={evt => set(`${boxPath}/content`, evt.key)}>
-                        <BoxControls set={set} boxPath={boxPath} box={box} />
+                        <BoxControls set={set} boxPath={boxPath} box={box}
+                            onBlock={
+                                () => update(path, blockedUpdate(row, column, crossword, !blocked))
+                            }
+                        />
                         { content }
                     </div>
                 ));
@@ -70,7 +86,7 @@ class Editor extends Component {
                     onChange={evt => set(`${path}/rows`, evt.target.value)} />
                 <input type='checkbox'
                     className='editor__symmetric'
-                    value={crossword.symmetric}
+                    checked={crossword.symmetric}
                     onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
                 <div className={bem('grid')}>
                     {rows}
