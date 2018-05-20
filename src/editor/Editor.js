@@ -10,6 +10,7 @@ import * as actions from './actions';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
+import CrosswordModel from '../model/Crossword';
 
 const enhance = compose(
     firebaseConnect(props => ([
@@ -41,6 +42,14 @@ const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) 
     }
 
     return new FirebaseChange(crosswordRef, update, undoUpdate);
+};
+
+const updateSuggestions = (row, column, crossword, crosswordActions) => {
+    const acrossPattern = CrosswordModel.acrossPattern(crossword, row, column);
+    const downPattern = CrosswordModel.downPattern(crossword, row, column);
+
+    crosswordActions.getSuggestions(acrossPattern);
+    crosswordActions.getSuggestions(downPattern);
 };
 
 const undoHistory = UndoHistory.getHistory('crossword');
@@ -129,6 +138,9 @@ class Editor extends Component {
                             ));
                         }
                     }}
+                    onFocus={
+                        () => updateSuggestions(row, column, crossword, this.props.actions)
+                    }
                     onKeyDown={(evt) => {
                         switch (evt.key) {
                         case 'ArrowLeft':
