@@ -49,12 +49,7 @@ class Editor extends Component {
                     })}
                     key={`box-${row}-${column}`}
                     tabIndex='0'
-                    onKeyPress={
-                        (evt) => {
-                            if (editor.cursor) {
-                                set(`${boxPath}/content`, evt.key);
-                            }
-                        } }>
+                    onKeyPress={evt => set(`${boxPath}/content`, evt.key)}>
                         <BoxControls set={set} boxPath={boxPath} box={box} />
                         { content }
                     </div>
