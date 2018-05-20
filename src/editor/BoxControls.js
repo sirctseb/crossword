@@ -11,7 +11,7 @@ class BoxControls extends Component {
       <div className='box-controls'>
         <div className={bem('block')}
           onClick={(evt) => {
-            set(`${boxPath}/blocked`, !blocked);
+            set(`${boxPath}`, { blocked: !blocked });
             evt.stopPropagation();
           }}/>
         <div className={bem('circle')}
