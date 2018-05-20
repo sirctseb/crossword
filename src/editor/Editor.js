@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import { get } from 'lodash';
+import { bemNamesFactory } from 'bem-names';
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -16,6 +17,8 @@ const enhance = compose(
 
 class Editor extends Component {
   render() {
+    const bem = bemNamesFactory('editor');
+
     const { firebase: { set }, path, crossword } = this.props;
     if (!crossword) {
       return 'WAIT!';
@@ -26,7 +29,7 @@ class Editor extends Component {
       for (let j = 0; j < crossword.rows; j += 1) {
         const blocked = get(crossword, `boxes.${i}.${j}.blocked`);
         boxes.push((
-          <div className={`editor__box ${blocked ? 'editor__box--blocked' : ''}`}
+          <div className={bem('box', { blocked })}
             key={`box-${i}-${j}`}
             onClick={() => set(`${path}/boxes/${i}/${j}/blocked`, !blocked)}>
           </div>
