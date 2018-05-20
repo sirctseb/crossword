@@ -12,6 +12,8 @@ class BoxControls extends Component {
                     onClick={this.props.onToggleBlock}/>
                 <div className={bem('circle')}
                     onClick={this.props.onToggleCircle}/>
+                <div className={bem('shade')}
+                    onClick={this.props.onToggleShade}/>
             </div>
         );
     }
