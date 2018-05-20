@@ -215,7 +215,11 @@ class Editor extends Component {
                                             });
                                         }}
                                         onBlur={(evt) => {
-                                            set(`${path}/clues/across/${row}/${column}`, evt.target.value);
+                                            undoHistory.add(FirebaseChange.FromValues(
+                                                fbRef.child(`${path}/clues/across/${row}/${column}`),
+                                                evt.target.value,
+                                                get(crossword, `${path}.clues.across.${row}.${column}`),
+                                            ));
                                             changeClue({
                                                 value: null,
                                                 row: null,
@@ -253,7 +257,11 @@ class Editor extends Component {
                                             });
                                         }}
                                         onBlur={(evt) => {
-                                            set(`${path}/clues/down/${row}/${column}`, evt.target.value);
+                                            undoHistory.add(FirebaseChange.FromValues(
+                                                fbRef.child(`${path}/clues/down/${row}/${column}`),
+                                                evt.target.value,
+                                                get(crossword, `${path}.clues.down.${row}.${column}`),
+                                            ));
                                             changeClue({
                                                 value: null,
                                                 row: null,
