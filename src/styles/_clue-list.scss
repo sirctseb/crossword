@@ -1,0 +1,16 @@
+$block-class: 'clue-list';
+
+@at-root {
+  .#{$block-class} {
+    &__clue {
+      display: flex;
+    }
+
+    &__clue-input {
+      margin-left: 8px;
+      border-width: 0 0 1px;
+      border-color: black;
+      flex: 1;
+    }
+  }
+}
