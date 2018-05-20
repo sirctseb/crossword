@@ -14,16 +14,20 @@ class BoxControls extends Component {
             set(`${boxPath}`, { blocked: !blocked });
             evt.stopPropagation();
           }}/>
-        <div className={bem('circle', { circled })}
-          onClick={(evt) => {
-            set(`${boxPath}/circled`, !circled);
-            evt.stopPropagation();
-          }}/>
-        <div className={bem('shade', { shaded })}
-          onClick={(evt) => {
-            set(`${boxPath}/shaded`, !shaded);
-            evt.stopPropagation();
-          }}/>
+        {
+          !blocked && <div className={bem('circle', { circled })}
+            onClick={(evt) => {
+              set(`${boxPath}/circled`, !circled);
+              evt.stopPropagation();
+            }}/>
+        }
+        {
+          !blocked && <div className={bem('shade', { shaded })}
+            onClick={(evt) => {
+              set(`${boxPath}/shaded`, !shaded);
+              evt.stopPropagation();
+            }}/>
+        }
       </div>
     );
   }
