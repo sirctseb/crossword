@@ -4,11 +4,12 @@ import { compose } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
 
 const enhance = compose(
-  firebaseConnect([
-    'crossword',
-  ]),
-  connect(({ firebase: { data: { crossword } } }) => ({
-    crossword,
+  firebaseConnect(props => ([
+    `crosswords/${props.params.crosswordId}`,
+  ])),
+  connect(({ firebase: { data: { crosswords } } }, props) => ({
+    crossword: crosswords && crosswords[props.params.crosswordId],
+    path: `crosswords/${props.params.crosswordId}`,
   })),
 );
 
@@ -39,7 +40,7 @@ class Editor extends Component {
         <input type='number'
           className='editor__input'
           value={this.props.crossword.rows}
-          onChange={evt => this.props.firebase.set('crossword/rows', evt.target.value)} />
+          onChange={evt => this.props.firebase.set(`${this.props.path}/rows`, evt.target.value)} />
         {rows}
       </div>
     );
