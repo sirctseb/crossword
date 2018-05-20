@@ -68,7 +68,7 @@ class Editor extends Component {
             blocked, circled, shaded, focused,
           })}
           key={`box-${row}-${column}`}
-          tabIndex='0'
+          tabIndex={!blocked ? '0' : undefined}
           onKeyPress={evt => set(`${boxPath}/content`, evt.key)}>
             <BoxControls set={set} boxPath={boxPath} box={box}
               onBlock={
