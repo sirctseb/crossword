@@ -1,0 +1,14 @@
+{
+  "name": "crossword-functions",
+  "description": "Cloud Functions for Crosswords",
+  "dependencies": {
+    "firebase-admin": "~4.2.1",
+    "firebase-functions": "^1.0.2"
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}
