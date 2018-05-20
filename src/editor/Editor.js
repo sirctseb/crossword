@@ -43,9 +43,12 @@ class Editor extends Component {
         }
 
         const refRows = [];
-
         const rows = [];
+
         let clueIndex = 1;
+        const acrossClues = [];
+        const downClues = [];
+
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             const refBoxes = [];
@@ -58,13 +61,17 @@ class Editor extends Component {
                     row === editor.cursor.row &&
                     column === editor.cursor.column;
                 const boxPath = `${path}/boxes/${row}/${column}`;
-                const indexBox = !blocked &&
-                (
-                    row === 0 ||
-                    column === 0 ||
-                    get(crossword, `boxes.${row - 1}.${column}.blocked`) ||
-                    get(crossword, `boxes.${row}.${column - 1}.blocked`)
-                );
+                const leftBlocked = column === 0 ||
+                    get(crossword, `boxes.${row}.${column - 1}.blocked`);
+                const topBlocked = row === 0 ||
+                    get(crossword, `boxes.${row - 1}.${column}.blocked`);
+                const indexBox = !blocked && (leftBlocked || topBlocked);
+                if (indexBox && leftBlocked) {
+                    acrossClues.push(clueIndex);
+                }
+                if (indexBox && topBlocked) {
+                    downClues.push(clueIndex);
+                }
 
                 boxes.push((
                     <div className={bem('box', {
@@ -141,8 +148,30 @@ class Editor extends Component {
                     className='editor__symmetric'
                     checked={crossword.symmetric}
                     onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
-                <div className={bem('grid')}>
-                    {rows}
+                <div className={bem('clues-and-grid')}>
+                    <div className={bem('across-clues')}>
+                        Across
+                        {
+                            acrossClues.map(clueLabel =>
+                                <div key={clueLabel}
+                                    className={bem('clue')}>
+                                    {clueLabel}
+                                </div>)
+                        }
+                    </div>
+                    <div className={bem('grid')}>
+                        {rows}
+                    </div>
+                    <div className={bem('down-clues')}>
+                        Down
+                        {
+                            downClues.map(clueLabel =>
+                                <div key={clueLabel}
+                                    className={bem('clue')}>
+                                    {clueLabel}
+                                </div>)
+                        }
+                    </div>
                 </div>
             </div>
         );
