@@ -31,15 +31,19 @@ class Editor extends Component {
         const {
             firebase: { set }, path, crossword, editor,
         } = this.props;
+
         if (!crossword) {
             return 'WAIT!';
         }
+
         const rows = [];
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
                 const box = get(crossword, `boxes.${row}.${column}`, {});
-                const { blocked, circled, shaded } = box;
+                const {
+                    blocked, circled, shaded, content,
+                } = box;
                 const focused = editor.cursor &&
                     row === editor.cursor.row &&
                     column === editor.cursor.column;
@@ -50,8 +54,16 @@ class Editor extends Component {
                         blocked, circled, shaded, focused,
                     })}
                     key={`box-${row}-${column}`}
-                    onClick={() => this.props.actions.setCursor({ row, column }) }>
+                    onClick={() => this.props.actions.setCursor({ row, column })}
+                    tabIndex='0'
+                    onKeyPress={
+                        (evt) => {
+                            if (editor.cursor) {
+                                set(`${boxPath}/content`, evt.key);
+                            }
+                        } }>
                         <BoxControls set={set} boxPath={boxPath} box={box} />
+                        { content }
                     </div>
                 ));
             }
