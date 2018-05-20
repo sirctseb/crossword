@@ -9,9 +9,9 @@ import { hotkeys } from 'react-keyboard-shortcuts';
 import * as actions from './actions';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
-import BoxControls from './BoxControls';
 import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
+import Box from './Box';
 
 const enhance = compose(
     firebaseConnect(props => ([
@@ -92,11 +92,22 @@ class Editor extends Component {
         };
 
         this.onClueBlur = this.onClueBlur.bind(this);
+        this.onBoxFocus = this.onBoxFocus.bind(this);
+        this.assignFocus = this.assignFocus.bind(this);
+        this.boxRefs = {};
     }
 
     onBoxFocus(row, column) {
         this.props.actions.setCursor({ row, column });
         updateSuggestions(row, column, this.props.crossword, this.props.actions);
+    }
+
+    assignFocus(row, column) {
+        const { rows: size } = this.props.crossword;
+
+        if (row > 0 && column > 0 && row < size && column < size) {
+            this.boxRefs[`${row}.${column}`].focus();
+        }
     }
 
     onClueBlur() {
@@ -133,7 +144,6 @@ class Editor extends Component {
             return 'WAIT!';
         }
 
-        const refRows = [];
         const rows = [];
 
         let clueIndex = 1;
@@ -142,11 +152,10 @@ class Editor extends Component {
 
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
-            const refBoxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
                 const box = get(crossword, `boxes.${row}.${column}`, {});
                 const {
-                    blocked, circled, shaded, content,
+                    blocked,
                 } = box;
                 const boxPath = `${path}/boxes/${row}/${column}`;
                 const leftBlocked = column === 0 ||
@@ -162,72 +171,32 @@ class Editor extends Component {
                 }
 
                 boxes.push((
-                    <div className={bem('box', {
-                        blocked, circled, shaded,
-                    })}
-                    key={`box-${row}-${column}`}
-                    tabIndex={!blocked ? '0' : undefined}
-                    ref={ref => refBoxes.push(ref)}
-                    onKeyPress={(evt) => {
-                        if (/[A-z]/.test(evt.key)) {
-                            undoHistory.add(FirebaseChange.FromValues(
-                                fbRef.child(`${boxPath}/content`),
-                                evt.key,
-                                box.content,
-                            ));
-                        }
-                    }}
-                    onFocus={() => this.onBoxFocus(row, column)}
-                    onKeyDown={(evt) => {
-                        switch (evt.key) {
-                        case 'ArrowLeft':
-                            if (column > 0) {
-                                refRows[row][column - 1].focus();
-                            }
-                            break;
-                        case 'ArrowRight':
-                            if (column < crossword.rows - 1) {
-                                refRows[row][column + 1].focus();
-                            }
-                            break;
-                        case 'ArrowUp':
-                            if (row > 0) {
-                                refRows[row - 1][column].focus();
-                            }
-                            break;
-                        case 'ArrowDown':
-                            if (row < crossword.rows - 1) {
-                                refRows[row + 1][column].focus();
-                            }
-                            break;
-                        default:
-                            break;
-                        }
-                    }}>
-                        <BoxControls boxRef={fbRef.child(boxPath)} box={box}
-                            onBlock={() => undoHistory.add(blockedChange(
-                                row,
-                                column,
-                                crossword,
-                                !blocked,
-                                fbRef.child(path),
-                            )) }
-                        />
-                        {
-                            indexBox &&
-                            <div className={bem('clue-index')}>
-                                {clueIndex}
-                            </div>
-                        }
-                        { content }
-                    </div>
+                    <Box key={`box-${row}-${column}`}
+                        row={row}
+                        column={column}
+                        box={box}
+                        boxRef={fbRef.child(boxPath)}
+                        undoHistory={undoHistory}
+                        assignFocus={this.assignFocus}
+                        clueLabel={indexBox ? clueIndex : undefined}
+                        onRef={(ref) => {
+                            this.boxRefs[`${row}.${column}`] = ref;
+                        }}
+                        onBlock={() => undoHistory.add(blockedChange(
+                            row,
+                            column,
+                            crossword,
+                            !blocked,
+                            fbRef.child(path),
+                        ))}
+                        onBoxFocus={this.onBoxFocus}
+                    />
                 ));
 
                 if (indexBox) {
                     clueIndex += 1;
                 }
             }
-            refRows.push(refBoxes);
             rows.push((
                 <div className='editor__row'
                     key={`row-${row}`}>

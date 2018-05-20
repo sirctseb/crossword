@@ -1,3 +1,8 @@
+$block-color: black;
+$shade-color: #aaa;
+$focus-color: #eee;
+
+@import 'box';
 @import 'box-controls';
 @import 'clue-list';
 @import 'editor';
