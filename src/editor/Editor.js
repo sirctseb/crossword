@@ -38,7 +38,8 @@ class Editor extends Component {
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
-                const { blocked, circled, shaded } = get(crossword, `boxes.${row}.${column}`, {});
+                const box = get(crossword, `boxes.${row}.${column}`, {});
+                const { blocked, circled, shaded } = box;
                 const focused = editor.cursor &&
                     row === editor.cursor.row &&
                     column === editor.cursor.column;
@@ -50,9 +51,7 @@ class Editor extends Component {
                     })}
                     key={`box-${row}-${column}`}
                     onClick={() => this.props.actions.setCursor({ row, column }) }>
-                        <BoxControls onToggleBlock={() => set(`${boxPath}/blocked`, !blocked)}
-                            onToggleCircle={() => set(`${boxPath}/circled`, !circled)}
-                            onToggleShade={() => set(`${boxPath}/shaded`, !shaded)} />
+                        <BoxControls set={set} boxPath={boxPath} box={box} />
                     </div>
                 ));
             }
