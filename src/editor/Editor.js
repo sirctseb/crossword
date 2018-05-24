@@ -7,6 +7,7 @@ import { bemNamesFactory } from 'bem-names';
 import { hotkeys } from 'react-keyboard-shortcuts';
 
 import * as actions from './actions';
+import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import CrosswordModel from '../model/Crossword';
@@ -221,7 +222,7 @@ class Editor extends Component {
                     onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
                 <div className={bem('clues-and-grid')}>
                     <div className={bem('clues-wrapper')}>
-                        <ClueList direction='across'
+                        <ClueList direction={ACROSS}
                             clueLabels={acrossClues}
                             clueData={crossword.clues.across}
                             clueInput={editor.clueInput}
@@ -232,7 +233,7 @@ class Editor extends Component {
                         {rows}
                     </div>
                     <div className={bem('clues-wrapper')}>
-                        <ClueList direction='down'
+                        <ClueList direction={DOWN}
                             clueLabels={downClues}
                             clueData={crossword.clues.down}
                             clueInput={editor.clueInput}

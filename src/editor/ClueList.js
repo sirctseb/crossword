@@ -3,9 +3,11 @@ import propTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 import { get } from 'lodash';
 
+import { DOWN, ACROSS } from './constants';
+
 const displayNames = {
-    across: 'Across',
-    down: 'Down',
+    [ACROSS]: 'Across',
+    [DOWN]: 'Down',
 };
 
 export default class ClueList extends Component {
@@ -46,7 +48,7 @@ export default class ClueList extends Component {
 }
 
 ClueList.propTypes = {
-    direction: propTypes.oneOf(['across', 'down']).isRequired,
+    direction: propTypes.oneOf([DOWN, ACROSS]).isRequired,
     clueLabels: propTypes.arrayOf(propTypes.object).isRequired,
     clueData: propTypes.oneOfType([propTypes.object, propTypes.array]).isRequired,
     clueInput: propTypes.object.isRequired,
