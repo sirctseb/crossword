@@ -16,6 +16,7 @@ $block-class: 'editor';
 
         &__clues-wrapper {
             width: $clue-width;
+            overflow-y: scroll;
 
             &:first-child {
                 order: 1;
@@ -50,6 +51,12 @@ $block-class: 'editor';
                         flex-wrap: wrap;
                         justify-content: center;
                     }
+                }
+            }
+
+            &--size-#{$size} {
+                .#{$block-class}__clues-wrapper {
+                    max-height: ($box-size + 1) * $size;
                 }
             }
         }
