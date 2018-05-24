@@ -2,6 +2,9 @@ $block-color: black;
 $shade-color: #aaa;
 $focus-color: #eee;
 
+$box-size: 32px;
+$clue-width: 200px;
+
 @import 'box';
 @import 'box-controls';
 @import 'clue-list';

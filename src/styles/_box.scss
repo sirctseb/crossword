@@ -2,8 +2,8 @@ $block-class: 'box';
 
 @at-root {
   .#{$block-class} {
-    width: 32px;
-    height: 32px;
+    width: $box-size;
+    height: $box-size;
     border-color: black;
     border-style: solid;
     border-width: 1px 1px 0 0;
