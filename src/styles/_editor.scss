@@ -15,7 +15,7 @@ $block-class: 'editor';
     }
 
     &__clues-wrapper {
-      width: 200px;
+      width: $clue-width;
 
       &:first-child {
         order: 1;
@@ -39,7 +39,7 @@ $block-class: 'editor';
     }
 
     @for $size from 1 to 30 {
-      @media (max-width: 33px * $size + 440px) {
+      @media (max-width: ($box-size + 1) * $size + (2 * $clue-width) + 40px) {
         &--size-#{$size} {
           .#{$block-class}__clues-wrapper {
             order: 1;
