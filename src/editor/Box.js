@@ -37,12 +37,12 @@ export default class Box extends Component {
     const {
       box: {
         blocked, circled, shaded, content,
-      }, undoHistory, clueLabel,
+      }, undoHistory, clueLabel, cursorAnswer: active,
     } = this.props;
 
     return (
       <div className={bem({
-        blocked, circled, shaded,
+        blocked, circled, shaded, active,
       })}
       tabIndex={!blocked ? '0' : undefined}
       ref={this.props.onRef}
