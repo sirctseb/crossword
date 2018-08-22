@@ -31,7 +31,7 @@ export default (state = initialState, action) => {
         });
     case actionTypes.SET_CURSOR:
         return update(state, {
-            cursor: { $set: action.cursor },
+            cursor: { $merge: action.cursor },
         });
     default:
         return state;
