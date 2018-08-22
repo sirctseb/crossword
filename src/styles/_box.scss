@@ -54,6 +54,10 @@ $block-class: 'box';
             border-bottom: none;
         }
 
+        &--active {
+            background-color: $active-color;
+        }
+
         &__clue-index {
             position: absolute;
             font-size: 12px;
