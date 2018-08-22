@@ -23,6 +23,7 @@ module.exports = {
                 "shouldComponentUpdate",
             ]
         }],
+        "comma-dangle": ["error", "always-multiline"]
     },
     "parserOptions": {
         "sourceType": "module",
