@@ -154,7 +154,7 @@ class Editor extends Component {
     for (let row = 0; row < crossword.rows; row += 1) {
       const boxes = [];
       for (let column = 0; column < crossword.rows; column += 1) {
-        const box = get(crossword, `boxes.${row}.${column}`, {});
+        const box = get(crossword, `boxes.${row}.${column}`) || {};
         const {
           blocked,
         } = box;
