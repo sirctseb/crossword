@@ -1,9 +1,14 @@
 import update from 'immutability-helper';
 
 import * as actionTypes from './actionTypes';
+import { ACROSS } from './constants';
 
 const initialState = {
-  cursor: null,
+  cursor: {
+    row: 0,
+    column: 0,
+    direction: ACROSS,
+  },
   clueInput: {
     row: null,
     column: null,
