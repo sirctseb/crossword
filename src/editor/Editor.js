@@ -106,7 +106,7 @@ class Editor extends Component {
   assignFocus(row, column) {
     const { rows: size } = this.props.crossword;
 
-    if (row > 0 && column > 0 && row < size && column < size) {
+    if (row >= 0 && column >= 0 && row < size && column < size) {
       this.boxRefs[`${row}.${column}`].focus();
     }
   }
