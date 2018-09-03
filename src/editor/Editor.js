@@ -95,7 +95,6 @@ class Editor extends Component {
         this.onClueBlur = this.onClueBlur.bind(this);
         this.onBoxFocus = this.onBoxFocus.bind(this);
         this.assignFocus = this.assignFocus.bind(this);
-        this.boxRefs = {};
     }
 
     onBoxFocus(row, column) {
@@ -107,7 +106,7 @@ class Editor extends Component {
         const { rows: size } = this.props.crossword;
 
         if (row >= 0 && column >= 0 && row < size && column < size) {
-            this.boxRefs[`${row}.${column}`].focus();
+            document.querySelector(`.box--index-${row}-${column}`).focus();
         }
     }
 
@@ -184,9 +183,6 @@ class Editor extends Component {
                         undoHistory={undoHistory}
                         assignFocus={this.assignFocus}
                         clueLabel={indexBox ? clueIndex : undefined}
-                        onRef={(ref) => {
-                            this.boxRefs[`${row}.${column}`] = ref;
-                        }}
                         onBlock={() => undoHistory.add(blockedChange(
                             row,
                             column,

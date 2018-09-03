@@ -38,12 +38,17 @@ export default class Box extends Component {
             box: {
                 blocked, circled, shaded, content,
             }, undoHistory, clueLabel, cursorAnswer: active,
+            row, column,
         } = this.props;
 
         return (
-            <div className={bem({
-                blocked, circled, shaded, active,
-            })}
+            <div className={
+                bem(
+                    {
+                        blocked, circled, shaded, active,
+                    },
+                    [`index-${row}-${column}`],
+                )}
             tabIndex={!blocked ? '0' : undefined}
             ref={this.props.onRef}
             onKeyPress={(evt) => {
@@ -84,7 +89,6 @@ Box.propTypes = {
     undoHistory: propTypes.object.isRequired,
     assignFocus: propTypes.func.isRequired,
     clueLabel: propTypes.number,
-    onRef: propTypes.func.isRequired,
     onBlock: propTypes.func.isRequired,
     onBoxFocus: propTypes.func.isRequired,
 };
