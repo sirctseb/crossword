@@ -14,6 +14,13 @@ import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
 import Box from './Box';
 
+const indexDiffs = {
+  ArrowLeft: [0, -1],
+  ArrowRight: [0, 1],
+  ArrowUp: [-1, 0],
+  ArrowDown: [1, 0],
+};
+
 const enhance = compose(
   firebaseConnect(props => ([
     `crosswords/${props.params.crosswordId}`,
@@ -94,7 +101,7 @@ class Editor extends Component {
 
     this.onClueBlur = this.onClueBlur.bind(this);
     this.onBoxFocus = this.onBoxFocus.bind(this);
-    this.assignFocus = this.assignFocus.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   onBoxFocus(row, column) {
@@ -102,11 +109,19 @@ class Editor extends Component {
     updateSuggestions(row, column, this.props.crossword, this.props.actions);
   }
 
-  assignFocus(row, column) {
-    const { rows: size } = this.props.crossword;
+  onKeyDown(evt) {
+    const {
+      editor: { cursor: { row, column } },
+      crossword: { rows: size },
+    } = this.props;
 
-    if (row >= 0 && column >= 0 && row < size && column < size) {
-      document.querySelector(`.box--index-${row}-${column}`).focus();
+    if (evt.key in indexDiffs) {
+      const newRow = row + indexDiffs[evt.key][0];
+      const newColumn = column + indexDiffs[evt.key][1];
+
+      if (newRow >= 0 && newColumn >= 0 && newRow < size && newColumn < size) {
+        document.querySelector(`.box--at-${newRow}-${newColumn}`).focus();
+      }
     }
   }
 
@@ -181,7 +196,6 @@ class Editor extends Component {
             box={box}
             boxRef={fbRef.child(boxPath)}
             undoHistory={undoHistory}
-            assignFocus={this.assignFocus}
             clueLabel={indexBox ? clueIndex : undefined}
             onBlock={() => undoHistory.add(blockedChange(
               row,
@@ -206,7 +220,8 @@ class Editor extends Component {
       ));
     }
     return (
-      <div className={bem([`size-${crossword.rows}`])}>
+      <div className={bem([`size-${crossword.rows}`])}
+        onKeyDown={this.onKeyDown}>
         <input type='number'
           className='editor__input'
           value={crossword.rows}
