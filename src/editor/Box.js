@@ -5,27 +5,11 @@ import propTypes from 'prop-types';
 import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
 
-const indexDiffs = {
-    ArrowLeft: [0, -1],
-    ArrowRight: [0, 1],
-    ArrowUp: [-1, 0],
-    ArrowDown: [1, 0],
-};
-
 export default class Box extends Component {
     constructor(props) {
         super(props);
 
-        this.onKeyDown = this.onKeyDown.bind(this);
         this.onFocus = this.onFocus.bind(this);
-    }
-
-    onKeyDown(evt) {
-        const { row, column } = this.props;
-
-        if (evt.key in indexDiffs) {
-            this.props.assignFocus(row + indexDiffs[evt.key][0], column + indexDiffs[evt.key][1]);
-        }
     }
 
     onFocus() {
@@ -47,7 +31,7 @@ export default class Box extends Component {
                     {
                         blocked, circled, shaded, active,
                     },
-                    [`index-${row}-${column}`],
+                    [`at-${row}-${column}`],
                 )}
             tabIndex={!blocked ? '0' : undefined}
             ref={this.props.onRef}
@@ -87,7 +71,6 @@ Box.propTypes = {
     }).isRequired,
     boxRef: propTypes.object.isRequired,
     undoHistory: propTypes.object.isRequired,
-    assignFocus: propTypes.func.isRequired,
     clueLabel: propTypes.number,
     onBlock: propTypes.func.isRequired,
     onBoxFocus: propTypes.func.isRequired,
