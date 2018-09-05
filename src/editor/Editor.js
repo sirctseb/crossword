@@ -13,6 +13,7 @@ import FirebaseChange from '../undo/FirebaseChange';
 import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
 import Box from './Box';
+import hotKeyEditor from './HotKeyEditor';
 
 const enhance = compose(
     firebaseConnect(props => ([
@@ -40,6 +41,7 @@ const enhance = compose(
         dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
     ),
     hotkeys,
+    hotKeyEditor,
 );
 
 const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
@@ -69,54 +71,9 @@ const updateSuggestions = (row, column, crossword, crosswordActions) => {
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
-const moveCursor = (props, vector) => {
-    const {
-        editor: { cursor: { row, column } },
-        crossword: { rows: size },
-    } = props;
-
-    const newRow = row + vector[0];
-    const newColumn = column + vector[1];
-
-    if (newRow >= 0 && newColumn >= 0 && newRow < size && newColumn < size) {
-        document.querySelector(`.box--at-${newRow}-${newColumn}`).focus();
-    }
-};
-
 class Editor extends Component {
     constructor(props) {
         super(props);
-
-        this.hot_keys = {
-            'meta+z': {
-                handler: (evt) => {
-                    if (document.activeElement.tagName !== 'INPUT') {
-                        undoHistory.undo();
-                    }
-                    evt.preventDefault();
-                },
-            },
-            'shift+meta+z': {
-                handler: (evt) => {
-                    if (document.activeElement.tagName !== 'INPUT') {
-                        undoHistory.redo();
-                    }
-                    evt.preventDefault();
-                },
-            },
-            up: {
-                handler: () => moveCursor(this.props, [-1, 0]),
-            },
-            down: {
-                handler: () => moveCursor(this.props, [1, 0]),
-            },
-            left: {
-                handler: () => moveCursor(this.props, [0, -1]),
-            },
-            right: {
-                handler: () => moveCursor(this.props, [0, 1]),
-            },
-        };
 
         this.onClueBlur = this.onClueBlur.bind(this);
         this.onBoxFocus = this.onBoxFocus.bind(this);
@@ -230,6 +187,7 @@ class Editor extends Component {
                     onChange={evt =>
                         undoHistory.add(FirebaseChange.FromValues(
                             fbRef.child(`${path}/rows`),
+                            // TODO this is a string and not a number
                             evt.target.value,
                             crossword.rows,
                         ))} />
