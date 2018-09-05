@@ -14,13 +14,6 @@ import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
 import Box from './Box';
 
-const indexDiffs = {
-  ArrowLeft: [0, -1],
-  ArrowRight: [0, 1],
-  ArrowUp: [-1, 0],
-  ArrowDown: [1, 0],
-};
-
 const enhance = compose(
   firebaseConnect(props => ([
     `crosswords/${props.params.crosswordId}`,
@@ -76,6 +69,20 @@ const updateSuggestions = (row, column, crossword, crosswordActions) => {
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
+const moveCursor = (props, vector) => {
+  const {
+    editor: { cursor: { row, column } },
+    crossword: { rows: size },
+  } = props;
+
+  const newRow = row + vector[0];
+  const newColumn = column + vector[1];
+
+  if (newRow >= 0 && newColumn >= 0 && newRow < size && newColumn < size) {
+    document.querySelector(`.box--at-${newRow}-${newColumn}`).focus();
+  }
+};
+
 class Editor extends Component {
   constructor(props) {
     super(props);
@@ -97,32 +104,27 @@ class Editor extends Component {
           evt.preventDefault();
         },
       },
+      up: {
+        handler: () => moveCursor(this.props, [-1, 0]),
+      },
+      down: {
+        handler: () => moveCursor(this.props, [1, 0]),
+      },
+      left: {
+        handler: () => moveCursor(this.props, [0, -1]),
+      },
+      right: {
+        handler: () => moveCursor(this.props, [0, 1]),
+      },
     };
 
     this.onClueBlur = this.onClueBlur.bind(this);
     this.onBoxFocus = this.onBoxFocus.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   onBoxFocus(row, column) {
     this.props.actions.setCursor({ row, column });
     updateSuggestions(row, column, this.props.crossword, this.props.actions);
-  }
-
-  onKeyDown(evt) {
-    const {
-      editor: { cursor: { row, column } },
-      crossword: { rows: size },
-    } = this.props;
-
-    if (evt.key in indexDiffs) {
-      const newRow = row + indexDiffs[evt.key][0];
-      const newColumn = column + indexDiffs[evt.key][1];
-
-      if (newRow >= 0 && newColumn >= 0 && newRow < size && newColumn < size) {
-        document.querySelector(`.box--at-${newRow}-${newColumn}`).focus();
-      }
-    }
   }
 
   onClueBlur() {
