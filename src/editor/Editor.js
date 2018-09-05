@@ -187,8 +187,7 @@ class Editor extends Component {
           onChange={evt =>
             undoHistory.add(FirebaseChange.FromValues(
               fbRef.child(`${path}/rows`),
-              // TODO this is a string and not a number
-              evt.target.value,
+              parseInt(evt.target.value, 10),
               crossword.rows,
             ))} />
         <input type='checkbox'
