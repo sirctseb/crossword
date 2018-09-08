@@ -1,22 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { bemFactory } from 'bem-names';
+import { bemNamesFactory } from 'bem-names';
+
+import UndoHistory from '../../undo/UndoHistory';
+import FirebaseChange from '../../undo/FirebaseChange';
 
 import ThemeEntryList from './ThemeEntryList';
 import ThemeEntryAddition from './ThemeEntryAddition';
 
+const undoHistory = UndoHistory.getHistory('crossword');
+
 class ThemeEntries extends Component {
     render() {
-        const bem = bemFactory('theme-entries');
-        const {
-            entries,
-            actions: {
-                addThemeEntry: onAdd, deleteThemeEntry: onDelete,
-            },
-        } = this.props;
+        const bem = bemNamesFactory('theme-entries');
+        const { entries, fbRef } = this.props;
+
+        const onAdd = text =>
+            undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+
+        const onDelete = text =>
+            undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
+
+        const annotatedEntries = entries.map(entry => ({
+            text: entry,
+            used: false,
+        }));
+
         return (
             <div className={bem()}>
-                <ThemeEntryList entries={entries} onDelete={onDelete} />
+                <ThemeEntryList entries={annotatedEntries} onDelete={onDelete} />
                 <ThemeEntryAddition onAdd={onAdd} />
             </div>
         );
@@ -26,6 +38,7 @@ class ThemeEntries extends Component {
 ThemeEntries.propTypes = {
     entries: PropTypes.arrayOf(PropTypes.string).isRequired,
     currentAnswers: PropTypes.arrayOf(PropTypes.string).isRequired,
+    fbRef: PropTypes.object.isRequired,
 };
 
 export default ThemeEntries;

@@ -14,6 +14,7 @@ import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
 import Box from './Box';
 import hotKeyEditor from './HotKeyEditor';
+import ThemeEntries from './themeEntries';
 
 const enhance = compose(
     firebaseConnect(props => ([
@@ -221,6 +222,8 @@ class Editor extends Component {
                     Down<br />
                     {this.props.suggestions.down}<br />
                 </div>
+                <ThemeEntries entries={Object.keys(crossword.theme_entries || {})}
+                    fbRef={fbRef.child(path).child('theme_entries')} />
                 <button onClick={() => undoHistory.undo()}>Undo</button>
                 <button onClick={() => undoHistory.redo()}>Redo</button>
             </div>
