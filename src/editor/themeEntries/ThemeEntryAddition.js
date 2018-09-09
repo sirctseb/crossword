@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
+const bem = bemNamesFactory('theme-entry-addition');
+
 class ThemeEntryAddition extends Component {
     constructor(props) {
         super(props);
         this.state = { input: '' };
     }
     render() {
-        const bem = bemNamesFactory('theme-entry-addition');
         return (
             <div className={bem()}>
                 <input className={bem('input')}

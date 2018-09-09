@@ -9,10 +9,10 @@ import ThemeEntryList from './ThemeEntryList';
 import ThemeEntryAddition from './ThemeEntryAddition';
 
 const undoHistory = UndoHistory.getHistory('crossword');
+const bem = bemNamesFactory('theme-entries');
 
 class ThemeEntries extends Component {
     render() {
-        const bem = bemNamesFactory('theme-entries');
         const { entries, fbRef } = this.props;
 
         const onAdd = text =>

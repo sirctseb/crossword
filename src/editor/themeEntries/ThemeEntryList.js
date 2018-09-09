@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
+const bem = bemNamesFactory('theme-entry-list');
+
 class ThemeEntryList extends Component {
     render() {
-        const bem = bemNamesFactory('theme-entry-list');
         const { entries, onDelete } = this.props;
         return (
             <div className={bem()}>
