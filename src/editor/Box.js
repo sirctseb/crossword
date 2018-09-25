@@ -36,7 +36,7 @@ export default class Box extends Component {
       tabIndex={!blocked ? '0' : undefined}
       ref={this.props.onRef}
       onKeyPress={(evt) => {
-        if (/[A-z]/.test(evt.key)) {
+        if (/[A-Za-z]/.test(evt.key)) {
           undoHistory.add(FirebaseChange.FromValues(
             this.props.boxRef.child('content'),
             evt.key,
