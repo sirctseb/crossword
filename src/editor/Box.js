@@ -44,8 +44,7 @@ export default class Box extends Component {
                     ));
                 }
             }}
-            onFocus={this.onFocus}
-            onKeyDown={this.onKeyDown}>
+            onFocus={this.onFocus}>
                 <BoxControls boxRef={this.props.boxRef}
                     box={this.props.box}
                     onBlock={this.props.onBlock} />
