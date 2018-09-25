@@ -13,7 +13,7 @@ const bem = bemNamesFactory('theme-entries');
 
 class ThemeEntries extends Component {
     render() {
-        const { entries, fbRef } = this.props;
+        const { entries, currentAnswers, fbRef } = this.props;
 
         const onAdd = text =>
             undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
@@ -23,7 +23,7 @@ class ThemeEntries extends Component {
 
         const annotatedEntries = entries.map(entry => ({
             text: entry,
-            used: false,
+            used: currentAnswers.includes(entry),
         }));
 
         return (
