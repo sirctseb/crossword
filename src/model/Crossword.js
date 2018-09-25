@@ -1,4 +1,4 @@
-import { get } from 'lodash';
+import { get, range, flatten } from 'lodash';
 import { ACROSS } from '../editor/constants';
 
 export default {
@@ -55,5 +55,24 @@ export default {
       }
     }
     return false;
+  },
+  completeAnswers: (crossword) => {
+    const MISSING_VALUE = { blocked: true };
+    const coordsToSignifier = (row, column) => {
+      const { content, blocked } = get(crossword, `boxes.${row}.${column}`, MISSING_VALUE);
+      return blocked ? '|' : (content || '.');
+    };
+    const lineToAnswers = line =>
+      line.join('')
+        .split('|')
+        .filter(answer => answer.length > 0)
+        .filter(answer => !answer.includes('.'));
+    return flatten(range(crossword.rows).map(row =>
+      [
+        ...lineToAnswers(range(crossword.rows)
+          .map(column => coordsToSignifier(row, column))),
+        ...lineToAnswers(range(crossword.rows)
+          .map(column => coordsToSignifier(column, row))),
+      ]));
   },
 };
