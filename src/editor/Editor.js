@@ -182,8 +182,7 @@ class Editor extends Component {
       ));
     }
     return (
-      <div className={bem([`size-${crossword.rows}`])}
-        onKeyDown={this.onKeyDown}>
+      <div className={bem([`size-${crossword.rows}`])}>
         <input type='number'
           className='editor__input'
           value={crossword.rows}
