@@ -38,6 +38,14 @@ const enhance = compose(
         { across: '', down: '' },
       path: `crosswords/${props.params.crosswordId}`,
       editor,
+      cursorContent:
+                get(crosswords, [
+                  props.params.crosswordId,
+                  'boxes',
+                  editor.cursor.row,
+                  editor.cursor.column,
+                  'content',
+                ]),
     }),
     dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
   ),
@@ -86,7 +94,8 @@ class Editor extends Component {
 
   componentDidUpdate(prevProps) {
     if (prevProps.editor.cursor.row !== this.props.editor.cursor.row ||
-            prevProps.editor.cursor.column !== this.props.editor.cursor.column) {
+            prevProps.editor.cursor.column !== this.props.editor.cursor.column ||
+            prevProps.cursorContent !== this.props.cursorContent) {
       const { row, column } = this.props.editor.cursor;
       updateSuggestions(row, column, this.props.crossword, this.props.actions);
     }
