@@ -107,6 +107,19 @@ class Editor extends Component {
         });
     }
 
+    amendSuggestions(suggestions, direction) {
+        const { row, column } = this.props.editor.cursor;
+        const pattern = direction === ACROSS ?
+            CrosswordModel.acrossPattern(this.props.crossword, row, column) :
+            CrosswordModel.downPattern(this.props.crossword, row, column);
+
+        return [
+            ...Object.keys(this.props.crossword.theme_entries || {})
+                .filter(entry => entry.match(pattern)),
+            ...suggestions || [],
+        ];
+    }
+
     render() {
         const bem = bemNamesFactory('editor');
         const fbRef = this.props.firebase.ref();
@@ -219,9 +232,9 @@ class Editor extends Component {
                 </div>
                 <div className={bem('suggestions')}>
                     Across<br />
-                    {this.props.suggestions.across}<br />
+                    {this.amendSuggestions(this.props.suggestions.across, ACROSS)}<br />
                     Down<br />
-                    {this.props.suggestions.down}<br />
+                    {this.amendSuggestions(this.props.suggestions.down, DOWN)}<br />
                 </div>
                 <ThemeEntries entries={Object.keys(crossword.theme_entries || {})}
                     currentAnswers={currentAnswers}
