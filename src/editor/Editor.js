@@ -82,7 +82,14 @@ class Editor extends Component {
 
   onBoxFocus(row, column) {
     this.props.actions.setCursor({ row, column });
-    updateSuggestions(row, column, this.props.crossword, this.props.actions);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.editor.cursor.row !== this.props.editor.cursor.row ||
+            prevProps.editor.cursor.column !== this.props.editor.cursor.column) {
+      const { row, column } = this.props.editor.cursor;
+      updateSuggestions(row, column, this.props.crossword, this.props.actions);
+    }
   }
 
   onClueBlur() {
