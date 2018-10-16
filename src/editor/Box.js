@@ -26,25 +26,26 @@ export default class Box extends Component {
         } = this.props;
 
         return (
-            <div className={
-                bem(
-                    {
-                        blocked, circled, shaded, active,
-                    },
-                    [`at-${row}-${column}`],
-                )}
-            tabIndex={!blocked ? '0' : undefined}
-            ref={this.props.onRef}
-            onKeyPress={(evt) => {
-                if (/[A-Za-z]/.test(evt.key)) {
-                    undoHistory.add(FirebaseChange.FromValues(
-                        this.props.boxRef.child('content'),
-                        evt.key,
-                        content,
-                    ));
-                }
-            }}
-            onFocus={this.onFocus}>
+            <div
+                className={
+                    bem(
+                        {
+                            blocked, circled, shaded, active,
+                        },
+                        [`at-${row}-${column}`],
+                    )}
+                tabIndex={!blocked ? '0' : undefined}
+                ref={this.props.onRef}
+                onKeyPress={(evt) => {
+                    if (/[A-Za-z]/.test(evt.key)) {
+                        undoHistory.add(FirebaseChange.FromValues(
+                            this.props.boxRef.child('content'),
+                            evt.key,
+                            content,
+                        ));
+                    }
+                }}
+                onFocus={this.onFocus}>
                 <BoxControls boxRef={this.props.boxRef}
                     box={this.props.box}
                     onBlock={this.props.onBlock} />
