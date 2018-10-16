@@ -45,6 +45,15 @@ export default class Box extends Component {
                         ));
                     }
                 }}
+                onKeyDown={(evt) => {
+                    if (evt.key === 'Backspace') {
+                        undoHistory.add(FirebaseChange.FromValues(
+                            this.props.boxRef.child('content'),
+                            null,
+                            content
+                        ));
+                    }
+                }}
                 onFocus={this.onFocus}>
                 <BoxControls boxRef={this.props.boxRef}
                     box={this.props.box}
