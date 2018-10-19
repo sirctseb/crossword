@@ -4,16 +4,45 @@ import propTypes from 'prop-types';
 
 import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
+import RebusInput from './RebusInput';
 
 export default class Box extends Component {
   constructor(props) {
     super(props);
 
-    this.onFocus = this.onFocus.bind(this);
+    this.state = {
+      rebus: false,
+    };
+
+    this.handleFocus = this.handleFocus.bind(this);
+    this.handleMouseDown = this.handleMouseDown.bind(this);
+    this.handleRebusClose = this.handleRebusClose.bind(this);
   }
 
-  onFocus() {
+  handleFocus() {
     this.props.onBoxFocus(this.props.row, this.props.column);
+  }
+  handleMouseDown(evt) {
+    if (this.props.focused) {
+      this.setState({ rebus: true });
+      // when state goes to { rebus: true }, the input is rendered
+      // and we focus the input element in RebusInput.componentDidMount
+      // we have to preventDefault here so that we don't immediately
+      // yank it back to the box
+      evt.preventDefault();
+    }
+  }
+  handleRebusClose(content) {
+    this.setContent(content);
+    this.setState({ rebus: false });
+  }
+
+  setContent(content) {
+    this.props.undoHistory.add(FirebaseChange.FromValues(
+      this.props.boxRef.child('content'),
+      content,
+      this.props.box.content,
+    ));
   }
 
   render() {
@@ -21,9 +50,10 @@ export default class Box extends Component {
     const {
       box: {
         blocked, circled, shaded, content,
-      }, undoHistory, clueLabel, cursorAnswer: active,
+      }, clueLabel, cursorAnswer: active,
       row, column,
     } = this.props;
+    const { rebus } = this.state;
 
     return (
       <div
@@ -38,26 +68,24 @@ export default class Box extends Component {
         ref={this.props.onRef}
         onKeyPress={(evt) => {
           if (/[A-Za-z]/.test(evt.key)) {
-            undoHistory.add(FirebaseChange.FromValues(
-              this.props.boxRef.child('content'),
-              evt.key,
-              content,
-            ));
+            this.setContent(evt.key);
           }
         }}
         onKeyDown={(evt) => {
           if (evt.key === 'Backspace') {
-            undoHistory.add(FirebaseChange.FromValues(
-              this.props.boxRef.child('content'),
-              null,
-              content,
-            ));
+            this.setContent(null);
           }
         }}
-        onFocus={this.onFocus}>
+        onFocus={this.handleFocus}
+        onMouseDown={this.handleMouseDown}>
         <BoxControls boxRef={this.props.boxRef}
           box={this.props.box}
           onBlock={this.props.onBlock} />
+        {
+          rebus &&
+                    <RebusInput
+                      content={content}
+                      onClose={this.handleRebusClose} /> }
         {
           clueLabel &&
                     <div className={bem('clue-index')}>
