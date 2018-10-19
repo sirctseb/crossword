@@ -30,6 +30,7 @@ $block-class: 'box';
 
     &:focus {
       outline: none;
+      cursor: text;
 
       &::before {
         content: '';
