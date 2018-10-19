@@ -14,9 +14,11 @@ class BoxControls extends Component {
     return (
       <div className='box-controls'>
         <div className={bem('block', { blocked })}
+          onMouseDown={evt => evt.preventDefault()}
           onClick={this.props.onBlock} />
         {
           !blocked && <div className={bem('circle', { circled })}
+            onMouseDown={evt => evt.preventDefault()}
             onClick={(evt) => {
               undoHistory.add(FirebaseChange.FromValues(
                 boxRef.child('circled'),
@@ -28,6 +30,7 @@ class BoxControls extends Component {
         }
         {
           !blocked && <div className={bem('shade', { shaded })}
+            onMouseDown={evt => evt.preventDefault()}
             onClick={(evt) => {
               undoHistory.add(FirebaseChange.FromValues(
                 boxRef.child('shaded'),
