@@ -13,10 +13,6 @@ $block-class: 'box';
     justify-content: center;
     text-transform: uppercase;
 
-    &--blocked {
-      background-color: $block-color;
-    }
-
     &--circled::after {
       content: '';
       border: 1px solid black;
@@ -56,6 +52,10 @@ $block-class: 'box';
 
     &--active {
       background-color: $active-color;
+    }
+
+    &--blocked {
+      background-color: $block-color;
     }
 
     &__clue-index {
