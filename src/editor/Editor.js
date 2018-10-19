@@ -196,6 +196,7 @@ class Editor extends Component {
                             fbRef.child(path),
                         ))}
                         onBoxFocus={this.onBoxFocus}
+                        focused={CrosswordModel.isFocusBox(row, column, editor.cursor)}
                     />
                 ));
 
