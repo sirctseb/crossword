@@ -2,27 +2,53 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import UndoHistory from '../undo/UndoHistory';
+import CrosswordModel from '../model/Crossword';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
 export default (MyComponent) => {
-  const moveCursor = (props, vector) => {
-    const {
-      editor: { cursor: { row, column } },
-      crossword: { rows: size },
-    } = props;
-
-    const newRow = row + vector[0];
-    const newColumn = column + vector[1];
-
-    if (newRow >= 0 && newColumn >= 0 && newRow < size && newColumn < size) {
-      document.querySelector(`.box--at-${newRow}-${newColumn}`).focus();
-    }
-  };
-
   class HotKeyedEditor extends Component {
+    handleRight() {
+      this.moveCursor([0, 1]);
+    }
+    handleLeft() {
+      this.moveCursor([0, -1]);
+    }
+    handleUp() {
+      this.moveCursor([-1, 0]);
+    }
+    handleDown() {
+      this.moveCursor([1, 0]);
+    }
+
+    moveCursor(vector) {
+      let {
+        editor: { cursor: { row, column } },
+      } = this.props;
+
+      const { crossword } = this.props;
+      const { rows: size } = crossword;
+
+      row += vector[0];
+      column += vector[1];
+      while (row >= 0 && column >= 0 && row < size && column < size) {
+        if (!CrosswordModel.isBlockedBox(crossword, row, column)) {
+          document.querySelector(`.box--at-${row}-${column}`).focus();
+          return;
+        }
+
+        row += vector[0];
+        column += vector[1];
+      }
+    }
+
     constructor(props) {
       super(props);
+
+      this.handleRight = this.handleRight.bind(this);
+      this.handleLeft = this.handleLeft.bind(this);
+      this.handleUp = this.handleUp.bind(this);
+      this.handleDown = this.handleDown.bind(this);
 
       this.hot_keys = {
         'meta+z': {
@@ -42,16 +68,16 @@ export default (MyComponent) => {
           },
         },
         up: {
-          handler: () => moveCursor(this.props, [-1, 0]),
+          handler: this.handleUp,
         },
         down: {
-          handler: () => moveCursor(this.props, [1, 0]),
+          handler: this.handleDown,
         },
         left: {
-          handler: () => moveCursor(this.props, [0, -1]),
+          handler: this.handleLeft,
         },
         right: {
-          handler: () => moveCursor(this.props, [0, 1]),
+          handler: this.handleRight,
         },
       };
     }
