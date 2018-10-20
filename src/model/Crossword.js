@@ -57,6 +57,7 @@ export default {
         return false;
     },
     isFocusBox: (row, column, cursor) => row === cursor.row && column === cursor.column,
+    isBlockedBox: (crossword, row, column) => !!get(crossword, `boxes.${row}.${column}.blocked`),
     completeAnswers: (crossword) => {
         const MISSING_VALUE = { blocked: true };
         const coordsToSignifier = (row, column) => {
