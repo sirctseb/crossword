@@ -15,6 +15,7 @@ import ClueList from './ClueList';
 import Box from './Box';
 import hotKeyEditor from './HotKeyEditor';
 import ThemeEntries from './themeEntries';
+import Suggestions from './Suggestions';
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -28,14 +29,14 @@ const enhance = compose(
           crosswords[props.params.crosswordId],
           editor.cursor.row,
           editor.cursor.column,
-        )],
+        )] || [],
         down: editor.suggestions[CrosswordModel.downPattern(
           crosswords[props.params.crosswordId],
           editor.cursor.row,
           editor.cursor.column,
-        )],
+        )] || [],
       } :
-        { across: '', down: '' },
+        { across: [], down: [] },
       path: `crosswords/${props.params.crosswordId}`,
       editor,
       cursorContent:
@@ -123,25 +124,12 @@ class Editor extends Component {
     });
   }
 
-  amendSuggestions(suggestions, direction) {
-    const { row, column } = this.props.editor.cursor;
-    const pattern = direction === ACROSS ?
-      CrosswordModel.acrossPattern(this.props.crossword, row, column) :
-      CrosswordModel.downPattern(this.props.crossword, row, column);
-
-    return [
-      ...Object.keys(this.props.crossword.theme_entries || {})
-        .filter(entry => entry.match(pattern)),
-      ...suggestions || [],
-    ];
-  }
-
   render() {
     const bem = bemNamesFactory('editor');
     const fbRef = this.props.firebase.ref();
 
     const {
-      firebase: { set }, path, crossword, editor,
+      firebase: { set }, path, crossword, editor, suggestions,
     } = this.props;
 
     if (!crossword) {
@@ -247,12 +235,11 @@ class Editor extends Component {
               onClueBlur={this.onClueBlur} />
           </div>
         </div>
-        <div className={bem('suggestions')}>
-                    Across<br />
-          {this.amendSuggestions(this.props.suggestions.across, ACROSS)}<br />
-                    Down<br />
-          {this.amendSuggestions(this.props.suggestions.down, DOWN)}<br />
-        </div>
+        <Suggestions {...{
+          suggestions,
+          crossword,
+          editor,
+        }}/>
         <ThemeEntries entries={Object.keys(crossword.theme_entries || {})}
           currentAnswers={currentAnswers}
           fbRef={fbRef.child(path).child('theme_entries')} />
