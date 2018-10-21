@@ -11,7 +11,7 @@ export default {
         for (let i = column + 1; i < crossword.rows && !get(crossword, `boxes.${row}.${i}.blocked`); i += 1) {
             across.push(get(crossword, `boxes.${row}.${i}.content`, '.'));
         }
-        return across.join('');
+        return `^${across.join('')}$`;
     },
     downPattern: (crossword, row, column) => {
         const down = [];
@@ -22,7 +22,7 @@ export default {
         for (let i = row + 1; i < crossword.rows && !get(crossword, `boxes.${i}.${column}.blocked`); i += 1) {
             down.push(get(crossword, `boxes.${i}.${column}.content`, '.'));
         }
-        return down.join('');
+        return `^${down.join('')}$`;
     },
     isCursorAnswer: (row, column, box, crossword, cursor) => {
         if (box.blocked) return false;
