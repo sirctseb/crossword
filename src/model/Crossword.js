@@ -15,7 +15,7 @@ export default {
     },
     downPattern: (crossword, row, column) => {
         const down = [];
-        for (let i = row; i >= 0 && !get(crossword, `boxes.${i}.${crossword}.blocked`); i -= 1) {
+        for (let i = row; i >= 0 && !get(crossword, `boxes.${i}.${column}.blocked`); i -= 1) {
             down.push(get(crossword, `boxes.${i}.${column}.content`, '.'));
         }
         down.reverse();
