@@ -21,13 +21,44 @@ class Suggestions extends Component {
     ];
   }
 
+  renderSuggestions(direction) {
+    const directionProperties = {
+      [ACROSS]: 'across',
+      [DOWN]: 'down',
+    };
+
+    const suggestions = this.amendSuggestions(
+      this.props.suggestions[directionProperties[direction]],
+      direction,
+    );
+
+    return suggestions.length > 0 ?
+      suggestions.map(suggestion => (
+        <div className={bem('suggestion')}
+          key={suggestion}>
+          {suggestion}
+        </div>
+      )) :
+      <div className={bem('no-suggestions')}>
+                no matches
+      </div>;
+  }
+
   render() {
     return (
       <div className={bem()}>
-                Across<br />
-        {this.amendSuggestions(this.props.suggestions.across, ACROSS)}<br />
-                Down<br />
-        {this.amendSuggestions(this.props.suggestions.down, DOWN)}<br />
+        <div className={bem('list')}>
+                    Across
+          <div className={bem('entries')}>
+            {this.renderSuggestions(ACROSS)}
+          </div>
+        </div>
+        <div className={bem('list')}>
+                    Down
+          <div className={bem('entries')}>
+            {this.renderSuggestions(DOWN)}
+          </div>
+        </div>
       </div>
     );
   }

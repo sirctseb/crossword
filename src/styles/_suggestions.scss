@@ -1,0 +1,27 @@
+$block-class: 'suggestions';
+
+@at-root {
+  .#{$block-class} {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 200px;
+
+    &__list {
+      padding: 3px;
+      flex: 1;
+    }
+
+    &__no-suggestions {
+      color: #777;
+    }
+
+    &__suggestion {
+      padding: 2px;
+
+      &:nth-child(odd) {
+        background-color: #eee;
+      }
+    }
+  }
+}
