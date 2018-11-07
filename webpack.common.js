@@ -29,7 +29,10 @@ module.exports = {
             loader: 'babel-loader',
             query: {
               presets: ['react'],
-              plugins: ['transform-object-rest-spread'],
+              plugins: [
+                'transform-class-properties',
+                'transform-object-rest-spread',
+              ],
             },
           },
           {
