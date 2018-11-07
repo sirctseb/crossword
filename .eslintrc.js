@@ -25,6 +25,7 @@ module.exports = {
         }],
         "comma-dangle": ["error", "always-multiline"]
     },
+    "parser": "babel-eslint",
     "parserOptions": {
         "sourceType": "module",
         "ecmaFeatures": {
