@@ -218,7 +218,7 @@ class Editor extends Component {
                     <div className={bem('clues-wrapper')}>
                         <ClueList direction={ACROSS}
                             clueLabels={acrossClues}
-                            clueData={crossword.clues.across}
+                            clueData={get(crossword.clues, 'across', [])}
                             clueInput={editor.clueInput}
                             actions={this.props.actions}
                             onClueBlur={this.onClueBlur} />
@@ -229,7 +229,7 @@ class Editor extends Component {
                     <div className={bem('clues-wrapper')}>
                         <ClueList direction={DOWN}
                             clueLabels={downClues}
-                            clueData={crossword.clues.down}
+                            clueData={get(crossword.clues, 'down', [])}
                             clueInput={editor.clueInput}
                             actions={this.props.actions}
                             onClueBlur={this.onClueBlur} />

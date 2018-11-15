@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withFirebase } from 'react-redux-firebase';
+import { withRouter } from 'react-router';
 import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
 
 import firebaseAuthConfig from '../config/firebaseAuth';
+
+import CrosswordModel from './model/Crossword';
 
 class Header extends Component {
     state = {
@@ -20,6 +24,17 @@ class Header extends Component {
     handleLogout = () => {
         this.props.firebase.auth().signOut();
     }
+    handleNew = () => {
+        const fbRef = this.props.firebase.ref();
+        const cwRef = fbRef.push();
+        fbRef.update({
+            [`crosswords/${cwRef.key}`]: CrosswordModel.newCrossword(),
+            [`users/${this.props.auth.uid}/crosswords/${cwRef.key}`]: {
+                title: 'Untitled',
+            },
+        });
+        this.props.router.push(`/${cwRef.key}`);
+    }
 
     render() {
         const { auth, firebase } = this.props;
@@ -33,14 +48,21 @@ class Header extends Component {
                         (auth.isEmpty && !this.state.showLogin) &&
                             <a className='header__show-login-button'
                                 onClick={this.handleShowLogin}>
-                            login
+                                login
                             </a>
                     }
                     {
                         !auth.isEmpty &&
                             <a className='header__logout-button'
                                 onClick={this.handleLogout}>
-                            logout
+                                logout
+                            </a>
+                    }
+                    {
+                        !auth.isEmpty &&
+                            <a className='header__new-button'
+                                onClick={this.handleNew}>
+                                new
                             </a>
                     }
                     {
@@ -65,4 +87,8 @@ Header.propTypes = {
     firebase: PropTypes.object.isRequired,
 };
 
-export default withFirebase(connect(({ firebase: { auth } }) => ({ auth }))(Header));
+export default compose(
+    withFirebase,
+    withRouter,
+    connect(({ firebase: { auth } }) => ({ auth })),
+)(Header);

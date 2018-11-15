@@ -77,4 +77,5 @@ export default {
                     .map(column => coordsToSignifier(column, row))),
             ]));
     },
+    newCrossword: () => ({ rows: 15, symmetric: true, title: 'untitled' }),
 };
