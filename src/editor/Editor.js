@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
@@ -6,6 +7,7 @@ import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 import { hotkeys } from 'react-keyboard-shortcuts';
 
+import * as selectors from './selectors';
 import * as actions from './actions';
 import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
@@ -22,32 +24,18 @@ const enhance = compose(
     `crosswords/${props.params.crosswordId}`,
   ])),
   connect(
-    ({ firebase: { data: { crosswords } }, editor }, props) => ({
-      crossword: crosswords && crosswords[props.params.crosswordId],
-      suggestions: (crosswords && editor.cursor) ? {
-        across: editor.suggestions[CrosswordModel.acrossPattern(
-          crosswords[props.params.crosswordId],
-          editor.cursor.row,
-          editor.cursor.column,
-        )] || [],
-        down: editor.suggestions[CrosswordModel.downPattern(
-          crosswords[props.params.crosswordId],
-          editor.cursor.row,
-          editor.cursor.column,
-        )] || [],
-      } :
-        { across: [], down: [] },
-      path: `crosswords/${props.params.crosswordId}`,
-      editor,
-      cursorContent:
-                get(crosswords, [
-                  props.params.crosswordId,
-                  'boxes',
-                  editor.cursor.row,
-                  editor.cursor.column,
-                  'content',
-                ]),
-    }),
+    (state, props) =>
+      (selectors.getCrossword(state, props) ?
+        ({
+          crossword: selectors.getCrossword(state, props),
+          suggestions: selectors.getCursorSuggestions(state, props),
+          path: `crosswords/${props.params.crosswordId}`,
+          editor: state.editor,
+          cursorContent: selectors.getCursorContent(state, props),
+        }) :
+        ({
+          loading: true,
+        })),
     dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
   ),
   hotkeys,
@@ -131,10 +119,6 @@ class Editor extends Component {
     const {
       firebase: { set }, path, crossword, editor, suggestions,
     } = this.props;
-
-    if (!crossword) {
-      return 'WAIT!';
-    }
 
     const rows = [];
 
@@ -250,4 +234,21 @@ class Editor extends Component {
   }
 }
 
-export default enhance(Editor);
+Editor.propTypes = {
+  crossword: PropTypes.object.isRequired,
+  suggestions: PropTypes.shape({
+    across: PropTypes.arrayOf(PropTypes.string).isRequired,
+    down: PropTypes.arrayOf(PropTypes.string).isRequired,
+  }).isRequired,
+  path: PropTypes.string.isRequired,
+  editor: PropTypes.object.isRequired,
+  cursorContent: PropTypes.string,
+};
+
+const EditorContainer = ({ loading, ...props }) =>
+  (loading ?
+    'WAIT!' :
+    <Editor {...props} />);
+
+
+export default enhance(EditorContainer);
