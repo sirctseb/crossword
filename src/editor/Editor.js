@@ -218,9 +218,9 @@ class Editor extends Component {
           crossword,
           editor,
         }}/>
-        <ThemeEntries entries={Object.keys(crossword.theme_entries || {})}
+        <ThemeEntries entries={Object.keys(crossword.themeEntries || {})}
           currentAnswers={currentAnswers}
-          fbRef={fbRef.child(path).child('theme_entries')} />
+          fbRef={fbRef.child(path).child('themeEntries')} />
         <button onClick={() => undoHistory.undo()}>Undo</button>
         <button onClick={() => undoHistory.redo()}>Redo</button>
       </div>
