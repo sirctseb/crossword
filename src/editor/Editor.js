@@ -213,11 +213,7 @@ class Editor extends Component {
                             onClueBlur={this.onClueBlur} />
                     </div>
                 </div>
-                <Suggestions {...{
-                    suggestions: amendedSuggestions,
-                    crossword,
-                    editor,
-                }}/>
+                <Suggestions suggestions={amendedSuggestions} />
                 <ThemeEntries entries={Object.keys(crossword.themeEntries || {})}
                     currentAnswers={currentAnswers}
                     fbRef={fbRef.child(path).child('themeEntries')} />
