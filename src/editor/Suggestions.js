@@ -2,35 +2,20 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
-import CrosswordModel from '../model/Crossword';
 import { DOWN, ACROSS } from './constants';
 
 const bem = bemNamesFactory('suggestions');
 
 class Suggestions extends Component {
-  amendSuggestions(suggestions, direction) {
-    const { row, column } = this.props.editor.cursor;
-    const pattern = direction === ACROSS ?
-      CrosswordModel.acrossPattern(this.props.crossword, row, column) :
-      CrosswordModel.downPattern(this.props.crossword, row, column);
-
-    return [
-      ...Object.keys(this.props.crossword.theme_entries || {})
-        .filter(entry => entry.match(pattern)),
-      ...suggestions || [],
-    ];
-  }
-
   renderSuggestions(direction) {
     const directionProperties = {
       [ACROSS]: 'across',
       [DOWN]: 'down',
     };
 
-    const suggestions = this.amendSuggestions(
-      this.props.suggestions[directionProperties[direction]],
-      direction,
-    );
+    const suggestions = this.props.suggestions[
+      directionProperties[direction]
+    ];
 
     return suggestions.length > 0 ?
       suggestions.map(suggestion => (
