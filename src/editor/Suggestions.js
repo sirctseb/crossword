@@ -54,15 +54,6 @@ Suggestions.propTypes = {
     across: PropTypes.arrayOf(PropTypes.string).isRequired,
     down: PropTypes.arrayOf(PropTypes.string).isRequired,
   }),
-  editor: PropTypes.shape({
-    cursor: PropTypes.shape({
-      row: PropTypes.number.isRequired,
-      column: PropTypes.number.isRequired,
-    }).isRequired,
-  }),
-  crossword: PropTypes.shape({
-    theme_entries: PropTypes.object.isRequired,
-  }).isRequired,
 };
 
 export default Suggestions;
