@@ -28,7 +28,9 @@ const enhance = compose(
             (selectors.getCrossword(state, props) ?
                 ({
                     crossword: selectors.getCrossword(state, props),
-                    suggestions: selectors.getCursorSuggestions(state, props),
+                    acrossPattern: selectors.getAcrossPattern(state, props),
+                    downPattern: selectors.getDownPattern(state, props),
+                    amendedSuggestions: selectors.getAmendedSuggestions(state, props),
                     path: `crosswords/${props.params.crosswordId}`,
                     editor: state.editor,
                     cursorContent: selectors.getCursorContent(state, props),
@@ -59,14 +61,6 @@ const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) 
     return new FirebaseChange(crosswordRef, update, undoUpdate);
 };
 
-const updateSuggestions = (row, column, crossword, crosswordActions) => {
-    const acrossPattern = CrosswordModel.acrossPattern(crossword, row, column);
-    const downPattern = CrosswordModel.downPattern(crossword, row, column);
-
-    crosswordActions.getSuggestions(acrossPattern);
-    crosswordActions.getSuggestions(downPattern);
-};
-
 const undoHistory = UndoHistory.getHistory('crossword');
 
 class Editor extends Component {
@@ -85,8 +79,8 @@ class Editor extends Component {
         if (prevProps.editor.cursor.row !== this.props.editor.cursor.row ||
             prevProps.editor.cursor.column !== this.props.editor.cursor.column ||
             prevProps.cursorContent !== this.props.cursorContent) {
-            const { row, column } = this.props.editor.cursor;
-            updateSuggestions(row, column, this.props.crossword, this.props.actions);
+            this.props.actions.getSuggestions(this.props.acrossPattern);
+            this.props.actions.getSuggestions(this.props.downPattern);
         }
     }
 
@@ -117,7 +111,7 @@ class Editor extends Component {
         const fbRef = this.props.firebase.ref();
 
         const {
-            firebase: { set }, path, crossword, editor, suggestions,
+            firebase: { set }, path, crossword, editor, amendedSuggestions,
         } = this.props;
 
         const rows = [];
@@ -220,7 +214,7 @@ class Editor extends Component {
                     </div>
                 </div>
                 <Suggestions {...{
-                    suggestions,
+                    suggestions: amendedSuggestions,
                     crossword,
                     editor,
                 }}/>
@@ -236,10 +230,12 @@ class Editor extends Component {
 
 Editor.propTypes = {
     crossword: PropTypes.object.isRequired,
-    suggestions: PropTypes.shape({
+    amendedSuggestions: PropTypes.shape({
         across: PropTypes.arrayOf(PropTypes.string).isRequired,
         down: PropTypes.arrayOf(PropTypes.string).isRequired,
     }).isRequired,
+    acrossPattern: PropTypes.string.isRequired,
+    downPattern: PropTypes.string.isRequired,
     path: PropTypes.string.isRequired,
     editor: PropTypes.object.isRequired,
     cursorContent: PropTypes.string,
