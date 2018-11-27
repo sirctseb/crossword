@@ -30,7 +30,6 @@ const enhance = compose(
           crossword: selectors.getCrossword(state, props),
           acrossPattern: selectors.getAcrossPattern(state, props),
           downPattern: selectors.getDownPattern(state, props),
-          amendedSuggestions: selectors.getAmendedSuggestions(state, props),
           path: `crosswords/${props.params.crosswordId}`,
           editor: state.editor,
           cursorContent: selectors.getCursorContent(state, props),
@@ -111,7 +110,7 @@ class Editor extends Component {
     const fbRef = this.props.firebase.ref();
 
     const {
-      firebase: { set }, path, crossword, editor, amendedSuggestions,
+      firebase: { set }, path, crossword, editor,
     } = this.props;
 
     const rows = [];
@@ -213,7 +212,7 @@ class Editor extends Component {
               onClueBlur={this.onClueBlur} />
           </div>
         </div>
-        <Suggestions suggestions={amendedSuggestions} />
+        <Suggestions />
         <ThemeEntries entries={Object.keys(crossword.themeEntries || {})}
           currentAnswers={currentAnswers}
           fbRef={fbRef.child(path).child('themeEntries')} />
@@ -226,10 +225,6 @@ class Editor extends Component {
 
 Editor.propTypes = {
   crossword: PropTypes.object.isRequired,
-  amendedSuggestions: PropTypes.shape({
-    across: PropTypes.arrayOf(PropTypes.string).isRequired,
-    down: PropTypes.arrayOf(PropTypes.string).isRequired,
-  }).isRequired,
   acrossPattern: PropTypes.string.isRequired,
   downPattern: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
