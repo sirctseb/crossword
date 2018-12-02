@@ -33,6 +33,7 @@ const enhance = compose(
           path: `crosswords/${props.params.crosswordId}`,
           editor: state.editor,
           cursorContent: selectors.getCursorContent(state, props),
+          isCursorAnswer: selectors.getIsCursorAnswer(state, props),
         }) :
         ({
           loading: true,
@@ -110,7 +111,7 @@ class Editor extends Component {
     const fbRef = this.props.firebase.ref();
 
     const {
-      firebase: { set }, path, crossword, editor,
+      firebase: { set }, path, crossword, editor, isCursorAnswer,
     } = this.props;
 
     const rows = [];
@@ -141,10 +142,7 @@ class Editor extends Component {
 
         boxes.push((
           <Box key={`box-${row}-${column}`}
-            cursorAnswer={CrosswordModel.isCursorAnswer(
-              row, column, box, crossword,
-              editor.cursor,
-            )}
+            cursorAnswer={isCursorAnswer(row, column)}
             row={row}
             column={column}
             box={box}
@@ -225,6 +223,7 @@ Editor.propTypes = {
   downPattern: PropTypes.string.isRequired,
   path: PropTypes.string.isRequired,
   editor: PropTypes.object.isRequired,
+  isCursorAnswer: PropTypes.func.isRequired,
   cursorContent: PropTypes.string,
 };
 
