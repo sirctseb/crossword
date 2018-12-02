@@ -119,8 +119,6 @@ class Editor extends Component {
         const acrossClues = [];
         const downClues = [];
 
-        const currentAnswers = CrosswordModel.completeAnswers(crossword);
-
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
@@ -213,9 +211,7 @@ class Editor extends Component {
                     </div>
                 </div>
                 <Suggestions />
-                <ThemeEntries entries={Object.keys(crossword.themeEntries || {})}
-                    currentAnswers={currentAnswers}
-                    fbRef={fbRef.child(path).child('themeEntries')} />
+                <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
                 <button onClick={() => undoHistory.undo()}>Undo</button>
                 <button onClick={() => undoHistory.redo()}>Redo</button>
             </div>

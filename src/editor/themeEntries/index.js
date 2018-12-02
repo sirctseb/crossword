@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
+import { withRouter } from 'react-router';
 
 import UndoHistory from '../../undo/UndoHistory';
 import FirebaseChange from '../../undo/FirebaseChange';
 
+import * as selectors from '../selectors';
 import ThemeEntryList from './ThemeEntryList';
 import ThemeEntryAddition from './ThemeEntryAddition';
 
@@ -41,4 +44,7 @@ ThemeEntries.propTypes = {
     fbRef: PropTypes.object.isRequired,
 };
 
-export default ThemeEntries;
+export default withRouter(connect((state, props) => ({
+    entries: selectors.getThemeEntries(state, props),
+    currentAnswers: selectors.getCurrentAnswers(state, props),
+}))(ThemeEntries));
