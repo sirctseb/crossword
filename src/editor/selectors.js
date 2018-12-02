@@ -1,6 +1,8 @@
 import { createSelector } from 'reselect';
 import { get, range, flatten } from 'lodash';
 
+import { ACROSS } from './constants';
+
 const getEditor = state => state.editor;
 
 const getCrosswords = state => state.firebase.data.crosswords;
@@ -97,4 +99,41 @@ const getCursor = state => state.editor.cursor;
 export const getCursorContent = createSelector(
     [getCrossword, getCursor],
     (crossword, { row, column }) => get(crossword, ['boxes', row, column, 'content'])
+);
+
+export const getIsCursorAnswer = createSelector(
+    [getCrossword, getCursor],
+    (crossword, cursor) => (row, column) => {
+        const box = get(crossword, `boxes.${row}.${column}`) || {};
+        if (box.blocked) return false;
+        if (row === cursor.row && column === cursor.column) return true;
+
+        if (cursor.direction === ACROSS) {
+            if (row !== cursor.row) {
+                return false;
+            }
+
+            for (let increment = Math.sign(cursor.column - column), columnIter = column;
+                columnIter >= 0 && columnIter < crossword.rows && !get(crossword, `boxes.${row}.${columnIter}.blocked`);
+                columnIter += increment) {
+                if (columnIter === cursor.column) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        if (column !== cursor.column) {
+            return false;
+        }
+
+        for (let increment = Math.sign(cursor.row - row), rowIter = row;
+            rowIter >= 0 && rowIter < crossword.rows && !get(crossword, `boxes.${rowIter}.${column}.blocked`);
+            rowIter += increment) {
+            if (rowIter === cursor.row) {
+                return true;
+            }
+        }
+        return false;
+    }
 );
