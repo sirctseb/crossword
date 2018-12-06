@@ -137,3 +137,18 @@ export const getIsCursorAnswer = createSelector(
     return false;
   },
 );
+
+export const getIsFocusBox = createSelector(
+  [getCursor],
+  cursor => (row, column) => row === cursor.row && column === cursor.column,
+);
+
+export const getIsBlockedBox = createSelector(
+  [getCrossword],
+  crossword => (row, column) => !!get(crossword, `boxes.${row}.${column}.blocked`),
+);
+
+export const getSize = createSelector(
+  [getCrossword],
+  ({ rows }) => rows,
+);
