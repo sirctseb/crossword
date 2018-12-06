@@ -8,8 +8,6 @@ import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
 
 import firebaseAuthConfig from '../config/firebaseAuth';
 
-import CrosswordModel from './model/Crossword';
-
 class Header extends Component {
   state = {
     showLogin: false,
@@ -28,7 +26,7 @@ class Header extends Component {
     const fbRef = this.props.firebase.ref();
     const cwRef = fbRef.push();
     fbRef.update({
-      [`crosswords/${cwRef.key}`]: CrosswordModel.newCrossword(),
+      [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
       [`users/${this.props.auth.uid}/crosswords/${cwRef.key}`]: {
         title: 'Untitled',
       },
