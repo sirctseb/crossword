@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import UndoHistory from '../undo/UndoHistory';
-import CrosswordModel from '../model/Crossword';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
@@ -26,13 +25,12 @@ export default (MyComponent) => {
         editor: { cursor: { row, column } },
       } = this.props;
 
-      const { crossword } = this.props;
-      const { rows: size } = crossword;
+      const { size, isBlockedBox } = this.props;
 
       row += vector[0];
       column += vector[1];
       while (row >= 0 && column >= 0 && row < size && column < size) {
-        if (!CrosswordModel.isBlockedBox(crossword, row, column)) {
+        if (!isBlockedBox(row, column)) {
           document.querySelector(`.box--at-${row}-${column}`).focus();
           return;
         }
@@ -94,9 +92,8 @@ export default (MyComponent) => {
         column: PropTypes.number.isRequired,
       }),
     }),
-    crossword: PropTypes.shape({
-      rows: PropTypes.number.isRequired,
-    }),
+    size: PropTypes.number.isRequired,
+    isBlockedBox: PropTypes.func.isRequired,
   };
 
   return HotKeyedEditor;

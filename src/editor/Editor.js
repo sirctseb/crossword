@@ -12,7 +12,6 @@ import * as actions from './actions';
 import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
-import CrosswordModel from '../model/Crossword';
 import ClueList from './ClueList';
 import Box from './Box';
 import hotKeyEditor from './HotKeyEditor';
@@ -32,8 +31,11 @@ const enhance = compose(
           downPattern: selectors.getDownPattern(state, props),
           path: `crosswords/${props.params.crosswordId}`,
           editor: state.editor,
+          size: selectors.getSize(state, props),
           cursorContent: selectors.getCursorContent(state, props),
           isCursorAnswer: selectors.getIsCursorAnswer(state, props),
+          isFocusBox: selectors.getIsFocusBox(state, props),
+          isBlockedBox: selectors.getIsBlockedBox(state, props),
         }) :
         ({
           loading: true,
@@ -111,7 +113,7 @@ class Editor extends Component {
     const fbRef = this.props.firebase.ref();
 
     const {
-      firebase: { set }, path, crossword, editor, isCursorAnswer,
+      firebase: { set }, path, crossword, editor, isCursorAnswer, isFocusBox,
     } = this.props;
 
     const rows = [];
@@ -157,7 +159,7 @@ class Editor extends Component {
               fbRef.child(path),
             ))}
             onBoxFocus={this.onBoxFocus}
-            focused={CrosswordModel.isFocusBox(row, column, editor.cursor)}
+            focused={isFocusBox(row, column)}
           />
         ));
 
@@ -224,6 +226,8 @@ Editor.propTypes = {
   path: PropTypes.string.isRequired,
   editor: PropTypes.object.isRequired,
   isCursorAnswer: PropTypes.func.isRequired,
+  actions: PropTypes.object.isRequired,
+  isFocusBox: PropTypes.func.isRequired,
   cursorContent: PropTypes.string,
 };
 
