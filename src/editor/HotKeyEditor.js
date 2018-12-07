@@ -92,8 +92,10 @@ export default (MyComponent) => {
                 column: PropTypes.number.isRequired,
             }),
         }),
-        size: PropTypes.number.isRequired,
-        isBlockedBox: PropTypes.func.isRequired,
+        // TODO would like to be able to require these but this mounts
+        // before the crossword is downloaded
+        size: PropTypes.number,
+        isBlockedBox: PropTypes.func,
     };
 
     return HotKeyedEditor;
