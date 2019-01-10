@@ -1,28 +1,24 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { bemNamesFactory } from 'bem-names';
 import propTypes from 'prop-types';
 
-import FirebaseChange from '../undo/FirebaseChange';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
-export default class Box extends Component {
+export default class Box extends PureComponent {
   constructor(props) {
     super(props);
 
     this.state = {
       rebus: false,
     };
-
-    this.handleFocus = this.handleFocus.bind(this);
-    this.handleMouseDown = this.handleMouseDown.bind(this);
-    this.handleRebusClose = this.handleRebusClose.bind(this);
   }
 
-  handleFocus() {
+  handleFocus = () => {
     this.props.onBoxFocus(this.props.row, this.props.column);
   }
-  handleMouseDown(evt) {
+
+  handleMouseDown = (evt) => {
     if (this.props.focused) {
       this.setState({ rebus: true });
       // when state goes to { rebus: true }, the input is rendered
@@ -32,17 +28,34 @@ export default class Box extends Component {
       evt.preventDefault();
     }
   }
-  handleRebusClose(content) {
+
+  handleRebusClose = (content) => {
     this.setContent(content);
     this.setState({ rebus: false });
   }
 
-  setContent(content) {
-    this.props.undoHistory.add(FirebaseChange.FromValues(
-      this.props.boxRef.child('content'),
+  handleOnBlock = () => {
+    const { row, column, box: { blocked } } = this.props;
+    this.props.onBlock(row, column, !blocked);
+  }
+
+  handleToggleAttribute = (attribute) => {
+    const { row, column, box } = this.props;
+
+    this.props.makeUndoableChange(
+      `boxes/${row}/${column}/${attribute}`,
+      !box[attribute],
+      box[attribute],
+    );
+  }
+
+  setContent(newContent) {
+    const { row, column, box: { content } } = this.props;
+    this.props.makeUndoableChange(
+      `boxes/${row}/${column}/content`,
+      newContent,
       content,
-      this.props.box.content,
-    ));
+    );
   }
 
   render() {
@@ -65,7 +78,6 @@ export default class Box extends Component {
             [`at-${row}-${column}`],
           )}
         tabIndex={!blocked ? '0' : undefined}
-        ref={this.props.onRef}
         onKeyPress={(evt) => {
           if (/[A-Za-z]/.test(evt.key)) {
             this.setContent(evt.key);
@@ -78,9 +90,9 @@ export default class Box extends Component {
         }}
         onFocus={this.handleFocus}
         onMouseDown={this.handleMouseDown}>
-        <BoxControls boxRef={this.props.boxRef}
+        <BoxControls onToggleAttribute={this.handleToggleAttribute}
           box={this.props.box}
-          onBlock={this.props.onBlock} />
+          onBlock={this.handleOnBlock} />
         {
           rebus &&
                     <RebusInput
@@ -106,8 +118,7 @@ Box.propTypes = {
     circled: propTypes.boolean,
     shaded: propTypes.boolean,
   }).isRequired,
-  boxRef: propTypes.object.isRequired,
-  undoHistory: propTypes.object.isRequired,
+  makeUndoableChange: propTypes.func.isRequired,
   clueLabel: propTypes.number,
   onBlock: propTypes.func.isRequired,
   onBoxFocus: propTypes.func.isRequired,
