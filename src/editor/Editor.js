@@ -65,15 +65,18 @@ const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) 
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
-class Editor extends Component {
-    constructor(props) {
-        super(props);
+const emptyBox = {};
 
-        this.onClueBlur = this.onClueBlur.bind(this);
-        this.onBoxFocus = this.onBoxFocus.bind(this);
+class Editor extends Component {
+    makeUndoableChange = (localPath, newValue, oldValue) => {
+        undoHistory.add(FirebaseChange.FromValues(
+            this.fbRef.child(`${this.props.path}/${localPath}`),
+            newValue,
+            oldValue
+        ));
     }
 
-    onBoxFocus(row, column) {
+    onBoxFocus = (row, column) => {
         this.props.actions.setCursor({ row, column });
     }
 
@@ -86,7 +89,11 @@ class Editor extends Component {
         }
     }
 
-    onClueBlur() {
+    componentWillMount() {
+        this.fbRef = this.props.firebase.ref();
+    }
+
+    onClueBlur = () => {
         const {
             editor: {
                 clueInput: {
@@ -96,7 +103,7 @@ class Editor extends Component {
         } = this.props;
 
         undoHistory.add(FirebaseChange.FromValues(
-            this.props.firebase.ref().child(`${path}/clues/${direction}/${row}/${column}`),
+            this.fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
             value,
             get(crossword, `clues.${direction}.${row}.${column}`),
         ));
@@ -108,9 +115,18 @@ class Editor extends Component {
         });
     }
 
+    onBlock = (row, column, blocked) => {
+        undoHistory.add(blockedChange(
+            row,
+            column,
+            this.props.crossword,
+            blocked,
+            this.fbRef.child(this.props.path)
+        ));
+    }
+
     render() {
         const bem = bemNamesFactory('editor');
-        const fbRef = this.props.firebase.ref();
 
         const {
             firebase: { set }, path, crossword, editor, isCursorAnswer, isFocusBox,
@@ -125,11 +141,8 @@ class Editor extends Component {
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
-                const box = get(crossword, `boxes.${row}.${column}`) || {};
-                const {
-                    blocked,
-                } = box;
-                const boxPath = `${path}/boxes/${row}/${column}`;
+                const box = get(crossword, `boxes.${row}.${column}`, emptyBox);
+                const { blocked } = box;
                 const leftBlocked = column === 0 ||
                     get(crossword, `boxes.${row}.${column - 1}.blocked`);
                 const topBlocked = row === 0 ||
@@ -148,16 +161,9 @@ class Editor extends Component {
                         row={row}
                         column={column}
                         box={box}
-                        boxRef={fbRef.child(boxPath)}
-                        undoHistory={undoHistory}
+                        makeUndoableChange={this.makeUndoableChange}
                         clueLabel={indexBox ? clueIndex : undefined}
-                        onBlock={() => undoHistory.add(blockedChange(
-                            row,
-                            column,
-                            crossword,
-                            !blocked,
-                            fbRef.child(path),
-                        ))}
+                        onBlock={this.onBlock}
                         onBoxFocus={this.onBoxFocus}
                         focused={isFocusBox(row, column)}
                     />
@@ -181,7 +187,7 @@ class Editor extends Component {
                     value={crossword.rows}
                     onChange={evt =>
                         undoHistory.add(FirebaseChange.FromValues(
-                            fbRef.child(`${path}/rows`),
+                            this.fbRef.child(`${path}/rows`),
                             parseInt(evt.target.value, 10),
                             crossword.rows,
                         ))} />
@@ -211,7 +217,7 @@ class Editor extends Component {
                     </div>
                 </div>
                 <Suggestions />
-                <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
+                <ThemeEntries fbRef={this.fbRef.child(path).child('themeEntries')} />
                 <button onClick={() => undoHistory.undo()}>Undo</button>
                 <button onClick={() => undoHistory.redo()}>Redo</button>
             </div>
