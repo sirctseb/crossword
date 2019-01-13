@@ -1,7 +1,10 @@
 import update from 'immutability-helper';
 
 import * as actionTypes from './actionTypes';
-import { ACROSS } from './constants';
+import { ACROSS, DOWN } from './constants';
+
+const oppositeCursorDirection = state =>
+    (state.cursor.direction === ACROSS ? DOWN : ACROSS);
 
 const initialState = {
     cursor: {
@@ -32,6 +35,14 @@ export default (state = initialState, action) => {
     case actionTypes.SET_CURSOR:
         return update(state, {
             cursor: { $merge: action.cursor },
+        });
+    case actionTypes.SET_CURSOR_DIRECTION:
+        return update(state, {
+            cursor: { direction: action.direction },
+        });
+    case actionTypes.TOGGLE_CURSOR_DIRECTION:
+        return update(state, {
+            cursor: { direction: { $set: oppositeCursorDirection(state) } },
         });
     default:
         return state;

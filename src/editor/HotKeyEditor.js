@@ -77,6 +77,9 @@ export default (MyComponent) => {
                 right: {
                     handler: this.handleRight,
                 },
+                ';': {
+                    handler: this.props.actions.toggleCursorDirection,
+                },
             };
         }
 
@@ -96,6 +99,9 @@ export default (MyComponent) => {
         // before the crossword is downloaded
         size: PropTypes.number,
         isBlockedBox: PropTypes.func,
+        actions: PropTypes.shape({
+            toggleCursorDirection: PropTypes.func.isRequired,
+        }).isRequired,
     };
 
     return HotKeyedEditor;
