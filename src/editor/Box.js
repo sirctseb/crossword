@@ -56,6 +56,7 @@ export default class Box extends PureComponent {
             newContent,
             content
         );
+        this.props.onAfterSetContent();
     }
 
     render() {
@@ -122,4 +123,5 @@ Box.propTypes = {
     clueLabel: propTypes.number,
     onBlock: propTypes.func.isRequired,
     onBoxFocus: propTypes.func.isRequired,
+    onAfterSetContent: propTypes.func.isRequired,
 };

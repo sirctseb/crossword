@@ -36,6 +36,7 @@ const enhance = compose(
                     isCursorAnswer: selectors.getIsCursorAnswer(state, props),
                     isFocusBox: selectors.getIsFocusBox(state, props),
                     isBlockedBox: selectors.getIsBlockedBox(state, props),
+                    cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
                 }) :
                 ({
                     loading: true,
@@ -78,6 +79,11 @@ class Editor extends Component {
 
     onBoxFocus = (row, column) => {
         this.props.actions.setCursor({ row, column });
+    }
+
+    handleAfterSetContent = () => {
+        const { row, column } = this.props.cursorAfterAdvancement;
+        document.querySelector(`.box--at-${row}-${column}`).focus();
     }
 
     componentDidUpdate(prevProps) {
@@ -166,6 +172,7 @@ class Editor extends Component {
                         onBlock={this.onBlock}
                         onBoxFocus={this.onBoxFocus}
                         focused={isFocusBox(row, column)}
+                        onAfterSetContent={this.handleAfterSetContent}
                     />
                 ));
 
@@ -235,6 +242,7 @@ Editor.propTypes = {
     actions: PropTypes.object.isRequired,
     isFocusBox: PropTypes.func.isRequired,
     cursorContent: PropTypes.string,
+    cursorAfterAdvancement: PropTypes.object.isRequired,
 };
 
 const EditorContainer = ({ loading, ...props }) =>
