@@ -4,6 +4,7 @@ module.exports = {
     'import',
     'react',
     'babel',
+    'mocha',
   ],
   rules: {
     indent: ['error', 2],
@@ -34,5 +35,6 @@ module.exports = {
   },
   env: {
     browser: true,
+    mocha: true,
   },
 };
