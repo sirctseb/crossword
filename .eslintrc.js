@@ -3,7 +3,9 @@ module.exports = {
     "plugins": [
         "import",
         "react",
-        "babel"
+        "babel",
+        "mocha",
+        "chai-expect",
     ],
     "rules": {
         "indent": ["error", 4],
@@ -23,7 +25,7 @@ module.exports = {
                 "shouldComponentUpdate",
             ]
         }],
-        "comma-dangle": ["error", "always-multiline"]
+        "comma-dangle": ["error", "always-multiline"],
     },
     "parser": "babel-eslint",
     "parserOptions": {
@@ -33,6 +35,7 @@ module.exports = {
         }
     },
     "env": {
-        "browser": true
+        "browser": true,
+        "mocha": true,
     }
 };
