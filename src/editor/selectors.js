@@ -153,29 +153,22 @@ export const getSize = createSelector(
   ({ rows }) => rows,
 );
 
-const firstBoxAddress = (crossword, row, column/* , direction */) => {
-  let rowIter = row;
-  while ((rowIter - 1 >= 0) && !get(crossword, ['boxes', rowIter - 1, column, 'blocked'])) {
-    rowIter -= 1;
-  }
-  return { row: rowIter, column };
-};
+const firstBoxAddress = (crossword, row, column, direction) => {
+  const columnChange = direction === ACROSS ? -1 : 0;
+  const rowChange = direction === ACROSS ? 0 : -1;
 
-const nextBlankWithinAnswer = (crossword, row, column/* , direction */) => {
   let rowIter = row;
-  // search forward in the current word
-  while (rowIter < crossword.rows && !get(crossword, ['boxes', rowIter, column, 'blocked'])) {
-    if (!get(crossword, ['boxes', rowIter, column, 'content'])) {
-      return { row: rowIter, column };
-    }
-    rowIter += 1;
+  let columnIter = column;
+  while ((rowIter + rowChange >= 0) && (columnIter + columnChange >= 0) && !get(crossword, ['boxes', rowIter + rowChange, columnIter + columnChange, 'blocked'])) {
+    columnIter += columnChange;
+    rowIter += rowChange;
   }
-  return null;
+  return { row: rowIter, column: columnIter };
 };
 
 const clueAddressAt = (crossword, row, column, direction, clueAddresses) => {
   const firstAddress = firstBoxAddress(crossword, row, column, direction);
-  return clueAddresses[direction].find(address =>
+  return clueAddresses.find(address =>
     address.row === firstAddress.row && address.column === firstAddress.column);
 };
 
@@ -210,69 +203,107 @@ const getClueAddresses = createSelector(
   },
 );
 
-const nextAnswerAddress = (crossword, row, column, direction, clueAddresses) => {
-  const { label: currentClueNumber } =
-        clueAddressAt(crossword, row, column, direction, clueAddresses);
-  let nextAddress = clueAddresses[direction].find(address =>
-    address.label === currentClueNumber + 1);
-  if (nextAddress === undefined) {
-    [nextAddress] = clueAddresses[direction];
+const notBlocked = (crossword, row, column) => !get(crossword, ['boxes', row, column, 'blocked']);
+const isAt = (address, row, column) => address.row === row && address.column === column;
+const boxAt = (crossword, row, column) => get(crossword, ['boxes', row, column], {});
+const candidateAt = (crossword, row, column) => ({
+  row, column, box: boxAt(crossword, row, column),
+});
+
+const cycleInAnswerDown = (crossword, row, column) => {
+  if ((row + 1) < crossword.rows && notBlocked(crossword, row + 1, column)) {
+    return candidateAt(crossword, row + 1, column);
   }
-  return nextAddress;
+  let rowIter = row;
+  while (rowIter - 1 >= 0 && notBlocked(crossword, rowIter - 1, column)) {
+    rowIter -= 1;
+  }
+  return candidateAt(crossword, rowIter, column);
 };
 
-const nextBlankWithWrapping = (crossword, row, column, direction) => {
-  // search forward in the current answer
-  const firstTry = nextBlankWithinAnswer(crossword, row, column, direction);
-  if (firstTry) {
-    return firstTry;
+const cycleInAnswerAcross = (crossword, row, column) => {
+  if ((column + 1) < crossword.rows && notBlocked(crossword, row, column + 1)) {
+    return candidateAt(crossword, row, column + 1);
   }
-
-  // try from beginning of answer
-  const { row: startRow, column: startColumn } =
-        firstBoxAddress(crossword, row, column, direction);
-  const secondTry = nextBlankWithinAnswer(crossword, startRow, startColumn, direction);
-  if (secondTry) {
-    return secondTry;
+  let columnIter = column;
+  while (columnIter - 1 >= 0 && notBlocked(crossword, row, columnIter - 1)) {
+    columnIter -= 1;
   }
+  return candidateAt(crossword, row, columnIter);
+};
 
+const cyclers = {
+  across: cycleInAnswerAcross,
+  down: cycleInAnswerDown,
+};
+
+const cycleInAnswer = (crossword, row, column, direction) =>
+  cyclers[direction](crossword, row, column);
+
+const findInCycle = (crossword, row, column, direction, where) => {
+  let candidate = candidateAt(crossword, row, column);
+  if (where(candidate)) return candidate;
+
+  candidate = cycleInAnswer(crossword, candidate.row, candidate.column, direction);
+  while (!isAt(candidate, row, column)) {
+    if (where(candidate)) return candidate;
+    candidate = cycleInAnswer(crossword, candidate.row, candidate.column, direction);
+  }
   return null;
 };
 
-const nextBoxWithWrapping = (crossword, row, column/* , direction */) => {
-  const nextRow = row + 1;
-  if (nextRow < crossword.rows && !get(crossword, `boxes.${nextRow}.${column}.blocked`)) {
-    return { row: nextRow, column };
-  }
+const findNext = (crossword, row, column, direction, clueAddresses, where) => {
+  let candidate = findInCycle(
+    crossword, row, column, direction,
+    box => where(box) && !isAt(box, row, column),
+  );
+  if (candidate) return candidate;
 
-  let rowIter = row;
-  while ((rowIter - 1) >= 0 && !get(crossword, `boxes.${(rowIter - 1)}.${column}.blocked`)) {
-    rowIter -= 1;
+  const { label } = clueAddressAt(crossword, row, column, direction, clueAddresses);
+  let currentIndex = (
+    clueAddresses.findIndex(address => address.label === label) + 1
+  ) % clueAddresses.length;
+  let answerAddress = clueAddresses[currentIndex];
+  while (answerAddress.label !== label) {
+    candidate = findInCycle(
+      crossword,
+      answerAddress.row,
+      answerAddress.column,
+      direction,
+      where,
+    );
+    if (candidate) {
+      return candidate;
+    }
+    currentIndex = (currentIndex + 1) % clueAddresses.length;
+    answerAddress = clueAddresses[currentIndex];
   }
-
-  return { row: rowIter, column };
+  return null;
 };
+
+export const test = {
+  firstBoxAddress,
+  notBlocked,
+  isAt,
+  boxAt,
+  candidateAt,
+  cycleInAnswerDown,
+  cycleInAnswerAcross,
+  cycleInAnswer,
+  findInCycle,
+  findNext,
+  getClueAddresses,
+};
+
+const findNextBlank = (crossword, row, column, direction, clueAddresses) => findNext(
+  crossword, row, column, direction, clueAddresses,
+  candidate => !get(candidate.box, 'content'),
+);
 
 export const getCursorAfterAdvancement = createSelector(
   [getCrossword, getCursor, getClueAddresses],
-  (crossword, { row: cursorRow, column: cursorColumn, direction }, clueAddresses) => {
-    // start from the box afer the cursor
-    const { row, column } = nextBoxWithWrapping(crossword, cursorRow, cursorColumn, direction);
-
-    const localBlank = nextBlankWithWrapping(crossword, row, column, direction);
-    if (localBlank && (localBlank.row !== cursorRow || localBlank.column !== cursorColumn)) {
-      return localBlank;
-    }
-
-    const localClueAddress = clueAddressAt(crossword, row, column, direction, clueAddresses);
-    let next = nextAnswerAddress(crossword, row, column, direction, clueAddresses);
-    while (next.label !== localClueAddress.label) {
-      const iterBlank = nextBlankWithWrapping(crossword, next.row, next.column, direction);
-      if (iterBlank) {
-        return iterBlank;
-      }
-      next = nextAnswerAddress(crossword, next.row, next.column, direction, clueAddresses);
-    }
-    return { row, column };
-  },
+  (crossword, { row, column, direction }, { [direction]: addresses }) =>
+  // candidateAt(crossword, row, column) ||
+    findNextBlank(crossword, row, column, direction, addresses) ||
+            { row, column },
 );
