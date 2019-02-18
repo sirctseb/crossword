@@ -243,6 +243,17 @@ describe('selectors', () => {
 
   describe('findNext', () => {
     describe('down', () => {
+      it('returns null if nothing found', () => {
+        const crossword = makeCrossword([
+          '--',
+          '--',
+        ]);
+        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+
+        const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
+        expect(subject).to.be.null();
+      });
+
       it('advances to the next column', () => {
         const crossword = makeCrossword([
           '-!-',
@@ -280,6 +291,18 @@ describe('selectors', () => {
         const subject = test.findNext(crossword, 0, 2, 'down', addresses, isBang);
         expect(subject.row).to.equal(0);
         expect(subject.column).to.equal(0);
+      });
+
+      it('returns null given a blocked box', () => {
+        const crossword = makeCrossword([
+          'b!-',
+          '---',
+          '---',
+        ]);
+        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+
+        const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
+        expect(subject).to.be.null();
       });
     });
 

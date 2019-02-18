@@ -166,6 +166,9 @@ const firstBoxAddress = (crossword, row, column, direction) => {
   return { row: rowIter, column: columnIter };
 };
 
+/**
+ * The address of the labeled box of the answer that contains the given row/column
+ */
 const clueAddressAt = (crossword, row, column, direction, clueAddresses) => {
   const firstAddress = firstBoxAddress(crossword, row, column, direction);
   return clueAddresses.find(address =>
@@ -271,15 +274,21 @@ const findInCycle = (crossword, row, column, direction, where) => {
   let candidate = candidateAt(crossword, row, column);
   if (where(candidate)) return candidate;
 
+  const reached = { [`${row}-${column}`]: true };
   candidate = cycleInAnswer(crossword, candidate.row, candidate.column, direction);
-  while (!isAt(candidate, row, column)) {
+  while (!reached[`${candidate.row}-${candidate.column}`]) {
     if (where(candidate)) return candidate;
+    reached[`${candidate.row}-${candidate.column}`] = true;
     candidate = cycleInAnswer(crossword, candidate.row, candidate.column, direction);
   }
   return null;
 };
 
 const findNext = (crossword, row, column, direction, clueAddresses, where) => {
+  if (!notBlocked(crossword, row, column)) {
+    return null;
+  }
+
   let candidate = findInCycle(
     crossword, row, column, direction,
     box => where(box) && !isAt(box, row, column),
