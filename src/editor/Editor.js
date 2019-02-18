@@ -37,6 +37,8 @@ const enhance = compose(
                     isFocusBox: selectors.getIsFocusBox(state, props),
                     isBlockedBox: selectors.getIsBlockedBox(state, props),
                     cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
+                    clueAddresses: selectors.getClueAddresses(state, props),
+                    labelMap: selectors.getLabelMap(state, props),
                 }) :
                 ({
                     loading: true,
@@ -136,30 +138,17 @@ class Editor extends Component {
 
         const {
             firebase: { set }, path, crossword, editor, isCursorAnswer, isFocusBox,
+            labelMap,
+            clueAddresses: { across: acrossClues, down: downClues },
         } = this.props;
 
         const rows = [];
-
-        let clueIndex = 1;
-        const acrossClues = [];
-        const downClues = [];
 
         for (let row = 0; row < crossword.rows; row += 1) {
             const boxes = [];
             for (let column = 0; column < crossword.rows; column += 1) {
                 const box = get(crossword, `boxes.${row}.${column}`, emptyBox);
-                const { blocked } = box;
-                const leftBlocked = column === 0 ||
-                    get(crossword, `boxes.${row}.${column - 1}.blocked`);
-                const topBlocked = row === 0 ||
-                    get(crossword, `boxes.${row - 1}.${column}.blocked`);
-                const indexBox = !blocked && (leftBlocked || topBlocked);
-                if (indexBox && leftBlocked) {
-                    acrossClues.push({ row, column, label: clueIndex });
-                }
-                if (indexBox && topBlocked) {
-                    downClues.push({ row, column, label: clueIndex });
-                }
+                const label = labelMap[row][column];
 
                 boxes.push((
                     <Box key={`box-${row}-${column}`}
@@ -168,17 +157,13 @@ class Editor extends Component {
                         column={column}
                         box={box}
                         makeUndoableChange={this.makeUndoableChange}
-                        clueLabel={indexBox ? clueIndex : undefined}
+                        clueLabel={label}
                         onBlock={this.onBlock}
                         onBoxFocus={this.onBoxFocus}
                         focused={isFocusBox(row, column)}
                         onAfterSetContent={this.handleAfterSetContent}
                     />
                 ));
-
-                if (indexBox) {
-                    clueIndex += 1;
-                }
             }
             rows.push((
                 <div className='editor__row'
@@ -243,6 +228,8 @@ Editor.propTypes = {
     isFocusBox: PropTypes.func.isRequired,
     cursorContent: PropTypes.string,
     cursorAfterAdvancement: PropTypes.object.isRequired,
+    clueAddresses: PropTypes.object.isRequired,
+    labelMap: PropTypes.object.isRequired,
 };
 
 const EditorContainer = ({ loading, ...props }) =>

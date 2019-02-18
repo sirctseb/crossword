@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { get, range, flatten } from 'lodash';
 
-import { ACROSS } from './constants';
+import { ACROSS, DOWN } from './constants';
 
 const getEditor = state => state.editor;
 
@@ -172,7 +172,17 @@ const clueAddressAt = (crossword, row, column, direction, clueAddresses) => {
         address.row === firstAddress.row && address.column === firstAddress.column);
 };
 
-const getClueAddresses = createSelector(
+/**
+ * Returns a map from directions to a list of boxes with their rows, columns, and labels
+ * {
+ *   [across|down]: [
+ *     {
+ *       row, column, label
+ *     }
+ *   ],
+ * }
+ */
+export const getClueAddresses = createSelector(
     [getCrossword],
     (crossword) => {
         const addresses = {
@@ -200,6 +210,23 @@ const getClueAddresses = createSelector(
             }
         }
         return addresses;
+    }
+);
+
+/**
+ * Returns a map from row to column to the label at that square
+ */
+export const getLabelMap = createSelector(
+    [getClueAddresses],
+    (addresses) => {
+        const map = {};
+        [ACROSS, DOWN].forEach((direction) => {
+            addresses[direction].forEach((address) => {
+                map[address.row] = map[address.row] || {};
+                map[address.row][address.column] = address.label;
+            });
+        });
+        return map;
     }
 );
 
