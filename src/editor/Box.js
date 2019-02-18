@@ -56,7 +56,7 @@ export default class Box extends PureComponent {
             newContent,
             content
         );
-        this.props.onAfterSetContent();
+        this.props.onAfterSetContent(newContent);
     }
 
     render() {
