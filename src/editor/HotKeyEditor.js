@@ -21,6 +21,8 @@ export default (MyComponent) => {
         }
 
         moveCursor(vector) {
+            if (!document.activeElement.classList.contains('box')) return;
+
             let {
                 editor: { cursor: { row, column } },
             } = this.props;
