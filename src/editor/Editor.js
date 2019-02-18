@@ -83,9 +83,11 @@ class Editor extends Component {
     this.props.actions.setCursor({ row, column });
   }
 
-  handleAfterSetContent = () => {
-    const { row, column } = this.props.cursorAfterAdvancement;
-    document.querySelector(`.box--at-${row}-${column}`).focus();
+  handleAfterSetContent = (newContent) => {
+    if (newContent !== null) {
+      const { row, column } = this.props.cursorAfterAdvancement;
+      document.querySelector(`.box--at-${row}-${column}`).focus();
+    }
   }
 
   componentDidUpdate(prevProps) {
