@@ -34,7 +34,7 @@ const enhance = compose(
                     size: selectors.getSize(state, props),
                     cursorContent: selectors.getCursorContent(state, props),
                     isCursorAnswer: selectors.getIsCursorAnswer(state, props),
-                    isFocusBox: selectors.getIsFocusBox(state, props),
+                    isCursorBox: selectors.getIsCursorBox(state, props),
                     isBlockedBox: selectors.getIsBlockedBox(state, props),
                     cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
                     clueAddresses: selectors.getClueAddresses(state, props),
@@ -139,7 +139,7 @@ class Editor extends Component {
         const bem = bemNamesFactory('editor');
 
         const {
-            firebase: { set }, path, crossword, editor, isCursorAnswer, isFocusBox,
+            firebase: { set }, path, crossword, editor, isCursorAnswer, isCursorBox,
             labelMap,
             clueAddresses: { across: acrossClues, down: downClues },
         } = this.props;
@@ -162,7 +162,7 @@ class Editor extends Component {
                         clueLabel={label}
                         onBlock={this.onBlock}
                         onBoxFocus={this.onBoxFocus}
-                        focused={isFocusBox(row, column)}
+                        cursor={isCursorBox(row, column)}
                         onAfterSetContent={this.handleAfterSetContent}
                     />
                 ));
@@ -227,7 +227,7 @@ Editor.propTypes = {
     editor: PropTypes.object.isRequired,
     isCursorAnswer: PropTypes.func.isRequired,
     actions: PropTypes.object.isRequired,
-    isFocusBox: PropTypes.func.isRequired,
+    isCursorBox: PropTypes.func.isRequired,
     cursorContent: PropTypes.string,
     cursorAfterAdvancement: PropTypes.object.isRequired,
     clueAddresses: PropTypes.object.isRequired,

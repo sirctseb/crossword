@@ -138,7 +138,7 @@ export const getIsCursorAnswer = createSelector(
     }
 );
 
-export const getIsFocusBox = createSelector(
+export const getIsCursorBox = createSelector(
     [getCursor],
     cursor => (row, column) => row === cursor.row && column === cursor.column
 );

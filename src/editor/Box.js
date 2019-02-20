@@ -19,7 +19,7 @@ export default class Box extends PureComponent {
     }
 
     handleMouseDown = (evt) => {
-        if (this.props.focused) {
+        if (this.props.cursor) {
             this.setState({ rebus: true });
             // when state goes to { rebus: true }, the input is rendered
             // and we focus the input element in RebusInput.componentDidMount
@@ -59,6 +59,10 @@ export default class Box extends PureComponent {
         this.props.onAfterSetContent(newContent);
     }
 
+    targetFocused(evt) {
+        return evt.currentTarget === document.activeElement;
+    }
+
     render() {
         const bem = bemNamesFactory('box');
         const {
@@ -80,12 +84,12 @@ export default class Box extends PureComponent {
                     )}
                 tabIndex={!blocked ? '0' : undefined}
                 onKeyPress={(evt) => {
-                    if (/[A-Za-z]/.test(evt.key)) {
+                    if (/[A-Za-z]/.test(evt.key) && this.targetFocused(evt)) {
                         this.setContent(evt.key);
                     }
                 }}
                 onKeyDown={(evt) => {
-                    if (evt.key === 'Backspace') {
+                    if (evt.key === 'Backspace' && this.targetFocused(evt)) {
                         this.setContent(null);
                     }
                 }}
@@ -115,10 +119,11 @@ Box.propTypes = {
     row: propTypes.number.isRequired,
     column: propTypes.number.isRequired,
     box: propTypes.shape({
-        blocked: propTypes.boolean,
-        circled: propTypes.boolean,
-        shaded: propTypes.boolean,
+        blocked: propTypes.bool,
+        circled: propTypes.bool,
+        shaded: propTypes.bool,
     }).isRequired,
+    cursor: propTypes.bool.isRequired,
     makeUndoableChange: propTypes.func.isRequired,
     clueLabel: propTypes.number,
     onBlock: propTypes.func.isRequired,
