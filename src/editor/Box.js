@@ -29,7 +29,7 @@ export default class Box extends PureComponent {
         }
     }
 
-    handleRebusClose = (content) => {
+    handleRebusClose = (content = this.props.box.content) => {
         this.setContent(content);
         this.setState({ rebus: false });
     }
@@ -122,6 +122,7 @@ Box.propTypes = {
         blocked: propTypes.bool,
         circled: propTypes.bool,
         shaded: propTypes.bool,
+        content: propTypes.string,
     }).isRequired,
     cursor: propTypes.bool.isRequired,
     makeUndoableChange: propTypes.func.isRequired,
