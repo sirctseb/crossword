@@ -5,6 +5,8 @@ import propTypes from 'prop-types';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
+const targetFocused = ({ currentTarget }) => document.activeElement === currentTarget;
+
 export default class Box extends PureComponent {
     constructor(props) {
         super(props);
@@ -59,10 +61,6 @@ export default class Box extends PureComponent {
         this.props.onAfterSetContent(newContent);
     }
 
-    targetFocused(evt) {
-        return evt.currentTarget === document.activeElement;
-    }
-
     render() {
         const bem = bemNamesFactory('box');
         const {
@@ -84,12 +82,12 @@ export default class Box extends PureComponent {
                     )}
                 tabIndex={!blocked ? '0' : undefined}
                 onKeyPress={(evt) => {
-                    if (/^[A-Za-z]$/.test(evt.key) && this.targetFocused(evt)) {
+                    if (/^[A-Za-z]$/.test(evt.key) && targetFocused(evt)) {
                         this.setContent(evt.key);
                     }
                 }}
                 onKeyDown={(evt) => {
-                    if (evt.key === 'Backspace' && this.targetFocused(evt)) {
+                    if (evt.key === 'Backspace' && targetFocused(evt)) {
                         this.setContent(null);
                     }
                 }}
