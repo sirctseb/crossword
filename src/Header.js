@@ -64,6 +64,13 @@ class Header extends Component {
                             </a>
                     }
                     {
+                        !auth.isEmpty &&
+                            <a className="header__user-button"
+                                href={`/users/${auth.uid}`}>
+                                user
+                            </a>
+                    }
+                    {
                         this.state.showLogin &&
                         <div className='header__login-controls'>
                             <FirebaseAuth uiConfig={firebaseAuthConfig}
