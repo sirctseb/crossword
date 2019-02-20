@@ -24,6 +24,14 @@ class RebusInput extends Component {
         <input className='rebus-input__input'
           ref={(ref) => { this.inputElement = ref; }}
           value={this.state.value || ''}
+          onKeyDown={(evt) => {
+            if (evt.key === 'Escape') {
+              this.props.onClose();
+            }
+            if (evt.key === 'Enter') {
+              this.props.onClose(this.state.value);
+            }
+          }}
           onChange={evt => this.setState({ value: evt.target.value })}/>
       </div>
     );
