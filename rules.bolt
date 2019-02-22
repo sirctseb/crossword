@@ -1,0 +1,34 @@
+type Matrix<Type> extends Map<Index, Map<Index, Type>> {}
+
+type Crossword {
+    rows: Number,
+    symmetric: Boolean,
+    themeEntries: Boolean[],
+    clues: Matrix<String>
+    boxes: Matrix<Box>
+}
+
+type Index extends String {
+    validate() {
+        this.test(/^[0-9]+$/)
+    }
+}
+
+type Box {
+    blocked: Boolean | Null,
+    circled: Boolean | Null,
+    shaded: Boolean | Null,
+    content: String,
+}
+
+path /crosswords is Crossword[] {}
+
+type CrosswordMetadata {
+    title: String | Null,
+}
+
+type User {
+    crosswords: CrosswordMetadata[],
+}
+
+path /users is User[] {}
