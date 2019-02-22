@@ -6,6 +6,22 @@ type Crossword {
     themeEntries: Boolean[],
     clues: Matrix<String>
     boxes: Matrix<Box>
+
+    create() {
+        auth.uid == root.permissions[key()].owner
+    }
+
+    delete() {
+        auth.uid === root.permissions[key()].owner
+    }
+
+    update() {
+        auth.uid === root.permissions[key()].owner ||
+        (
+            root.permissions[key()].collaborators &&
+            root.permissinos[key()].collaborators[auth.uid]
+        )
+    }
 }
 
 type Index extends String {
@@ -18,7 +34,7 @@ type Box {
     blocked: Boolean | Null,
     circled: Boolean | Null,
     shaded: Boolean | Null,
-    content: String,
+    content: String | Null,
 }
 
 path /crosswords is Crossword[] {}
@@ -29,6 +45,43 @@ type CrosswordMetadata {
 
 type User {
     crosswords: CrosswordMetadata[],
+
+    create() {
+        key() === auth.uid
+    }
+    update() {
+        key() === auth.uid
+    }
+    delete() {
+        key() === auth.uid
+    }
 }
 
 path /users is User[] {}
+
+type Permissions {
+    owner: UserId,
+    collaborators: Map<UserId, Boolean>,
+    global: Boolean | Null,
+
+    create() {
+        key() === auth.uid
+    }
+    update() {
+        key() === auth.uid
+    }
+    delete() {
+        key() === auth.uid
+    }
+}
+
+// would like to be able to ensure this user exists but we don't own that list
+type UserId extends String {}
+
+type CrosswordId extends String {
+    validate() {
+        root.crosswords[key()].exists()
+    }
+}
+
+path /permissions is Map<CrosswordId, Permissions> {}
