@@ -7,6 +7,11 @@ type Crossword {
     clues: Matrix<String>
     boxes: Matrix<Box>
 
+    read() {
+        auth.uid == root.permissions[key()].owner ||
+        root.permissions[key()].collaborators[auth.uid]
+    }
+
     create() {
         auth.uid == root.permissions[key()].owner
     }
@@ -17,10 +22,7 @@ type Crossword {
 
     update() {
         auth.uid === root.permissions[key()].owner ||
-        (
-            root.permissions[key()].collaborators &&
-            root.permissinos[key()].collaborators[auth.uid]
-        )
+        root.permissions[key()].collaborators[auth.uid]
     }
 }
 
@@ -80,7 +82,7 @@ type UserId extends String {}
 
 type CrosswordId extends String {
     validate() {
-        root.crosswords[key()].exists()
+        root.crosswords[key()] != null
     }
 }
 
