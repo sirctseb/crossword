@@ -1,2 +1,5 @@
 {
+  "database": {
+    "rules": "rules.bolt"
+  }
 }
