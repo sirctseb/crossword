@@ -17,11 +17,11 @@ type Crossword {
     }
 
     delete() {
-        auth.uid === root.permissions[key()].owner
+        auth.uid == root.permissions[key()].owner
     }
 
     update() {
-        auth.uid === root.permissions[key()].owner ||
+        auth.uid == root.permissions[key()].owner ||
         root.permissions[key()].collaborators[auth.uid]
     }
 }
@@ -48,14 +48,8 @@ type CrosswordMetadata {
 type User {
     crosswords: CrosswordMetadata[],
 
-    create() {
-        key() === auth.uid
-    }
-    update() {
-        key() === auth.uid
-    }
-    delete() {
-        key() === auth.uid
+    write() {
+        key() == auth.uid
     }
 }
 
@@ -67,13 +61,21 @@ type Permissions {
     global: Boolean | Null,
 
     create() {
-        key() === auth.uid
+        auth.uid != null &&
+        auth.uid == this.owner
     }
     update() {
-        key() === auth.uid
+        auth.uid == this.owner
     }
     delete() {
-        key() === auth.uid
+        auth.uid == this.owner
+    }
+    validate() {
+        this.owner == auth.uid &&
+        (
+            prior(this.owner) == null ||
+            this.owner == prior(this.owner)
+        )
     }
 }
 
