@@ -25,13 +25,14 @@ class Header extends Component {
     handleNew = () => {
         const fbRef = this.props.firebase.ref();
         const cwRef = fbRef.push();
+        const { auth: { uid } } = this.props;
         fbRef.update({
             [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
-            [`users/${this.props.auth.uid}/crosswords/${cwRef.key}`]: {
+            [`users/${uid}/crosswords/${cwRef.key}`]: {
                 title: 'Untitled',
             },
-        });
-        this.props.router.push(`/${cwRef.key}`);
+            [`permissions/${cwRef.key}`]: { owner: uid },
+        }).then(() => this.props.router.push(`/${cwRef.key}`));
     }
 
     render() {
