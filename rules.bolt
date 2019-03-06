@@ -1,11 +1,12 @@
 type Matrix<Type> extends Map<Index, Map<Index, Type>> {}
 
 type Crossword {
-    rows: Number,
-    symmetric: Boolean,
-    themeEntries: Boolean[],
+    rows: Number
+    symmetric: Boolean
+    themeEntries: Boolean[]
     clues: Matrix<String>
     boxes: Matrix<Box>
+    title: String | Null
 
     read() {
         auth.uid == root.permissions[key()].owner ||
