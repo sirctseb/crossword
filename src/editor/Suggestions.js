@@ -60,5 +60,5 @@ Suggestions.propTypes = {
 };
 
 export default withRouter(connect((state, props) => ({
-  suggestions: selectors.getAmendedSuggestions(state, props),
+  suggestions: selectors.getAmendedSuggestions(state, props.params),
 }))(Suggestions));
