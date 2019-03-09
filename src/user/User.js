@@ -25,23 +25,12 @@ const enhance = compose(
 
 class User extends Component {
   render() {
-    const { loading, crosswords, userId } = this.props;
+    const { loading, userId } = this.props;
     if (loading) {
       return <div>JUST WAIT</div>;
     }
     return (
-      <div>
-        {
-          Object.keys(crosswords).map(id => (
-            <div key={id}>
-              <a href={`/${id}`}>
-                {crosswords[id].title || 'Untitled'}
-              </a>
-            </div>
-          ))
-        }
-        <PreviewList userId={userId} />
-      </div>
+      <PreviewList userId={userId} />
     );
   }
 }

@@ -5,8 +5,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 
 import { getUserCrosswords } from './user/selectors';
-// import CrosswordPreview from './CrosswordPreview';
-const CrosswordPreview = ({ id }) => <div>{ id }</div>;
+import CrosswordPreview from './CrosswordPreview';
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -25,7 +24,8 @@ class PreviewList extends Component {
       <div className='preview-list'>
         {
           Object.keys(this.props.crosswords).map(id =>
-            <CrosswordPreview id={id} key={id} />)
+            <CrosswordPreview id={id} key={id}
+              {...this.props.crosswords[id]} />)
         }
       </div>
     );
