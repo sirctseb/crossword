@@ -7,7 +7,7 @@ const getEditor = state => state.editor;
 
 const getCrosswords = state => state.firebase.data.crosswords;
 
-const getCrosswordId = (state, props) => props.params.crosswordId;
+const getCrosswordId = (state, { crosswordId }) => crosswordId;
 
 export const getCrossword = createSelector(
     [getCrosswords, getCrosswordId],

@@ -23,13 +23,13 @@ const enhance = compose(
         `crosswords/${props.params.crosswordId}`,
     ])),
     connect(
-        (state, props) =>
+        (state, { params: props }) =>
             (selectors.getCrossword(state, props) ?
                 ({
                     crossword: selectors.getCrossword(state, props),
                     acrossPattern: selectors.getAcrossPattern(state, props),
                     downPattern: selectors.getDownPattern(state, props),
-                    path: `crosswords/${props.params.crosswordId}`,
+                    path: `crosswords/${props.crosswordId}`,
                     editor: state.editor,
                     size: selectors.getSize(state, props),
                     cursorContent: selectors.getCursorContent(state, props),

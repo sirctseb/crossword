@@ -45,6 +45,6 @@ ThemeEntries.propTypes = {
 };
 
 export default withRouter(connect((state, props) => ({
-    entries: selectors.getThemeEntries(state, props),
-    currentAnswers: selectors.getCurrentAnswers(state, props),
+    entries: selectors.getThemeEntries(state, props.params),
+    currentAnswers: selectors.getCurrentAnswers(state, props.params),
 }))(ThemeEntries));
