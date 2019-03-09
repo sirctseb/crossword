@@ -6,20 +6,26 @@ import { firebaseConnect } from 'react-redux-firebase';
 
 import * as selectors from './selectors';
 
+import PreviewList from '../PreviewList';
+
 const enhance = compose(
     firebaseConnect(props => ([
         `users/${props.params.userId}`,
     ])),
     connect((state, props) =>
-        selectors.getUserData(state, props) ||
-        {
-            loading: true,
-        })
+        (selectors.getUserData(state, props) ?
+            {
+                ...selectors.getUserData(state, props),
+                userId: props.params.userId,
+            } :
+            {
+                loading: true,
+            }))
 );
 
 class User extends Component {
     render() {
-        const { loading, crosswords } = this.props;
+        const { loading, crosswords, userId } = this.props;
         if (loading) {
             return <div>JUST WAIT</div>;
         }
@@ -34,6 +40,7 @@ class User extends Component {
                         </div>
                     ))
                 }
+                <PreviewList userId={userId} />
             </div>
         );
     }
