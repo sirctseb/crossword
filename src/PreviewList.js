@@ -11,21 +11,22 @@ const enhance = compose(
     firebaseConnect(props => ([
         `users/${props.userId}/crosswords`,
     ])),
-    connect((state, props) =>
-        getUserCrosswords(state, props) ||
-        {
-            loading: true,
-        })
+    connect((state, props) => ({
+        crosswords: getUserCrosswords(state, props),
+        loading: !getUserCrosswords(state, props),
+    }))
 );
 
 class PreviewList extends Component {
     render() {
+        const { loading, crosswords } = this.props;
         return (
             <div className='preview-list'>
                 {
-                    Object.keys(this.props.crosswords).map(id =>
+                    !loading &&
+                    Object.keys(crosswords).map(id =>
                         <CrosswordPreview id={id} key={id}
-                            {...this.props.crosswords[id]} />)
+                            {...crosswords[id]} />)
                 }
             </div>
         );

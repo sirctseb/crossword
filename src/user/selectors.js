@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+import { get } from 'lodash';
 
 const getUserId = state => state.firebase.auth.uid;
 
@@ -11,5 +12,5 @@ export const getUserData = createSelector(
 
 export const getUserCrosswords = createSelector(
     [getUserData],
-    ({ crosswords }) => ({ crosswords }),
+    userData => get(userData, 'crosswords'),
 );
