@@ -1,44 +1,26 @@
 import React, { Component } from 'react';
-import propTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { firebaseConnect } from 'react-redux-firebase';
-
-import * as selectors from './selectors';
+import PropTypes from 'prop-types';
+import { bemNamesFactory } from 'bem-names';
 
 import PreviewList from '../PreviewList';
 
-const enhance = compose(
-  firebaseConnect(props => ([
-    `users/${props.params.userId}`,
-  ])),
-  connect((state, props) =>
-    (selectors.getUserData(state, props) ?
-      {
-        ...selectors.getUserData(state, props),
-        userId: props.params.userId,
-      } :
-      {
-        loading: true,
-      })),
-);
+const bem = bemNamesFactory('user');
 
 class User extends Component {
   render() {
-    const { loading, userId } = this.props;
-    if (loading) {
-      return <div>JUST WAIT</div>;
-    }
+    const { userId } = this.props.params;
     return (
-      <PreviewList userId={userId} />
+      <div className={bem()}>
+        <PreviewList userId={userId} />
+      </div>
     );
   }
 }
 
 User.propTypes = {
-  crosswords: propTypes.shape({
-    title: propTypes.string,
-  }),
+  params: PropTypes.shape({
+    userId: PropTypes.string.isRequired,
+  }).isRequired,
 };
 
-export default enhance(User);
+export default User;
