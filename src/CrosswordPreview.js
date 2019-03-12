@@ -27,7 +27,7 @@ const drawBoxes = ({ rows, boxes }) => {
       boxElements.push(<div key={`box-${row}-${column}`}
         className={bem('box', {
           blocked: get(boxes, [row, column, 'blocked']),
-        })} />);
+        })}>{get(boxes, [row, column, 'content'])}</div>);
     }
     rowElements.push(<div key={`row-${row}`} className={bem('row')}>{boxElements}</div>);
   }

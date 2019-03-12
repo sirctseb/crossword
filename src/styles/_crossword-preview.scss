@@ -25,6 +25,8 @@ $block-class: 'crossword-preview';
       height: 8px;
       border-right: 1px solid black;
       border-bottom: 1px solid black;
+      text-transform: uppercase;
+      text-align: center;
 
       &--blocked {
         background-color: black;
