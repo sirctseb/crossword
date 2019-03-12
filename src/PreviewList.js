@@ -5,6 +5,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 
 import { getUserCrosswords } from './user/selectors';
+import Wait from './Wait';
 import CrosswordPreview from './CrosswordPreview';
 
 const enhance = compose(
@@ -13,17 +14,15 @@ const enhance = compose(
     ])),
     connect((state, props) => ({
         crosswords: getUserCrosswords(state, props),
-        loading: !getUserCrosswords(state, props),
     }))
 );
 
 class PreviewList extends Component {
     render() {
-        const { loading, crosswords } = this.props;
+        const { crosswords } = this.props;
         return (
             <div className='preview-list'>
                 {
-                    !loading &&
                     Object.keys(crosswords).map(id =>
                         <CrosswordPreview id={id} key={id}
                             {...crosswords[id]} />)
@@ -34,7 +33,7 @@ class PreviewList extends Component {
 }
 
 PreviewList.propTypes = {
-    crosswords: PropTypes.object,
+    crosswords: PropTypes.object.isRequired,
 };
 
-export default enhance(PreviewList);
+export default enhance(Wait(PreviewList));
