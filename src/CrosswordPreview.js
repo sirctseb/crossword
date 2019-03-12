@@ -38,7 +38,7 @@ export default enhance(({ metadata, crossword }) => (
   <div className={bem()}>
     {
       crossword &&
-            <div className={bem('grid')}>
+            <div className={bem('grid', [`size-${crossword.rows}`])}>
               { drawBoxes(crossword) }
             </div>
     }
