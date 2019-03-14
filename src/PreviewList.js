@@ -14,7 +14,8 @@ const enhance = compose(
     ])),
     connect((state, props) => ({
         crosswords: getUserCrosswords(state, props),
-    }))
+    })),
+    Wait
 );
 
 class PreviewList extends Component {
@@ -36,4 +37,4 @@ PreviewList.propTypes = {
     crosswords: PropTypes.object.isRequired,
 };
 
-export default enhance(Wait(PreviewList));
+export default enhance(PreviewList);
