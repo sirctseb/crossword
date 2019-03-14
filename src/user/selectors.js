@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
 import { get } from 'lodash';
 
-const getUserId = state => state.firebase.auth.uid;
+export const getUserId = state => state.firebase.auth.uid;
 
 const getUsers = state => state.firebase.data.users;
 
