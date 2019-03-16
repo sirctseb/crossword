@@ -1,10 +1,6 @@
-$block-color: black;
-$shade-color: #aaa;
-$active-color: #eee;
+@import 'variables';
 
-$box-size: 32px;
-$clue-width: 200px;
-
+// components
 @import 'box';
 @import 'box-controls';
 @import 'clue-list';
