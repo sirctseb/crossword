@@ -67,7 +67,7 @@ class Header extends Component {
           {
             !auth.isEmpty &&
                             <a className="header__user-button"
-                              href={`/users/${auth.uid}`}>
+                              href={'/user'}>
                                 user
                             </a>
           }
