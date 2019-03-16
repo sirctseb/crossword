@@ -2,8 +2,8 @@ $block-class: 'crossword-preview';
 
 @at-root {
     .#{$block-class} {
-        margin-left: 20px;
-        margin-right: 20px;
+        margin-left: $preview-margin;
+        margin-right: $preview-margin;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -13,11 +13,11 @@ $block-class: 'crossword-preview';
             flex-direction: column;
             border-left: 1px solid black;
             border-top: 1px solid black;
-            font-size: 8px;
+            font-size: $base-preview-box-size;
 
             @for $size from 1 to 30 {
                 &--size-#{$size} {
-                    font-size: (8px * 15) / $size;
+                    font-size: ($base-preview-box-size * 15) / $size;
                 }
             }
         }
