@@ -5,7 +5,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import { bemNamesFactory } from 'bem-names';
 import { get } from 'lodash';
 
-import * as selectors from './editor/selectors';
+import * as selectors from '../editor/selectors';
 
 const bem = bemNamesFactory('crossword-preview');
 
