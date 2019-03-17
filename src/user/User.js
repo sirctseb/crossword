@@ -5,7 +5,7 @@ import { bemNamesFactory } from 'bem-names';
 import Wait from '../Wait';
 
 import { getUserId } from './selectors';
-import PreviewList from '../PreviewList';
+import PreviewList from './PreviewList';
 
 const bem = bemNamesFactory('user');
 

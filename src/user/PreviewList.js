@@ -5,8 +5,8 @@ import { firebaseConnect } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
-import { getUserCrosswords } from './user/selectors';
-import Wait from './Wait';
+import { getUserCrosswords } from './selectors';
+import Wait from '../Wait';
 import CrosswordPreview from './CrosswordPreview';
 
 const bem = bemNamesFactory('preview-list');
