@@ -9,12 +9,22 @@ import PreviewList from '../PreviewList';
 
 const bem = bemNamesFactory('user');
 
+// const Section = ({ children }) => (
+//     <div className={bem('section')}>
+//         <div className={bem('divider')}>
+//             {children}
+//         </div>
+//     </div>
+// );
+
 class User extends Component {
   render() {
     const { userId } = this.props;
     return (
       <div className={bem()}>
-        <PreviewList userId={userId} />
+        <PreviewList userId={userId}>
+                    My Crosswords
+        </PreviewList>
       </div>
     );
   }

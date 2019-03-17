@@ -3,10 +3,13 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
+import { bemNamesFactory } from 'bem-names';
 
 import { getUserCrosswords } from './user/selectors';
 import Wait from './Wait';
 import CrosswordPreview from './CrosswordPreview';
+
+const bem = bemNamesFactory('preview-list');
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -20,14 +23,19 @@ const enhance = compose(
 
 class PreviewList extends Component {
   render() {
-    const { crosswords } = this.props;
+    const { crosswords, children } = this.props;
     return (
-      <div className='preview-list'>
-        {
-          Object.keys(crosswords).map(id =>
-            <CrosswordPreview id={id} key={id}
-              {...crosswords[id]} />)
-        }
+      <div className={bem()}>
+        <div className={bem('title')}>
+          { children }
+        </div>
+        <div className={bem('list')}>
+          {
+            Object.keys(crosswords).map(id =>
+              <CrosswordPreview id={id} key={id}
+                {...crosswords[id]} />)
+          }
+        </div>
       </div>
     );
   }
