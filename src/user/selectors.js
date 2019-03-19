@@ -14,3 +14,8 @@ export const getUserCrosswords = createSelector(
   [getUserData],
   userData => get(userData, 'crosswords'),
 );
+
+export const getWordlist = createSelector(
+  [getUserData],
+  userData => get(userData, 'wordlist'),
+);
