@@ -6,6 +6,7 @@ import Wait from '../Wait';
 
 import { getUserId } from './selectors';
 import PreviewList from './PreviewList';
+import WordList from './WordList';
 
 const bem = bemNamesFactory('user');
 
@@ -25,6 +26,7 @@ class User extends Component {
         <PreviewList userId={userId}>
                     My Crosswords
         </PreviewList>
+        <WordList userId={userId} />
       </div>
     );
   }
