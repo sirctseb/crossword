@@ -1,4 +1,5 @@
-type Matrix<Type> extends Map<Index, Map<Index, Type>> {}
+type Matrix<Type> extends Map<Index, Map<Index, Type>>;
+type Presence<Type> extends Map<Type, Boolean>;
 
 type Crossword {
     rows: Number
@@ -46,8 +47,14 @@ type CrosswordMetadata {
     title: String | Null,
 }
 
+type WordlistEntry {
+    word: String,
+    usedBy: Presence<CrosswordId>,
+}
+
 type User {
     crosswords: CrosswordMetadata[],
+    wordlist: WordlistEntry[],
 
     write() {
         key() == auth.uid
@@ -61,7 +68,7 @@ path /users is User[] {}
 
 type Permissions {
     owner: UserId,
-    collaborators: Map<UserId, Boolean>,
+    collaborators: Presence<UserId>,
     global: Boolean | Null,
 
     create() {
