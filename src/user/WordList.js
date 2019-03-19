@@ -17,6 +17,7 @@ const enhance = compose(
     ])),
     connect((state, props) => ({
         wordlist: getWordlist(state, { userId: props.userId }) || emptyWordList,
+        path: `/users/${props.userId}/wordlist`,
     })),
     Wait,
 );
@@ -24,24 +25,36 @@ const enhance = compose(
 class WordList extends Component {
     state = { newValue: '' }
 
+    componentDidMount() {
+        this.fbRef = this.props.firebase.ref().child(this.props.path);
+    }
+
     handleNewValueChange = ({ target: { value } }) => this.setState({ newValue: value })
     handleNewValueAdd = () => {
         const { newValue } = this.state;
-        const { userId } = this.props;
         if (newValue.length > 0) {
-            this.props.firebase.ref().child(`users/${userId}/wordlist`).push({
+            this.fbRef.push({
                 word: newValue,
             });
         }
         this.setState({ newValue: '' });
     }
+    handleDelete = key => this.fbRef.child(key).remove()
 
     render() {
         return (
             <div bem={bem()}>
                 <div bem={bem('list')}>
                     {
-                        Object.values(this.props.wordlist).map(({ word }) => word)
+                        Object.entries(this.props.wordlist).map(([key, { word }]) => (
+                            <div className={bem('entry')}>
+                                {word}
+                                <div className={bem('delete')}
+                                    onClick={() => this.handleDelete(key)}>
+                                    -
+                                </div>
+                            </div>
+                        ))
                     }
                 </div>
                 <div bem={bem('add')}>
