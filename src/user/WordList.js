@@ -43,11 +43,14 @@ class WordList extends Component {
 
   render() {
     return (
-      <div bem={bem()}>
-        <div bem={bem('list')}>
+      <div className={bem()}>
+        <div className={bem('title')}>
+                    Word List
+        </div>
+        <div className={bem('list')}>
           {
             Object.entries(this.props.wordlist).map(([key, { word }]) => (
-              <div className={bem('entry')}>
+              <div className={bem('entry')} key={key}>
                 {word}
                 <div className={bem('delete')}
                   onClick={() => this.handleDelete(key)}>
@@ -57,7 +60,7 @@ class WordList extends Component {
             ))
           }
         </div>
-        <div bem={bem('add')}>
+        <div className={bem('add')}>
           <input value={this.state.newValue}
             onChange={this.handleNewValueChange} />
           <div onClick={this.handleNewValueAdd}>
