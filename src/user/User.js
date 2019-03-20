@@ -7,26 +7,23 @@ import Wait from '../Wait';
 import { getUserId } from './selectors';
 import PreviewList from './PreviewList';
 import WordList from './WordList';
+import UserSection from './UserSection';
 
 const bem = bemNamesFactory('user');
-
-// const Section = ({ children }) => (
-//     <div className={bem('section')}>
-//         <div className={bem('divider')}>
-//             {children}
-//         </div>
-//     </div>
-// );
 
 class User extends Component {
     render() {
         const { userId } = this.props;
         return (
             <div className={bem()}>
-                <PreviewList userId={userId}>
-                    My Crosswords
-                </PreviewList>
-                <WordList userId={userId} />
+                <UserSection>
+                    <PreviewList userId={userId}>
+                        My Crosswords
+                    </PreviewList>
+                </UserSection>
+                <UserSection>
+                    <WordList userId={userId} />
+                </UserSection>
             </div>
         );
     }

@@ -1,0 +1,15 @@
+$block-class: 'word-list';
+
+@at-root {
+    .#{$block-class} {
+        &__entry {
+            display: flex;
+            flex-direction: row;
+        }
+
+        &__add {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+}
