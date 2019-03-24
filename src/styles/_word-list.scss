@@ -2,9 +2,25 @@ $block-class: 'word-list';
 
 @at-root {
   .#{$block-class} {
+    &__list {
+      display: flex;
+      flex-flow: row wrap;
+    }
+
     &__entry {
       display: flex;
       flex-direction: row;
+      margin-left: 8px;
+      padding: 2px;
+      align-items: center;
+    }
+
+    &__delete {
+      padding-left: 6px;
+      padding-right: 4px;
+      margin-left: 4px;
+      border-left: 1px solid black;
+      cursor: pointer;
     }
 
     &__add {
