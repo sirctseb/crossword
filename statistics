@@ -1,0 +1,62 @@
+statistics
+from crossfire:
+
+Summary tab
+# words
+avg length
+# blocks
+# letters
+avg score (?)
+
+word counts by length
+letter counts (below tab container)
+
+Words tab
+	General
+		Avg word score
+		avg cross score
+	Words
+		Just a list of the answers, score, xscore, length
+
+Fill tab
+	Shows suggestions for the cursor
+
+Clues tab <-- this will not be in stats for us
+	Just the clues
+	Destructive on block change
+
+Lookup
+	Manual word search based on
+		Pattern
+		Attach ends (?)
+		Content
+		Length
+		Min score
+
+Rebus tab <-- this will also be inline/ui feature
+lol wtf
+	you define a rebus
+		set of letters contained
+		display letter (only one)
+	then you can add it to the puzzle
+
+Other crossfire features:
+config
+	Fill
+		Min fill word score
+		Longest shared substring
+		Candidate ranking quality
+		Speed/quality tradeoff (lol wtf)
+	Dictionary files
+	General
+		Web lookup url (?)
+		Clue database file
+		Auto-select definitions when in clue tab
+		Show numbers in grid
+		Auto-add complete cross words (?)
+
+Have to choose size at start
+Hover shows suggestions in contexty menu
+
+Phil:
+Generate NYT submission pdf
