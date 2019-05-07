@@ -5,7 +5,7 @@ type Crossword {
     rows: Number
     symmetric: Boolean
     themeEntries: Boolean[]
-    clues: Matrix<String>
+    clues: Map<Direction, Matrix<String>>
     boxes: Matrix<Box>
     title: String | Null
 
@@ -31,6 +31,12 @@ type Crossword {
 type Index extends String {
     validate() {
         this.test(/^[0-9]+$/)
+    }
+}
+
+type Direction extends String {
+    validate() {
+        this.test(/(across|down)/)
     }
 }
 
