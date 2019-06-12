@@ -5,7 +5,6 @@ module.exports = {
         "react",
         "babel",
         "mocha",
-        "chai-expect",
     ],
     "rules": {
         "indent": ["error", 4],
