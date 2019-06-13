@@ -1,6 +1,18 @@
+isCurrentUser(userId) {
+    return auth != null && auth.uid = userId;
+}
+
 type Matrix<Type> extends Map<Index, Map<Index, Type>>;
 type Presence<Type> extends Map<Type, Boolean>;
+type CurrentUser extends UserId {
+    validate() {
+        isCurrentUser(this);
+    }
+}
 
+/*
+ * Core crossword document content types
+ */
 type Crossword {
     rows: Number
     symmetric: Boolean
@@ -29,6 +41,8 @@ type Crossword {
     }
 }
 
+// Subtype of String restricted to valid integers. This helps to ensure
+// that a Map from this type will act well as an array
 type Index extends String {
     validate() {
         this.test(/^[0-9]+$/)
@@ -50,6 +64,9 @@ type Box {
 
 path /crosswords is Crossword[] {}
 
+/*
+ * Crossword metadata and types for authoring features
+ */
 type CrosswordMetadata {
     title: String | Null,
 }
@@ -59,6 +76,9 @@ type WordlistEntry {
     usedBy: Presence<CrosswordId>,
 }
 
+/*
+ * User info, profile, and preferences
+ */
 type User {
     crosswords: CrosswordMetadata[],
     wordlist: WordlistEntry[],
@@ -73,6 +93,9 @@ type User {
 
 path /users is User[] {}
 
+/*
+ * Permissions
+ */
 type Permissions {
     owner: UserId,
     collaborators: Presence<UserId>,
@@ -107,3 +130,15 @@ type CrosswordId extends String {
 }
 
 path /permissions is Map<CrosswordId, Permissions> {}
+
+/*
+ * Cursors
+ */
+type Cursor {
+    userId: CurrentUser
+
+    row: Number | Null
+    column: Number | Null
+}
+
+path /cursors is Map<CrosswordId, Cursor[]>;
