@@ -104,7 +104,7 @@ describe('selectors', () => {
                 0: {
                     1: {
                         blocked: true,
-                    }
+                    },
                 },
                 1: {
                     0: {
@@ -163,8 +163,8 @@ describe('selectors', () => {
                         blocked: true,
                     },
                 },
-            }
-        }
+            },
+        };
         it('returns a candidate', () => {
             const subject = test.cycleInAnswerAcross(crossword, 0, 0);
             expect(subject.box.payload).to.equal('payload');
