@@ -10,13 +10,16 @@
     "start": "webpack-dev-server --config webpack.dev.js",
     "build:dev": "webpack --config webpack.dev.js",
     "build": "webpack --config webpack.prod.js",
-    "test": "mocha --opts mocha.opts src/{,**/}*.test.js"
+    "test": "mocha --opts mocha.opts src/{,**/}*.test.js",
+    "test:rules": "firebase-bolt rules.bolt && mocha --opts mocha.opts rules.test.js"
   },
   "devDependencies": {
+    "@firebase/testing": "^0.11.0",
     "babel-eslint": "^8.2.1",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "dirty-chai": "^2.0.1",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
