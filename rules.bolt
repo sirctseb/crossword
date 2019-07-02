@@ -1,5 +1,5 @@
 isCurrentUser(userId) {
-    return auth != null && auth.uid = userId;
+    return auth != null && auth.uid == userId;
 }
 
 type Matrix<Type> extends Map<Index, Map<Index, Type>>;
@@ -139,6 +139,14 @@ type Cursor {
 
     row: Number | Null
     column: Number | Null
+
+    write() {
+        auth.uid == this.userId || auth.uid == prior(this.userId)
+    }
+
+    read() {
+        true
+    }
 }
 
 path /cursors is Map<CrosswordId, Cursor[]>;

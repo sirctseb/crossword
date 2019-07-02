@@ -17,7 +17,8 @@ export default class Box extends PureComponent {
     }
 
     handleFocus = () => {
-        this.props.onBoxFocus(this.props.row, this.props.column);
+        const { row, column } = this.props;
+        this.props.onBoxFocus({ row, column });
     }
 
     handleMouseDown = (evt) => {
