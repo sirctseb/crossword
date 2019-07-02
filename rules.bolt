@@ -16,6 +16,7 @@ type Crossword {
 
     create() {
         auth.uid == root.permissions[key()].owner
+        && root.users[auth.uid].crosswords[key()] != null
     }
 
     delete() {
