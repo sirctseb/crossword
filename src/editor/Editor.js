@@ -17,6 +17,51 @@ import Box from './Box';
 import hotKeyEditor from './HotKeyEditor';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
+import Wait from '../Wait';
+
+const focusSyncHOC = (Editor) => {
+  class FocusSyncEditor extends Component {
+    constructor(props) {
+      super(props);
+
+      this.state = {};
+    }
+
+    componentDidMount() {
+      // create cursor
+      const initialCursor = {
+        userId: this.props.firebase.auth().currentUser.uid,
+      };
+      const cursorRef = this.props.firebase.ref(`cursors/${this.props.params.crosswordId}`)
+        .push(initialCursor);
+
+      // set up onDelete to remove the cursor
+      cursorRef.onDisconnect().set(null);
+
+      this.setState({ cursorRef });
+    }
+
+    componentWillUnmount() {
+      // remove onDelete
+      this.state.cursorRef.onDisconnect().cancel();
+      // delete cursor
+      this.state.cursorRef.set(null);
+    }
+
+    handleBoxFocus = (cursor) => {
+      this.props.actions.setCursor(cursor, this.props.params.crosswordId);
+      this.state.cursorRef.update(cursor);
+    }
+
+    render() {
+      return <Editor {...this.props} onBoxFocus={this.handleBoxFocus} />;
+    }
+  }
+
+  return FocusSyncEditor;
+};
+
+export { focusSyncHOC };
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -39,12 +84,15 @@ const enhance = compose(
           cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
           clueAddresses: selectors.getClueAddresses(state, props),
           labelMap: selectors.getLabelMap(state, props),
+          auth: selectors.getAuth(state, props),
         }) :
         ({
           loading: true,
         })),
     dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
   ),
+  C => Wait(C, { toggle: ({ loading }) => !loading }),
+  focusSyncHOC,
   hotkeys,
   hotKeyEditor,
 );
@@ -77,10 +125,6 @@ class Editor extends Component {
       newValue,
       oldValue,
     ));
-  }
-
-  onBoxFocus = (row, column) => {
-    this.props.actions.setCursor({ row, column });
   }
 
   handleAfterSetContent = (newContent) => {
@@ -161,7 +205,7 @@ class Editor extends Component {
             makeUndoableChange={this.makeUndoableChange}
             clueLabel={label}
             onBlock={this.onBlock}
-            onBoxFocus={this.onBoxFocus}
+            onBoxFocus={this.props.onBoxFocus}
             cursor={isCursorBox(row, column)}
             onAfterSetContent={this.handleAfterSetContent}
           />
@@ -232,12 +276,7 @@ Editor.propTypes = {
   cursorAfterAdvancement: PropTypes.object.isRequired,
   clueAddresses: PropTypes.object.isRequired,
   labelMap: PropTypes.object.isRequired,
+  onBoxFocus: PropTypes.func.isRequired,
 };
 
-const EditorContainer = ({ loading, ...props }) =>
-  (loading ?
-    'WAIT!' :
-    <Editor {...props} />);
-
-
-export default enhance(EditorContainer);
+export default enhance(Editor);
