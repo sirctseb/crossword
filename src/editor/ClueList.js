@@ -32,7 +32,7 @@ export default class ClueList extends Component {
                                     column === clueInput.column &&
                                     clueInput.direction === direction &&
                                     clueInput.value
-                ) || get(clueData, `${row}.${column}`, '')}
+                ) || get(clueData, [row, column], '')}
                 onChange={(evt) => {
                   changeClue({
                     value: evt.target.value, row, column, direction,
