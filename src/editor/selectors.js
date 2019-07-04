@@ -5,8 +5,6 @@ import { ACROSS, DOWN } from './constants';
 
 const getEditor = state => state.editor;
 
-export const getAuth = state => state.firebase.auth;
-
 const getCrosswords = state => state.firebase.data.crosswords;
 
 const getCrosswordId = (state, { crosswordId }) => crosswordId;
