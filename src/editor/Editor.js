@@ -18,50 +18,7 @@ import hotKeyEditor from './HotKeyEditor';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
-
-const focusSyncHOC = (Editor) => {
-  class FocusSyncEditor extends Component {
-    constructor(props) {
-      super(props);
-
-      this.state = {};
-    }
-
-    componentDidMount() {
-      // create cursor
-      const initialCursor = {
-        userId: this.props.firebase.auth().currentUser.uid,
-      };
-      const cursorRef = this.props.firebase.ref(`cursors/${this.props.params.crosswordId}`)
-        .push(initialCursor);
-
-      // set up onDelete to remove the cursor
-      cursorRef.onDisconnect().set(null);
-
-      this.setState({ cursorRef });
-    }
-
-    componentWillUnmount() {
-      // remove onDelete
-      this.state.cursorRef.onDisconnect().cancel();
-      // delete cursor
-      this.state.cursorRef.set(null);
-    }
-
-    handleBoxFocus = (cursor) => {
-      this.props.actions.setCursor(cursor, this.props.params.crosswordId);
-      this.state.cursorRef.update(cursor);
-    }
-
-    render() {
-      return <Editor {...this.props} onBoxFocus={this.handleBoxFocus} />;
-    }
-  }
-
-  return FocusSyncEditor;
-};
-
-export { focusSyncHOC };
+import publishCursor from './publishCursor';
 
 const enhance = compose(
   firebaseConnect(props => ([
@@ -92,7 +49,7 @@ const enhance = compose(
     dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
-  focusSyncHOC,
+  publishCursor,
   hotkeys,
   hotKeyEditor,
 );
