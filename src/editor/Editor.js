@@ -41,7 +41,6 @@ const enhance = compose(
           cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
           clueAddresses: selectors.getClueAddresses(state, props),
           labelMap: selectors.getLabelMap(state, props),
-          auth: selectors.getAuth(state, props),
         }) :
         ({
           loading: true,
