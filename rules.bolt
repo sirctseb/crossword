@@ -143,10 +143,18 @@ type Cursor {
     write() {
         auth.uid == this.userId || auth.uid == prior(this.userId)
     }
-
-    read() {
-        true
-    }
 }
 
-path /cursors is Map<CrosswordId, Cursor[]>;
+// would rather specify the path this way, but then we can't access the cw id key
+// from the cursor key object level
+// path /cursors is Map<CrosswordId, Cursor[]> {
+path /cursors/{cwid} is Cursor[] {
+    validate() {
+        root.crosswords[key()] != null
+    }
+
+    read() {
+        auth.uid == root.permissions[cwid].owner ||
+        root.permissions[cwid].collaborators[auth.uid]
+    }
+}
