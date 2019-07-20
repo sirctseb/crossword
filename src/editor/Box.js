@@ -70,8 +70,9 @@ export default class Box extends PureComponent {
             }, clueLabel, cursorAnswer: active,
             row, column,
         } = this.props;
+        const cursors = Object.values(this.props.cursors).filter(({ row: cRow, column: cColumn }) =>
+            cRow === row && cColumn === column);
         const { rebus } = this.state;
-
         return (
             <div
                 className={
@@ -80,6 +81,8 @@ export default class Box extends PureComponent {
                             blocked, circled, shaded, active,
                         },
                         [`at-${row}-${column}`],
+                        ['one', 'two'],
+                        cursors.map(() => 'remote-cursor'),
                     )}
                 tabIndex={!blocked ? '0' : undefined}
                 onKeyPress={(evt) => {
@@ -94,6 +97,10 @@ export default class Box extends PureComponent {
                 }}
                 onFocus={this.handleFocus}
                 onMouseDown={this.handleMouseDown}>
+                <div className={bem('cursor')}>
+                    <div className={bem('cursor-overlay')}>
+                    </div>
+                </div>
                 <BoxControls onToggleAttribute={this.handleToggleAttribute}
                     box={this.props.box}
                     onBlock={this.handleOnBlock} />

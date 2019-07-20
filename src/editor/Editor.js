@@ -8,6 +8,7 @@ import { bemNamesFactory } from 'bem-names';
 import { hotkeys } from 'react-keyboard-shortcuts';
 
 import * as selectors from './selectors';
+import * as cursorSelectors from './cursors/selectors';
 import * as actions from './actions';
 import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
@@ -23,12 +24,26 @@ import publishCursor from './publishCursor';
 const enhance = compose(
     firebaseConnect(props => ([
         `crosswords/${props.params.crosswordId}`,
+        `cursors/${props.params.crosswordId}`,
     ])),
     connect(
         (state, { params: props }) =>
             (selectors.getCrossword(state, props) ?
                 ({
                     crossword: selectors.getCrossword(state, props),
+                    // TODO oh noooo we do not have the cursor id here
+                    // 1. strip the local cursor out in editor render
+                    //    - do we have the cursor id _anywhere_? it'll have to be
+                    //      passed to editor from cursor hoc
+                    // 2. boxes get crossword id, indices, and cursor id, and connect to data
+                    //    - big change
+                    // 3. we actually could move the publishCursor above this, all it needs is
+                    //    the crossword id. then we would have the local cursor id here
+                    //    - seems so fragile. if we need the cursor id to calculate the render,
+                    //      then it's application state and should go in redux. we could put it
+                    //      in the editor reducer and then we can use it in selectors
+                    //      i think either this or 1 is the correct answer, but more code than 3
+                    cursors: cursorSelectors.getCursors(state, props),
                     acrossPattern: selectors.getAcrossPattern(state, props),
                     downPattern: selectors.getDownPattern(state, props),
                     path: `crosswords/${props.crosswordId}`,
@@ -164,6 +179,7 @@ class Editor extends Component {
                         onBoxFocus={this.props.onBoxFocus}
                         cursor={isCursorBox(row, column)}
                         onAfterSetContent={this.handleAfterSetContent}
+                        cursors={this.props.cursors}
                     />
                 ));
             }
@@ -219,6 +235,10 @@ class Editor extends Component {
     }
 }
 
+Editor.defaultProps = {
+    cursors: {},
+};
+
 Editor.propTypes = {
     crossword: PropTypes.object.isRequired,
     acrossPattern: PropTypes.string.isRequired,
@@ -233,6 +253,7 @@ Editor.propTypes = {
     clueAddresses: PropTypes.object.isRequired,
     labelMap: PropTypes.object.isRequired,
     onBoxFocus: PropTypes.func.isRequired,
+    cursors: PropTypes.object,
 };
 
 export default enhance(Editor);

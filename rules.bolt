@@ -83,6 +83,8 @@ type User {
     crosswords: CrosswordMetadata[],
     wordlist: WordlistEntry[],
 
+    avatarUrl: String | Null,
+
     write() {
         key() == auth.uid
     }
@@ -139,6 +141,10 @@ type Cursor {
 
     row: Number | Null
     column: Number | Null
+
+    // fanout cursor owner info for display
+    userDisplayName: String | Null
+    userAvatarUrl: String | Null
 
     write() {
         auth.uid == this.userId || auth.uid == prior(this.userId)

@@ -28,6 +28,10 @@ $block-class: 'box';
             background-color: $shade-color;
         }
 
+        &--remote-cursor {
+            background-color: red;
+        }
+
         &:focus {
             outline: none;
             cursor: text;
@@ -66,6 +70,28 @@ $block-class: 'box';
             z-index: 2;
             left: 0;
             top: 0;
+        }
+
+        &__cursor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: green;
+
+            &:hover .box__cursor-overlay {
+                display: block;
+            }
+        }
+
+        &__cursor-overlay {
+            display: none;
+            background-color: blue;
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            right: 0;
         }
     }
 }
