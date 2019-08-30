@@ -2,7 +2,7 @@
   "name": "crossword-functions",
   "description": "Cloud Functions for Crosswords",
   "scripts": {
-    "test": "mocha  '*.test.js' --exit"
+    "test": "mocha  --opts mocha.opts '*.test.js' --exit"
   },
   "dependencies": {
     "firebase-admin": "~5.12.0",

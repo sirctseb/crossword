@@ -76,6 +76,30 @@ type WordlistEntry {
     usedBy: Presence<CrosswordId>,
 }
 
+// ok product: user's have an associated image which is:
+// 1. a photo they have uploaded to our site if they have uploaded it OR
+// 2. a photoUrl from their auth object if it exists OR
+// 3. a gravatar keyed by their email OR
+// 4. a random checkerbox pattern. basically a github one but black and white
+//
+// this can't really be pure client logic because we're showing avatars for other users,
+// and this logic would depend on knowing their email. we don't have or want other user
+// email addresses coming down
+//
+// so what are the times when we set the url?
+// 1. when the upload a photo => immediately set it
+// 2.
+//
+// also, can they clear the image if it came from 2,3,4?
+// wait, wait, wait. auth always has a photoUrl AND you can modify it
+// so for cursors, e.g., we should just set the url in decorateCursor with the photoUrl
+// what about rendering, e.g. a friends list, or the author of some public cw?
+// we don't just have the auth object to look up the photo at query time
+// so for any given feature we need to stash that url into the data needed for the feature?
+//  - that doesn't make sense for friends list, where the list maker is not the
+//    person with the photourl
+//
+
 /*
  * User info, profile, and preferences
  */

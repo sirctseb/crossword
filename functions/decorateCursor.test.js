@@ -1,12 +1,4 @@
-const test = require('firebase-functions-test')({
-    apiKey: 'AIzaSyB1q2fH7XjhzGtr2Ed8WJAsV7JzUtynI9E',
-    authDomain: 'crossword-test-1149f.firebaseapp.com',
-    databaseURL: 'https://crossword-test-1149f.firebaseio.com',
-    projectId: 'crossword-test-1149f',
-    storageBucket: '',
-    messagingSenderId: '275025952215',
-    appId: '1:275025952215:web:994a396f098d4620',
-}, './crossword-test-1149f-5dac7f05770a.json');
+const test = require('./testConfig');
 
 const { expect } = require('chai');
 
@@ -23,15 +15,15 @@ const aliceContext = {
     auth: aliceAuth,
 };
 
-describe('cloud functions', () => {
-    before(() => {
-        admin.initializeApp();
-    });
+describe('Cursor Decoration', () => {
+    // before(() => {
+    //     admin.initializeApp();
+    // });
 
-    after(() => {
-        test.cleanup();
-        return admin.database().ref().remove();
-    });
+    // after(() => {
+    //     test.cleanup();
+    //     return admin.database().ref().remove();
+    // });
 
     describe('decorateCursor', () => {
         it('adds a users display name to the cursor', () => {
@@ -40,5 +32,7 @@ describe('cloud functions', () => {
                 admin.database().ref('/cursors/cw-id/cursor-id/displayName').once('value').then(createdSnap =>
                     expect(createdSnap.val()).to.eq(aliceAuth.displayName)));
         });
+
+        it('adds a users ')
     });
 })
