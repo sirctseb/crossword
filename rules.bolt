@@ -140,6 +140,9 @@ type Cursor {
     row: Number | Null
     column: Number | Null
 
+    displayName: String | Null
+    photoUrl: String | Null
+
     write() {
         auth.uid == this.userId || auth.uid == prior(this.userId)
     }
