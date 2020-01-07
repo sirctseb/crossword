@@ -1,0 +1,9 @@
+$block-class: 'preview-list';
+
+@at-root {
+  .#{$block-class} {
+    display: flex;
+    justify-content: left;
+    flex-wrap: wrap;
+  }
+}
