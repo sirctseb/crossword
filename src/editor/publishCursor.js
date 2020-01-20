@@ -9,7 +9,7 @@ export default Editor =>
       const initialCursor = {
         userId: this.props.firebase.auth().currentUser.uid,
       };
-      const cursorRef = this.props.firebase.ref(`cursors/${this.props.params.crosswordId}`)
+      const cursorRef = this.props.firebase.ref(`cursors/${this.props.match.params.crosswordId}`)
         .push(initialCursor);
 
       // set up onDelete to remove the cursor
@@ -26,7 +26,7 @@ export default Editor =>
     }
 
     handleBoxFocus = (cursor) => {
-      this.props.actions.setCursor(cursor, this.props.params.crosswordId);
+      this.props.actions.setCursor(cursor, this.props.match.params.crosswordId);
       this.state.cursorRef.update(cursor);
     }
 

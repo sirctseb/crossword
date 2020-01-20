@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withRouter } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bemNamesFactory } from 'bem-names';
 
@@ -60,5 +60,5 @@ Suggestions.propTypes = {
 };
 
 export default withRouter(connect((state, props) => ({
-  suggestions: selectors.getAmendedSuggestions(state, props.params),
+  suggestions: selectors.getAmendedSuggestions(state, props.match.params),
 }))(Suggestions));

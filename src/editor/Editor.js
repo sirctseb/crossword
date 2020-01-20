@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
+import { withRouter } from 'react-router-dom';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 import { hotkeys } from 'react-keyboard-shortcuts';
@@ -21,11 +22,12 @@ import Wait from '../Wait';
 import publishCursor from './publishCursor';
 
 const enhance = compose(
+  withRouter,
   firebaseConnect(props => ([
-    `crosswords/${props.params.crosswordId}`,
+    `crosswords/${props.match.params.crosswordId}`,
   ])),
   connect(
-    (state, { params: props }) =>
+    (state, { match: { params: props } }) =>
       (selectors.getCrossword(state, props) ?
         ({
           crossword: selectors.getCrossword(state, props),

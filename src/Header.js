@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withFirebase } from 'react-redux-firebase';
-import { withRouter } from 'react-router';
+import { withRouter } from 'react-router-dom';
 import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
 
 import firebaseAuthConfig from '../config/firebaseAuth';

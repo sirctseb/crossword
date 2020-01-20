@@ -3,8 +3,7 @@ import { combineReducers, createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
 import { firebaseReducer, ReactReduxFirebaseProvider } from 'react-redux-firebase';
-import { Router, browserHistory } from 'react-router';
-import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import firebase from 'firebase';
@@ -30,13 +29,10 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     firebase: firebaseReducer,
-    routing: routerReducer,
     editor: editorReducer,
   }),
   composeEnhancers(applyMiddleware(createLogger(), thunk)),
 );
-
-const history = syncHistoryWithStore(browserHistory, store);
 
 const rrfProps = {
   firebase,
@@ -47,7 +43,7 @@ const rrfProps = {
 ReactDOM.render(
   <Provider store={store}>
     <ReactReduxFirebaseProvider {...rrfProps}>
-      <Router history={history}>
+      <Router>
         {routes}
       </Router>
     </ReactReduxFirebaseProvider>

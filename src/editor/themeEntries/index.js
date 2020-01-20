@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
-import { withRouter } from 'react-router';
+import { withRouter } from 'react-router-dom';
 
 import UndoHistory from '../../undo/UndoHistory';
 import FirebaseChange from '../../undo/FirebaseChange';
@@ -45,6 +45,6 @@ ThemeEntries.propTypes = {
 };
 
 export default withRouter(connect((state, props) => ({
-  entries: selectors.getThemeEntries(state, props.params),
-  currentAnswers: selectors.getCurrentAnswers(state, props.params),
+  entries: selectors.getThemeEntries(state, props.match.params),
+  currentAnswers: selectors.getCurrentAnswers(state, props.match.params),
 }))(ThemeEntries));
