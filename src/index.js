@@ -2,7 +2,7 @@ import React from 'react';
 import { combineReducers, createStore, compose, applyMiddleware } from 'redux';
 import { Provider } from 'react-redux';
 import ReactDOM from 'react-dom';
-import { reactReduxFirebase, firebaseStateReducer } from 'react-redux-firebase';
+import { firebaseReducer, ReactReduxFirebaseProvider } from 'react-redux-firebase';
 import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux';
 import { createLogger } from 'redux-logger';
@@ -29,23 +29,28 @@ firebase.initializeApp(firebaseConfig);
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
-    firebase: firebaseStateReducer,
+    firebase: firebaseReducer,
     routing: routerReducer,
     editor: editorReducer,
   }),
-  composeEnhancers(
-    applyMiddleware(createLogger(), thunk),
-    reactReduxFirebase(firebase),
-  ),
+  composeEnhancers(applyMiddleware(createLogger(), thunk)),
 );
 
 const history = syncHistoryWithStore(browserHistory, store);
 
+const rrfProps = {
+  firebase,
+  dispatch: store.dispatch,
+  config: {},
+};
+
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={history}>
-      {routes}
-    </Router>
+    <ReactReduxFirebaseProvider {...rrfProps}>
+      <Router history={history}>
+        {routes}
+      </Router>
+    </ReactReduxFirebaseProvider>
   </Provider>,
   document.getElementById('react-root'),
 );
