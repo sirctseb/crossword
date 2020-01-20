@@ -75,9 +75,17 @@ const undoHistory = UndoHistory.getHistory('crossword');
 const emptyBox = {};
 
 class Editor extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      fbRef: this.props.firebase.ref(),
+    };
+  }
+
   makeUndoableChange = (localPath, newValue, oldValue) => {
     undoHistory.add(FirebaseChange.FromValues(
-      this.fbRef.child(`${this.props.path}/${localPath}`),
+      this.state.fbRef.child(`${this.props.path}/${localPath}`),
       newValue,
       oldValue,
     ));
@@ -99,10 +107,6 @@ class Editor extends Component {
     }
   }
 
-  componentWillMount() {
-    this.fbRef = this.props.firebase.ref();
-  }
-
   onClueBlur = () => {
     const {
       editor: {
@@ -113,7 +117,7 @@ class Editor extends Component {
     } = this.props;
 
     undoHistory.add(FirebaseChange.FromValues(
-      this.fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
+      this.state.fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
       value,
       get(crossword, `clues.${direction}.${row}.${column}`),
     ));
@@ -131,7 +135,7 @@ class Editor extends Component {
       column,
       this.props.crossword,
       blocked,
-      this.fbRef.child(this.props.path),
+      this.state.fbRef.child(this.props.path),
     ));
   }
 
@@ -181,7 +185,7 @@ class Editor extends Component {
           value={crossword.rows}
           onChange={evt =>
             undoHistory.add(FirebaseChange.FromValues(
-              this.fbRef.child(`${path}/rows`),
+              this.state.fbRef.child(`${path}/rows`),
               parseInt(evt.target.value, 10),
               crossword.rows,
             ))} />
@@ -211,7 +215,7 @@ class Editor extends Component {
           </div>
         </div>
         <Suggestions />
-        <ThemeEntries fbRef={this.fbRef.child(path).child('themeEntries')} />
+        <ThemeEntries fbRef={this.state.fbRef.child(path).child('themeEntries')} />
         <button onClick={() => undoHistory.undo()}>Undo</button>
         <button onClick={() => undoHistory.redo()}>Redo</button>
       </div>
