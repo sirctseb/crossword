@@ -1,46 +1,33 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import enhanceWithClickOutside from 'react-click-outside';
 
-class RebusInput extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: props.content,
-    };
-  }
+const RebusInput = ({ onClose, content }) => {
+  const [value, setValue] = useState(content);
 
-  handleClickOutside() {
-    this.props.onClose(this.state.value);
-  }
+  const inputElement = useRef(null);
+  useEffect(() => inputElement.current.focus(), [inputElement]);
 
-  componentDidMount() {
-    this.inputElement.focus();
-  }
-
-  render() {
-    return (
-      <div className='rebus-input'>
-        <input className='rebus-input__input'
-          ref={(ref) => { this.inputElement = ref; }}
-          value={this.state.value || ''}
-          onKeyDown={(evt) => {
-            if (evt.key === 'Escape') {
-              this.props.onClose();
-            }
-            if (evt.key === 'Enter') {
-              this.props.onClose(this.state.value);
-            }
-          }}
-          onChange={evt => this.setState({ value: evt.target.value })}/>
-      </div>
-    );
-  }
-}
+  return (
+    <div className='rebus-input'>
+      <input className='rebus-input__input'
+        ref={inputElement}
+        value={value || ''}
+        onKeyDown={(evt) => {
+          if (evt.key === 'Escape') {
+            onClose();
+          }
+          if (evt.key === 'Enter') {
+            onClose(value);
+          }
+        }}
+        onChange={evt => setValue(evt.target.value)}/>
+    </div>
+  );
+};
 
 RebusInput.propTypes = {
   onClose: PropTypes.func.isRequired,
   content: PropTypes.string,
 };
 
-export default enhanceWithClickOutside(RebusInput);
+export default RebusInput;
