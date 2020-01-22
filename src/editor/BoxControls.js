@@ -1,50 +1,51 @@
-import React, { Component } from 'react';
+import React from 'react';
 import propTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
-class BoxControls extends Component {
-  killEvent = (evt) => {
+const bem = bemNamesFactory('box-controls');
+
+const BoxControls = ({
+  box: {
+    blocked,
+    circled,
+    shaded,
+  },
+  onBlock,
+  onToggleAttribute,
+}) => {
+  const killEvent = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
-  }
+  };
 
-  handleToggleCircle = (evt) => {
-    this.props.onToggleAttribute('circled');
+  const handleToggleCircle = (evt) => {
+    onToggleAttribute('circled');
     evt.stopPropagation();
-  }
+  };
 
-  handleToggleShade = (evt) => {
-    this.props.onToggleAttribute('shaded');
+  const handleToggleShade = (evt) => {
+    onToggleAttribute('shaded');
     evt.stopPropagation();
-  }
+  };
 
-  render() {
-    const bem = bemNamesFactory('box-controls');
-    const {
-      box: {
-        blocked, circled, shaded,
-      },
-    } = this.props;
-
-    return (
-      <div className='box-controls'>
-        <div className={bem('block', { blocked })}
-          onMouseDown={this.killEvent}
-          onClick={this.props.onBlock} />
-        {
-          !blocked && <div className={bem('circle', { circled })}
-            onMouseDown={this.killEvent}
-            onClick={this.handleToggleCircle}/>
-        }
-        {
-          !blocked && <div className={bem('shade', { shaded })}
-            onMouseDown={this.killEvent}
-            onClick={this.handleToggleShade}/>
-        }
-      </div>
-    );
-  }
-}
+  return (
+    <div className='box-controls'>
+      <div className={bem('block', { blocked })}
+        onMouseDown={killEvent}
+        onClick={onBlock} />
+      {
+        !blocked && <div className={bem('circle', { circled })}
+          onMouseDown={killEvent}
+          onClick={handleToggleCircle}/>
+      }
+      {
+        !blocked && <div className={bem('shade', { shaded })}
+          onMouseDown={killEvent}
+          onClick={handleToggleShade}/>
+      }
+    </div>
+  );
+};
 
 BoxControls.propTypes = {
   box: propTypes.object.isRequired,
