@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { bemNamesFactory } from 'bem-names';
 import propTypes from 'prop-types';
 
@@ -8,7 +8,7 @@ import RebusInput from './RebusInput';
 const targetFocused = ({ currentTarget }) => document.activeElement === currentTarget;
 const bem = bemNamesFactory('box');
 
-const Box = ({
+const Box = memo(({
   row,
   column,
   box,
@@ -103,7 +103,7 @@ const Box = ({
       { content }
     </div>
   );
-};
+});
 
 Box.propTypes = {
   row: propTypes.number.isRequired,
