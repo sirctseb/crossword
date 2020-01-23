@@ -1,26 +1,16 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bemNamesFactory } from 'bem-names';
 
 import * as selectors from './selectors';
-import { DOWN, ACROSS } from './constants';
 
 const bem = bemNamesFactory('suggestions');
 
-class Suggestions extends Component {
-  renderSuggestions(direction) {
-    const directionProperties = {
-      [ACROSS]: 'across',
-      [DOWN]: 'down',
-    };
-
-    const suggestions = this.props.suggestions[
-      directionProperties[direction]
-    ];
-
-    return suggestions.length > 0 ?
+const Suggestions = ({ suggestions: { across, down } }) => {
+  const renderSuggestions = suggestions =>
+    (suggestions.length > 0 ?
       suggestions.map(suggestion => (
         <div className={bem('suggestion')}
           key={suggestion}>
@@ -28,29 +18,26 @@ class Suggestions extends Component {
         </div>
       )) :
       <div className={bem('no-suggestions')}>
-                no matches
-      </div>;
-  }
+        no matches
+      </div>);
 
-  render() {
-    return (
-      <div className={bem()}>
-        <div className={bem('list')}>
-                    Across
-          <div className={bem('entries')}>
-            {this.renderSuggestions(ACROSS)}
-          </div>
-        </div>
-        <div className={bem('list')}>
-                    Down
-          <div className={bem('entries')}>
-            {this.renderSuggestions(DOWN)}
-          </div>
+  return (
+    <div className={bem()}>
+      <div className={bem('list')}>
+          Across
+        <div className={bem('entries')}>
+          {renderSuggestions(across)}
         </div>
       </div>
-    );
-  }
-}
+      <div className={bem('list')}>
+          Down
+        <div className={bem('entries')}>
+          {renderSuggestions(down)}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 Suggestions.propTypes = {
   suggestions: PropTypes.shape({
