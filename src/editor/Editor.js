@@ -19,7 +19,7 @@ import hotKeyEditor from './HotKeyEditor';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
-import publishCursor from './publishCursor';
+import withPublishedCursor from './withPublishedCursor';
 
 const enhance = compose(
   withRouter,
@@ -50,7 +50,7 @@ const enhance = compose(
     dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
-  publishCursor,
+  withPublishedCursor,
   hotkeys,
   hotKeyEditor,
 );
