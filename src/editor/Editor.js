@@ -14,7 +14,7 @@ import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import ClueList from './ClueList';
 import Box from './Box';
-import hotKeyEditor from './HotKeyEditor';
+import withEditorHotKeys from './withEditorHotKeys';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
@@ -50,7 +50,7 @@ const enhance = compose(
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
   withPublishedCursor,
-  hotKeyEditor,
+  withEditorHotKeys,
 );
 
 const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
