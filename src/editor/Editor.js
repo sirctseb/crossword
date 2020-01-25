@@ -6,7 +6,6 @@ import { firebaseConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router-dom';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
-import { hotkeys } from 'react-keyboard-shortcuts';
 
 import * as selectors from './selectors';
 import * as actions from './actions';
@@ -51,7 +50,6 @@ const enhance = compose(
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
   withPublishedCursor,
-  hotkeys,
   hotKeyEditor,
 );
 

@@ -1,94 +1,83 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
+import { GlobalHotKeys } from 'react-hotkeys';
 
 import UndoHistory from '../undo/UndoHistory';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
-export default (MyComponent) => {
-  class HotKeyedEditor extends Component {
-    handleRight() {
-      this.moveCursor([0, 1]);
-    }
-    handleLeft() {
-      this.moveCursor([0, -1]);
-    }
-    handleUp() {
-      this.moveCursor([-1, 0]);
-    }
-    handleDown() {
-      this.moveCursor([1, 0]);
-    }
+const keyMap = {
+  undo: 'meta+z',
+  redo: 'shift+meta+z',
+  up: 'up',
+  down: 'down',
+  left: 'left',
+  right: 'right',
+  toggleCursorDirection: ';',
+};
 
-    moveCursor(vector) {
+export default (MyComponent) => {
+  const HotKeyedEditor = (props) => {
+    const {
+      editor: {
+        cursor: {
+          row, column,
+        },
+      },
+      size,
+      isBlockedBox,
+      actions: { toggleCursorDirection },
+    } = props;
+
+    const makeMoveCursor = vector => () => {
+      // TODO there should be a selector for this
       if (!document.activeElement.classList.contains('box')) return;
 
-      let {
-        editor: { cursor: { row, column } },
-      } = this.props;
+      let rowIter = row;
+      let columnIter = column;
 
-      const { size, isBlockedBox } = this.props;
-
-      row += vector[0];
-      column += vector[1];
-      while (row >= 0 && column >= 0 && row < size && column < size) {
-        if (!isBlockedBox(row, column)) {
-          document.querySelector(`.box--at-${row}-${column}`).focus();
+      rowIter += vector[0];
+      columnIter += vector[1];
+      while (rowIter >= 0 && columnIter >= 0 && rowIter < size && columnIter < size) {
+        if (!isBlockedBox(rowIter, columnIter)) {
+          document.querySelector(`.box--at-${rowIter}-${columnIter}`).focus();
           return;
         }
 
-        row += vector[0];
-        column += vector[1];
+        rowIter += vector[0];
+        columnIter += vector[1];
       }
-    }
+    };
 
-    constructor(props) {
-      super(props);
+    const right = makeMoveCursor([0, 1]);
+    const left = makeMoveCursor([0, -1]);
+    const up = makeMoveCursor([-1, 0]);
+    const down = makeMoveCursor([1, 0]);
 
-      this.handleRight = this.handleRight.bind(this);
-      this.handleLeft = this.handleLeft.bind(this);
-      this.handleUp = this.handleUp.bind(this);
-      this.handleDown = this.handleDown.bind(this);
+    const handlers = {
+      undo: (evt) => {
+        if (document.activeElement.tagName !== 'INPUT') {
+          undoHistory.undo();
+        }
+        evt.preventDefault();
+      },
+      redo: (evt) => {
+        if (document.activeElement.tagName !== 'INPUT') {
+          undoHistory.redo();
+        }
+        evt.preventDefault();
+      },
+      up,
+      down,
+      left,
+      right,
+      toggleCursorDirection,
+    };
 
-      this.hot_keys = {
-        'meta+z': {
-          handler: (evt) => {
-            if (document.activeElement.tagName !== 'INPUT') {
-              undoHistory.undo();
-            }
-            evt.preventDefault();
-          },
-        },
-        'shift+meta+z': {
-          handler: (evt) => {
-            if (document.activeElement.tagName !== 'INPUT') {
-              undoHistory.redo();
-            }
-            evt.preventDefault();
-          },
-        },
-        up: {
-          handler: this.handleUp,
-        },
-        down: {
-          handler: this.handleDown,
-        },
-        left: {
-          handler: this.handleLeft,
-        },
-        right: {
-          handler: this.handleRight,
-        },
-        ';': {
-          handler: this.props.actions.toggleCursorDirection,
-        },
-      };
-    }
-
-    render() {
-      return <MyComponent {...this.props} />;
-    }
-  }
+    return <GlobalHotKeys allowChanges keyMap={keyMap} handlers={handlers}>
+      <MyComponent {...props} />
+    </GlobalHotKeys>;
+  };
 
   HotKeyedEditor.propTypes = {
     editor: PropTypes.shape({
@@ -99,6 +88,7 @@ export default (MyComponent) => {
     }),
     // TODO would like to be able to require these but this mounts
     // before the crossword is downloaded
+    // TODO couldn't we just put it after the wait?
     size: PropTypes.number,
     isBlockedBox: PropTypes.func,
     actions: PropTypes.shape({
