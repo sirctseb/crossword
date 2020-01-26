@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
@@ -8,7 +8,7 @@ import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 
 import * as selectors from './selectors';
-import * as actions from './actions';
+import * as editorActions from './actions';
 import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
@@ -46,7 +46,7 @@ const enhance = compose(
         ({
           loading: true,
         })),
-    dispatch => ({ actions: bindActionCreators(actions, dispatch) }),
+    dispatch => ({ actions: bindActionCreators(editorActions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
   withPublishedCursor,
@@ -72,156 +72,153 @@ const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) 
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
+const bem = bemNamesFactory('editor');
+
 const emptyBox = {};
 
-class Editor extends Component {
-  constructor(props) {
-    super(props);
+const Editor = ({
+  crossword,
+  editor,
+  firebase,
+  firebase: { set },
+  path,
+  cursorContent,
+  cursorAfterAdvancement,
+  acrossPattern,
+  downPattern,
+  actions,
+  isCursorAnswer,
+  isCursorBox,
+  labelMap,
+  onBoxFocus,
+  clueAddresses: { across: acrossClues, down: downClues },
+}) => {
+  const [fbRef] = useState(firebase.ref());
 
-    this.state = {
-      fbRef: this.props.firebase.ref(),
-    };
-  }
-
-  makeUndoableChange = (localPath, newValue, oldValue) => {
+  const makeUndoableChange = (localPath, newValue, oldValue) => {
     undoHistory.add(FirebaseChange.FromValues(
-      this.state.fbRef.child(`${this.props.path}/${localPath}`),
+      fbRef.child(`${path}/${localPath}`),
       newValue,
       oldValue,
     ));
-  }
+  };
 
-  handleAfterSetContent = (newContent) => {
+  const handleAfterSetContent = (newContent) => {
     if (newContent !== null) {
-      const { row, column } = this.props.cursorAfterAdvancement;
+      const { row, column } = cursorAfterAdvancement;
       document.querySelector(`.box--at-${row}-${column}`).focus();
     }
-  }
+  };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.editor.cursor.row !== this.props.editor.cursor.row ||
-            prevProps.editor.cursor.column !== this.props.editor.cursor.column ||
-            prevProps.cursorContent !== this.props.cursorContent) {
-      this.props.actions.getSuggestions(this.props.acrossPattern);
-      this.props.actions.getSuggestions(this.props.downPattern);
-    }
-  }
+  useEffect(() => {
+    actions.getSuggestions(acrossPattern);
+    actions.getSuggestions(downPattern);
+  }, [editor.cursor.row, editor.cursor.column, cursorContent]);
 
-  onClueBlur = () => {
+  const onClueBlur = () => {
     const {
-      editor: {
-        clueInput: {
-          direction, row, column, value,
-        },
-      }, path, crossword,
-    } = this.props;
+      clueInput: {
+        direction, row, column, value,
+      },
+    } = editor;
 
     undoHistory.add(FirebaseChange.FromValues(
-      this.state.fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
+      fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
       value,
       get(crossword, `clues.${direction}.${row}.${column}`),
     ));
-    this.props.actions.changeClue({
+    actions.changeClue({
       value: null,
       row: null,
       column: null,
       direction: null,
     });
-  }
+  };
 
-  onBlock = (row, column, blocked) => {
+  const onBlock = (row, column, blocked) => {
     undoHistory.add(blockedChange(
       row,
       column,
-      this.props.crossword,
+      crossword,
       blocked,
-      this.state.fbRef.child(this.props.path),
+      fbRef.child(path),
+    ));
+  };
+
+  const rows = [];
+
+  for (let row = 0; row < crossword.rows; row += 1) {
+    const boxes = [];
+    for (let column = 0; column < crossword.rows; column += 1) {
+      const box = get(crossword, `boxes.${row}.${column}`, emptyBox);
+      const label = labelMap[row][column];
+
+      boxes.push((
+        <Box key={`box-${row}-${column}`}
+          cursorAnswer={isCursorAnswer(row, column)}
+          row={row}
+          column={column}
+          box={box}
+          makeUndoableChange={makeUndoableChange}
+          clueLabel={label}
+          onBlock={onBlock}
+          onBoxFocus={onBoxFocus}
+          cursor={isCursorBox(row, column)}
+          onAfterSetContent={handleAfterSetContent}
+        />
+      ));
+    }
+    rows.push((
+      <div className='editor__row'
+        key={`row-${row}`}>
+        {boxes}
+      </div>
     ));
   }
 
-  render() {
-    const bem = bemNamesFactory('editor');
-
-    const {
-      firebase: { set }, path, crossword, editor, isCursorAnswer, isCursorBox,
-      labelMap,
-      clueAddresses: { across: acrossClues, down: downClues },
-    } = this.props;
-
-    const rows = [];
-
-    for (let row = 0; row < crossword.rows; row += 1) {
-      const boxes = [];
-      for (let column = 0; column < crossword.rows; column += 1) {
-        const box = get(crossword, `boxes.${row}.${column}`, emptyBox);
-        const label = labelMap[row][column];
-
-        boxes.push((
-          <Box key={`box-${row}-${column}`}
-            cursorAnswer={isCursorAnswer(row, column)}
-            row={row}
-            column={column}
-            box={box}
-            makeUndoableChange={this.makeUndoableChange}
-            clueLabel={label}
-            onBlock={this.onBlock}
-            onBoxFocus={this.props.onBoxFocus}
-            cursor={isCursorBox(row, column)}
-            onAfterSetContent={this.handleAfterSetContent}
-          />
-        ));
-      }
-      rows.push((
-        <div className='editor__row'
-          key={`row-${row}`}>
-          {boxes}
+  return (
+    <div className={bem([`size-${crossword.rows}`])}>
+      <input type='number'
+        className='editor__input'
+        value={crossword.rows}
+        onChange={evt =>
+          undoHistory.add(FirebaseChange.FromValues(
+            fbRef.child(`${path}/rows`),
+            parseInt(evt.target.value, 10),
+            crossword.rows,
+          ))} />
+      <input type='checkbox'
+        className='editor__symmetric'
+        checked={crossword.symmetric}
+        onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
+      <div className={bem('clues-and-grid')}>
+        <div className={bem('clues-wrapper')}>
+          <ClueList direction={ACROSS}
+            clueLabels={acrossClues}
+            clueData={get(crossword.clues, 'across', [])}
+            clueInput={editor.clueInput}
+            actions={actions}
+            onClueBlur={onClueBlur} />
         </div>
-      ));
-    }
-    return (
-      <div className={bem([`size-${crossword.rows}`])}>
-        <input type='number'
-          className='editor__input'
-          value={crossword.rows}
-          onChange={evt =>
-            undoHistory.add(FirebaseChange.FromValues(
-              this.state.fbRef.child(`${path}/rows`),
-              parseInt(evt.target.value, 10),
-              crossword.rows,
-            ))} />
-        <input type='checkbox'
-          className='editor__symmetric'
-          checked={crossword.symmetric}
-          onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
-        <div className={bem('clues-and-grid')}>
-          <div className={bem('clues-wrapper')}>
-            <ClueList direction={ACROSS}
-              clueLabels={acrossClues}
-              clueData={get(crossword.clues, 'across', [])}
-              clueInput={editor.clueInput}
-              actions={this.props.actions}
-              onClueBlur={this.onClueBlur} />
-          </div>
-          <div className={bem('grid')}>
-            {rows}
-          </div>
-          <div className={bem('clues-wrapper')}>
-            <ClueList direction={DOWN}
-              clueLabels={downClues}
-              clueData={get(crossword.clues, 'down', [])}
-              clueInput={editor.clueInput}
-              actions={this.props.actions}
-              onClueBlur={this.onClueBlur} />
-          </div>
+        <div className={bem('grid')}>
+          {rows}
         </div>
-        <Suggestions />
-        <ThemeEntries fbRef={this.state.fbRef.child(path).child('themeEntries')} />
-        <button onClick={() => undoHistory.undo()}>Undo</button>
-        <button onClick={() => undoHistory.redo()}>Redo</button>
+        <div className={bem('clues-wrapper')}>
+          <ClueList direction={DOWN}
+            clueLabels={downClues}
+            clueData={get(crossword.clues, 'down', [])}
+            clueInput={editor.clueInput}
+            actions={actions}
+            onClueBlur={onClueBlur} />
+        </div>
       </div>
-    );
-  }
-}
+      <Suggestions />
+      <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
+      <button onClick={() => undoHistory.undo()}>Undo</button>
+      <button onClick={() => undoHistory.redo()}>Redo</button>
+    </div>
+  );
+};
 
 Editor.propTypes = {
   crossword: PropTypes.object.isRequired,
