@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
@@ -14,29 +14,25 @@ import ThemeEntryAddition from './ThemeEntryAddition';
 const undoHistory = UndoHistory.getHistory('crossword');
 const bem = bemNamesFactory('theme-entries');
 
-class ThemeEntries extends Component {
-  render() {
-    const { entries, currentAnswers, fbRef } = this.props;
+const ThemeEntries = ({ entries, currentAnswers, fbRef }) => {
+  const onAdd = text =>
+    undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
 
-    const onAdd = text =>
-      undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+  const onDelete = text =>
+    undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
 
-    const onDelete = text =>
-      undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
+  const annotatedEntries = entries.map(entry => ({
+    text: entry,
+    used: currentAnswers.includes(entry),
+  }));
 
-    const annotatedEntries = entries.map(entry => ({
-      text: entry,
-      used: currentAnswers.includes(entry),
-    }));
-
-    return (
-      <div className={bem()}>
-        <ThemeEntryList entries={annotatedEntries} onDelete={onDelete} />
-        <ThemeEntryAddition onAdd={onAdd} />
-      </div>
-    );
-  }
-}
+  return (
+    <div className={bem()}>
+      <ThemeEntryList entries={annotatedEntries} onDelete={onDelete} />
+      <ThemeEntryAddition onAdd={onAdd} />
+    </div>
+  );
+};
 
 ThemeEntries.propTypes = {
   entries: PropTypes.arrayOf(PropTypes.string).isRequired,
