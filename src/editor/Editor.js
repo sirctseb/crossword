@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
@@ -95,20 +95,26 @@ const Editor = ({
 }) => {
   const [fbRef] = useState(firebase.ref());
 
-  const makeUndoableChange = (localPath, newValue, oldValue) => {
+  const makeUndoableChange = useCallback((localPath, newValue, oldValue) => {
     undoHistory.add(FirebaseChange.FromValues(
       fbRef.child(`${path}/${localPath}`),
       newValue,
       oldValue,
     ));
-  };
+  }, [path]);
 
-  const handleAfterSetContent = (newContent) => {
+  // TODO revisit this optimization-by-nullifying
+  // so yeah, naturally this would change every time the cursor moves.
+  // why pass this to every box though? if a box doesn't have focus,
+  // it'll obviously never be called.
+  // FURTHERMORE, if we weren't precomputing the next cursor location
+  // and grabbing it from the selector, this function wouldn't change anyway
+  const handleAfterSetContent = useCallback((newContent) => {
     if (newContent !== null) {
       const { row, column } = cursorAfterAdvancement;
       document.querySelector(`.box--at-${row}-${column}`).focus();
     }
-  };
+  }, [cursorAfterAdvancement.row, cursorAfterAdvancement.column]);
 
   useEffect(() => {
     actions.getSuggestions(acrossPattern);
@@ -135,7 +141,7 @@ const Editor = ({
     });
   };
 
-  const onBlock = (row, column, blocked) => {
+  const handleBlock = useCallback((row, column, blocked) => {
     undoHistory.add(blockedChange(
       row,
       column,
@@ -143,7 +149,8 @@ const Editor = ({
       blocked,
       fbRef.child(path),
     ));
-  };
+    // TODO should take rows and symmetric as params so we don't leak impl details here
+  }, [path, crossword.rows, crossword.symmetric]);
 
   const rows = [];
 
@@ -161,10 +168,10 @@ const Editor = ({
           box={box}
           makeUndoableChange={makeUndoableChange}
           clueLabel={label}
-          onBlock={onBlock}
+          onBlock={handleBlock}
           onBoxFocus={onBoxFocus}
           cursor={isCursorBox(row, column)}
-          onAfterSetContent={handleAfterSetContent}
+          onAfterSetContent={isCursorAnswer(row, column) ? handleAfterSetContent : null}
         />
       ));
     }

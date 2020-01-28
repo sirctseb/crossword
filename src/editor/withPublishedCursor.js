@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 export default Editor => (props) => {
   const [cursorRef, setCursorRef] = useState(null);
 
-  const handleBoxFocus = (cursor) => {
+  const handleBoxFocus = useCallback((cursor) => {
     // TODO we shouldn't be setting the redux cursor state here
     props.actions.setCursor(cursor, props.match.params.crosswordId);
     cursorRef.update(cursor);
-  };
+  }, [props.match.params.crosswordId, cursorRef]);
 
   useEffect(() => {
     const newCursorRef = props.firebase

@@ -8,7 +8,7 @@ import RebusInput from './RebusInput';
 const targetFocused = ({ currentTarget }) => document.activeElement === currentTarget;
 const bem = bemNamesFactory('box');
 
-const Box = memo(({
+const Box = ({
   row,
   column,
   box,
@@ -49,7 +49,9 @@ const Box = memo(({
       newContent,
       content,
     );
-    onAfterSetContent(newContent);
+    if (onAfterSetContent) {
+      onAfterSetContent(newContent);
+    }
   };
 
   const handleRebusClose = (newContent = content) => {
@@ -103,7 +105,7 @@ const Box = memo(({
       { content }
     </div>
   );
-});
+};
 
 Box.propTypes = {
   row: propTypes.number.isRequired,
@@ -120,7 +122,7 @@ Box.propTypes = {
   clueLabel: propTypes.number,
   onBlock: propTypes.func.isRequired,
   onBoxFocus: propTypes.func.isRequired,
-  onAfterSetContent: propTypes.func.isRequired,
+  onAfterSetContent: propTypes.func,
 };
 
-export default Box;
+export default memo(Box);
