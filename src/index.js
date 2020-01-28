@@ -7,11 +7,16 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import firebase from 'firebase';
+import { configure } from 'react-hotkeys';
 
 import routes from './routes';
 import editorReducer from './editor/reducer';
 
 import './styles/main.scss';
+
+configure({
+  allowCombinationSubmatches: true,
+});
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCKj_BRXYrNVGLbTlYtq517O7hxpPnZBZ8',
