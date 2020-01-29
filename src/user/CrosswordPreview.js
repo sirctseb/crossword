@@ -38,9 +38,9 @@ export default enhance(({ metadata, crossword }) => (
   <div className={bem()}>
     {
       crossword &&
-            <div className={bem('grid', [`size-${crossword.rows}`])}>
-              { drawBoxes(crossword) }
-            </div>
+      <div className={bem('grid', [`size-${crossword.rows}`])}>
+        {drawBoxes(crossword)}
+      </div>
     }
     <a href={`/${metadata.id}`}>
       {metadata.title || 'Untitled'}
