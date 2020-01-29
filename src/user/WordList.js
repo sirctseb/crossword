@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
@@ -22,61 +22,55 @@ const enhance = compose(
   Wait,
 );
 
-class WordList extends Component {
-  state = { newValue: '' }
+const WordList = ({ wordlist, firebase, path }) => {
+  const [newValue, setNewValue] = useState('');
 
-  componentDidMount() {
-    this.fbRef = this.props.firebase.ref().child(this.props.path);
-  }
+  const [fbRef] = useState(firebase.ref().child(path));
 
-  handleNewValueChange = ({ target: { value } }) => this.setState({ newValue: value })
-  handleNewValueAdd = () => {
-    const { newValue } = this.state;
+  const handleNewValueChange = ({ target: { value } }) => setNewValue(value);
+
+  const handleNewValueAdd = () => {
     if (newValue.length > 0) {
-      this.fbRef.push({
-        word: newValue,
-      });
+      fbRef.push({ word: newValue });
     }
-    this.setState({ newValue: '' });
-  }
-  handleDelete = key => this.fbRef.child(key).remove()
+    setNewValue('');
+  };
 
-  render() {
-    return (
-      <div className={bem()}>
-        <div className={bem('title')}>
-                    Word List
-        </div>
-        <div className={bem('list')}>
-          {
-            Object.entries(this.props.wordlist).map(([key, { word }]) => (
-              <div className={bem('entry')} key={key}>
-                {word}
-                <div className={bem('delete')}
-                  onClick={() => this.handleDelete(key)}>
-                                    -
-                </div>
-              </div>
-            ))
-          }
-        </div>
-        <div className={bem('add')}>
-          <input value={this.state.newValue}
-            onChange={this.handleNewValueChange} />
-          <div onClick={this.handleNewValueAdd}>
-                        +
-          </div>
-        </div>
+  const handleDelete = key => fbRef.child(key).remove();
+
+  return (
+    <div className={bem()}>
+      <div className={bem('title')}>
+        Word List
       </div>
-    );
-  }
-}
+      <div className={bem('list')}>
+        {
+          Object.entries(wordlist).map(([key, { word }]) => (
+            <div className={bem('entry')} key={key}>
+              {word}
+              <div className={bem('delete')}
+                onClick={() => handleDelete(key)}>
+                -
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div className={bem('add')}>
+        <input value={newValue} onChange={handleNewValueChange} />
+        <div onClick={handleNewValueAdd}> + </div>
+      </div>
+    </div>
+  );
+};
 
 WordList.propTypes = {
   wordlist: PropTypes.objectOf(PropTypes.shape({
     word: PropTypes.string.isRequired,
     usedBy: PropTypes.objectOf(PropTypes.bool),
   })).isRequired,
+  firebase: PropTypes.object.isRequired,
+  path: PropTypes.string.isRequired,
 };
 
 export default enhance(WordList);
