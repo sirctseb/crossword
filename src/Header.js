@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { withFirebase } from 'react-redux-firebase';
-import { withRouter } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useFirebase } from 'react-redux-firebase';
+import { useHistory } from 'react-router-dom';
 import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
 
+import { getAuth } from './selectors';
 import firebaseAuthConfig from '../config/firebaseAuth';
 
-const Header = ({ auth, firebase, history }) => {
+const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
+  const history = useHistory();
+  const firebase = useFirebase();
+  const auth = useSelector(getAuth);
 
   const handleShowLogin = () => {
     setShowLogin(true);
@@ -79,14 +81,4 @@ const Header = ({ auth, firebase, history }) => {
   );
 };
 
-Header.propTypes = {
-  auth: PropTypes.object.isRequired,
-  firebase: PropTypes.object.isRequired,
-  history: PropTypes.object.isRequired,
-};
-
-export default compose(
-  withFirebase,
-  withRouter,
-  connect(({ firebase: { auth } }) => ({ auth })),
-)(Header);
+export default Header;
