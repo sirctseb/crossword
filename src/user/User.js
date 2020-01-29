@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
@@ -11,23 +11,17 @@ import UserSection from './UserSection';
 
 const bem = bemNamesFactory('user');
 
-class User extends Component {
-  render() {
-    const { userId } = this.props;
-    return (
-      <div className={bem()}>
-        <UserSection>
-          <PreviewList userId={userId}>
-                        My Crosswords
-          </PreviewList>
-        </UserSection>
-        <UserSection>
-          <WordList userId={userId} />
-        </UserSection>
-      </div>
-    );
-  }
-}
+const User = ({ userId }) =>
+  <div className={bem()}>
+    <UserSection>
+      <PreviewList userId={userId}>
+        My Crosswords
+      </PreviewList>
+    </UserSection>
+    <UserSection>
+      <WordList userId={userId} />
+    </UserSection>
+  </div>;
 
 User.propTypes = {
   userId: PropTypes.string.isRequired,
