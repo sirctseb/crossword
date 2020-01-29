@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { firebaseConnect } from 'react-redux-firebase';
@@ -21,25 +21,19 @@ const enhance = compose(
   Wait,
 );
 
-class PreviewList extends Component {
-  render() {
-    const { crosswords, children } = this.props;
-    return (
-      <div className={bem()}>
-        <div className={bem('title')}>
-          { children }
-        </div>
-        <div className={bem('list')}>
-          {
-            Object.keys(crosswords).map(id =>
-              <CrosswordPreview id={id} key={id}
-                {...crosswords[id]} />)
-          }
-        </div>
-      </div>
-    );
-  }
-}
+const PreviewList = ({ crosswords, children }) =>
+  <div className={bem()}>
+    <div className={bem('title')}>
+      { children }
+    </div>
+    <div className={bem('list')}>
+      {
+        Object.keys(crosswords).map(id =>
+          <CrosswordPreview id={id} key={id}
+            {...crosswords[id]} />)
+      }
+    </div>
+  </div>;
 
 PreviewList.propTypes = {
   crosswords: PropTypes.object.isRequired,
