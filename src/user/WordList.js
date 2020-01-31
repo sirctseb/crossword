@@ -1,30 +1,22 @@
 import React, { useState } from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import { useSelector } from 'react-redux';
+import { useFirebaseConnect, useFirebase } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
 import { getWordlist } from './selectors';
-import Wait from '../Wait';
 
 const bem = bemNamesFactory('word-list');
 
-const emptyWordList = {};
-const enhance = compose(
-  firebaseConnect(({ userId }) => ([
-    `/users/${userId}/wordlist`,
-  ])),
-  connect((state, props) => ({
-    wordlist: getWordlist(state, { userId: props.userId }) || emptyWordList,
-    path: `/users/${props.userId}/wordlist`,
-  })),
-  Wait,
-);
+const WordList = ({ userId }) => {
+  const path = `/users/${userId}/wordlist`;
 
-const WordList = ({ wordlist, firebase, path }) => {
+  const firebase = useFirebase();
+  useFirebaseConnect([path], [userId]);
+  const wordlist = useSelector(getWordlist);
+
+
   const [newValue, setNewValue] = useState('');
-
   const [fbRef] = useState(firebase.ref().child(path));
 
   const handleNewValueChange = ({ target: { value } }) => setNewValue(value);
@@ -65,12 +57,7 @@ const WordList = ({ wordlist, firebase, path }) => {
 };
 
 WordList.propTypes = {
-  wordlist: PropTypes.objectOf(PropTypes.shape({
-    word: PropTypes.string.isRequired,
-    usedBy: PropTypes.objectOf(PropTypes.bool),
-  })).isRequired,
-  firebase: PropTypes.object.isRequired,
-  path: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
 };
 
-export default enhance(WordList);
+export default WordList;

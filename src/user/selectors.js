@@ -15,7 +15,8 @@ export const getUserCrosswords = createSelector(
   userData => get(userData, 'crosswords'),
 );
 
+const emptyWordlist = {};
 export const getWordlist = createSelector(
   [getUserData],
-  userData => get(userData, 'wordlist'),
+  userData => get(userData, 'wordlist', emptyWordlist),
 );
