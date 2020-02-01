@@ -12,7 +12,7 @@ export const getUserData = createSelector(
 
 export const getUserCrosswords = createSelector(
   [getUserData],
-  userData => get(userData, 'crosswords'),
+  userData => get(userData, 'crosswords', []),
 );
 
 const emptyWordlist = {};

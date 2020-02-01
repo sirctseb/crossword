@@ -1,28 +1,19 @@
 import React from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import { useSelector } from 'react-redux';
+import { useFirebaseConnect } from 'react-redux-firebase';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
 import { getUserCrosswords } from './selectors';
-import Wait from '../Wait';
 import CrosswordPreview from './CrosswordPreview';
 
 const bem = bemNamesFactory('preview-list');
 
-const enhance = compose(
-  firebaseConnect(props => ([
-    `users/${props.userId}/crosswords`,
-  ])),
-  connect((state, props) => ({
-    crosswords: getUserCrosswords(state, props),
-  })),
-  Wait,
-);
+const PreviewList = ({ userId, children }) => {
+  useFirebaseConnect(`users/${userId}/crosswords`);
+  const crosswords = useSelector(getUserCrosswords);
 
-const PreviewList = ({ crosswords, children }) =>
-  <div className={bem()}>
+  return <div className={bem()}>
     <div className={bem('title')}>
       { children }
     </div>
@@ -34,9 +25,10 @@ const PreviewList = ({ crosswords, children }) =>
       }
     </div>
   </div>;
-
-PreviewList.propTypes = {
-  crosswords: PropTypes.object.isRequired,
 };
 
-export default enhance(PreviewList);
+PreviewList.propTypes = {
+  userId: PropTypes.string.isRequired,
+};
+
+export default PreviewList;
