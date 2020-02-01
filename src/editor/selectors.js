@@ -5,14 +5,16 @@ import { ACROSS, DOWN } from './constants';
 
 const getEditor = state => state.editor;
 
-const getCrosswords = state => state.firebase.data.crosswords;
+const getCrosswords = state => get(state, 'firebase.data.crosswords');
 
 export const getCrosswordId = (state, { crosswordId }) => crosswordId;
 
-export const getCrossword = createSelector(
+export const makeGetCrossword = () => createSelector(
   [getCrosswords, getCrosswordId],
   (crosswords, id) => crosswords && crosswords[id],
 );
+
+export const getCrossword = makeGetCrossword();
 
 export const getThemeEntries = createSelector(
   [getCrossword],

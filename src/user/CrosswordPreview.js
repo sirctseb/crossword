@@ -1,23 +1,13 @@
-import React from 'react';
-import { compose } from 'redux';
-import { connect } from 'react-redux';
-import { firebaseConnect } from 'react-redux-firebase';
+import React, { useMemo } from 'react';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { useFirebaseConnect } from 'react-redux-firebase';
 import { bemNamesFactory } from 'bem-names';
 import { get } from 'lodash';
 
-import * as selectors from '../editor/selectors';
+import { makeGetCrossword } from '../editor/selectors';
 
 const bem = bemNamesFactory('crossword-preview');
-
-const enhance = compose(
-  firebaseConnect(({ id }) => ([
-    `/crosswords/${id}`,
-  ])),
-  connect((state, props) => ({
-    crossword: selectors.getCrossword(state, { crosswordId: props.id }),
-    metadata: props,
-  })),
-);
 
 const drawBoxes = ({ rows, boxes }) => {
   const rowElements = [];
@@ -34,16 +24,34 @@ const drawBoxes = ({ rows, boxes }) => {
   return rowElements;
 };
 
-export default enhance(({ metadata, crossword }) => (
-  <div className={bem()}>
+const CrosswordPreview = ({ id, title }) => {
+  useFirebaseConnect(`/crosswords/${id}`);
+  // TODO wouldn't this be functionally equivalent to
+  // const getCrossword = useState(makeGetCrossword());
+  const getCrossword = useMemo(makeGetCrossword, []);
+  // TODO wait what? Couldn't we curry the id when we make the selector?
+  const crossword = useSelector(state => getCrossword(state, { crosswordId: id }));
+
+  return <div className={bem()}>
     {
       crossword &&
       <div className={bem('grid', [`size-${crossword.rows}`])}>
         {drawBoxes(crossword)}
       </div>
     }
-    <a href={`/${metadata.id}`}>
-      {metadata.title || 'Untitled'}
+    <a href={`/${id}`}>
+      { title }
     </a>
-  </div>
-));
+  </div>;
+};
+
+CrosswordPreview.defaultProps = {
+  title: 'Untitled',
+};
+
+CrosswordPreview.propTypes = {
+  id: PropTypes.string.isRequired,
+  title: PropTypes.string,
+};
+
+export default CrosswordPreview;
