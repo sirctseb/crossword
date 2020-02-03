@@ -1,20 +1,24 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
-import { withRouter } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import UndoHistory from '../../undo/UndoHistory';
 import FirebaseChange from '../../undo/FirebaseChange';
 
-import * as selectors from '../selectors';
+import { getThemeEntries, getCurrentAnswers } from '../selectors';
 import ThemeEntryList from './ThemeEntryList';
 import ThemeEntryAddition from './ThemeEntryAddition';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 const bem = bemNamesFactory('theme-entries');
 
-const ThemeEntries = ({ entries, currentAnswers, fbRef }) => {
+const ThemeEntries = ({ fbRef }) => {
+  const params = useParams();
+  const entries = useSelector(state => getThemeEntries(state, params));
+  const currentAnswers = useSelector(state => getCurrentAnswers(state, params));
+
   const onAdd = text =>
     undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
 
@@ -35,12 +39,7 @@ const ThemeEntries = ({ entries, currentAnswers, fbRef }) => {
 };
 
 ThemeEntries.propTypes = {
-  entries: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentAnswers: PropTypes.arrayOf(PropTypes.string).isRequired,
   fbRef: PropTypes.object.isRequired,
 };
 
-export default withRouter(connect((state, props) => ({
-  entries: selectors.getThemeEntries(state, props.match.params),
-  currentAnswers: selectors.getCurrentAnswers(state, props.match.params),
-}))(ThemeEntries));
+export default ThemeEntries;
