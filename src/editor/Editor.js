@@ -18,7 +18,7 @@ import withEditorHotKeys from './withEditorHotKeys';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
-import withPublishedCursor from './withPublishedCursor';
+import usePublishCursor from './usePublishCursor';
 
 const enhance = compose(
   withRouter,
@@ -49,7 +49,6 @@ const enhance = compose(
     dispatch => ({ actions: bindActionCreators(editorActions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
-  withPublishedCursor,
   withEditorHotKeys,
 );
 
@@ -90,8 +89,8 @@ const Editor = ({
   isCursorAnswer,
   isCursorBox,
   labelMap,
-  onBoxFocus,
   clueAddresses: { across: acrossClues, down: downClues },
+  match: { params: { crosswordId } },
 }) => {
   const [fbRef] = useState(firebase.ref());
 
@@ -102,6 +101,12 @@ const Editor = ({
       oldValue,
     ));
   }, [path]);
+
+  const [cursorRef, publishCursor] = usePublishCursor(crosswordId);
+  const handleBoxFocus = useCallback((cursor) => {
+    actions.setCursor(cursor, crosswordId);
+    publishCursor(cursor);
+  }, [crosswordId, cursorRef]);
 
   // TODO revisit this optimization-by-nullifying
   // so yeah, naturally this would change every time the cursor moves.
@@ -169,7 +174,7 @@ const Editor = ({
           makeUndoableChange={makeUndoableChange}
           clueLabel={label}
           onBlock={handleBlock}
-          onBoxFocus={onBoxFocus}
+          onBoxFocus={handleBoxFocus}
           cursor={isCursorBox(row, column)}
           onAfterSetContent={isCursorAnswer(row, column) ? handleAfterSetContent : null}
         />
@@ -240,7 +245,6 @@ Editor.propTypes = {
   cursorAfterAdvancement: PropTypes.object.isRequired,
   clueAddresses: PropTypes.object.isRequired,
   labelMap: PropTypes.object.isRequired,
-  onBoxFocus: PropTypes.func.isRequired,
 };
 
 export default enhance(Editor);
