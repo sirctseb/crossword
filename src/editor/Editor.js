@@ -6,6 +6,7 @@ import { firebaseConnect } from 'react-redux-firebase';
 import { withRouter } from 'react-router-dom';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
+import { GlobalHotKeys } from 'react-hotkeys';
 
 import * as selectors from './selectors';
 import * as editorActions from './actions';
@@ -14,11 +15,11 @@ import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
 import ClueList from './ClueList';
 import Box from './Box';
-import withEditorHotKeys from './withEditorHotKeys';
 import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
 import usePublishCursor from './usePublishCursor';
+import useEditorHotKeys from './useEditorHotKeys';
 
 const enhance = compose(
   withRouter,
@@ -49,7 +50,6 @@ const enhance = compose(
     dispatch => ({ actions: bindActionCreators(editorActions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
-  withEditorHotKeys,
 );
 
 const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
@@ -90,6 +90,8 @@ const Editor = ({
   isCursorBox,
   labelMap,
   clueAddresses: { across: acrossClues, down: downClues },
+  isBlockedBox,
+  size,
   match: { params: { crosswordId } },
 }) => {
   const [fbRef] = useState(firebase.ref());
@@ -107,6 +109,8 @@ const Editor = ({
     actions.setCursor(cursor, crosswordId);
     publishCursor(cursor);
   }, [crosswordId, cursorRef]);
+
+  const hotkeysProps = useEditorHotKeys(editor.cursor.row, editor.cursor.column, size, isBlockedBox, actions.toggleCursorDirection);
 
   // TODO revisit this optimization-by-nullifying
   // so yeah, naturally this would change every time the cursor moves.
@@ -189,46 +193,49 @@ const Editor = ({
   }
 
   return (
-    <div className={bem([`size-${crossword.rows}`])}>
-      <input type='number'
-        className='editor__input'
-        value={crossword.rows}
-        onChange={evt =>
-          undoHistory.add(FirebaseChange.FromValues(
-            fbRef.child(`${path}/rows`),
-            parseInt(evt.target.value, 10),
-            crossword.rows,
-          ))} />
-      <input type='checkbox'
-        className='editor__symmetric'
-        checked={crossword.symmetric}
-        onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
-      <div className={bem('clues-and-grid')}>
-        <div className={bem('clues-wrapper')}>
-          <ClueList direction={ACROSS}
-            clueLabels={acrossClues}
-            clueData={get(crossword.clues, 'across', [])}
-            clueInput={editor.clueInput}
-            actions={actions}
-            onClueBlur={onClueBlur} />
+    // TODO would love if hotkeys was pure hook
+    <GlobalHotKeys {...hotkeysProps}>
+      <div className={bem([`size-${crossword.rows}`])}>
+        <input type='number'
+          className='editor__input'
+          value={crossword.rows}
+          onChange={evt =>
+            undoHistory.add(FirebaseChange.FromValues(
+              fbRef.child(`${path}/rows`),
+              parseInt(evt.target.value, 10),
+              crossword.rows,
+            ))} />
+        <input type='checkbox'
+          className='editor__symmetric'
+          checked={crossword.symmetric}
+          onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
+        <div className={bem('clues-and-grid')}>
+          <div className={bem('clues-wrapper')}>
+            <ClueList direction={ACROSS}
+              clueLabels={acrossClues}
+              clueData={get(crossword.clues, 'across', [])}
+              clueInput={editor.clueInput}
+              actions={actions}
+              onClueBlur={onClueBlur} />
+          </div>
+          <div className={bem('grid')}>
+            {rows}
+          </div>
+          <div className={bem('clues-wrapper')}>
+            <ClueList direction={DOWN}
+              clueLabels={downClues}
+              clueData={get(crossword.clues, 'down', [])}
+              clueInput={editor.clueInput}
+              actions={actions}
+              onClueBlur={onClueBlur} />
+          </div>
         </div>
-        <div className={bem('grid')}>
-          {rows}
-        </div>
-        <div className={bem('clues-wrapper')}>
-          <ClueList direction={DOWN}
-            clueLabels={downClues}
-            clueData={get(crossword.clues, 'down', [])}
-            clueInput={editor.clueInput}
-            actions={actions}
-            onClueBlur={onClueBlur} />
-        </div>
+        <Suggestions />
+        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
+        <button onClick={() => undoHistory.undo()}>Undo</button>
+        <button onClick={() => undoHistory.redo()}>Redo</button>
       </div>
-      <Suggestions />
-      <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
-      <button onClick={() => undoHistory.undo()}>Undo</button>
-      <button onClick={() => undoHistory.redo()}>Redo</button>
-    </div>
+    </GlobalHotKeys>
   );
 };
 
