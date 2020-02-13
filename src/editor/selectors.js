@@ -7,7 +7,7 @@ const getEditor = state => state.editor;
 
 const getCrosswords = state => get(state, 'firebase.data.crosswords');
 
-export const getCrosswordId = (state, { crosswordId }) => crosswordId;
+export const getCrosswordId = (state, { id }) => id;
 
 export const makeGetCrossword = () => createSelector(
   [getCrosswords, getCrosswordId],

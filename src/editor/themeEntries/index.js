@@ -2,7 +2,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
-import { useParams } from 'react-router-dom';
 
 import UndoHistory from '../../undo/UndoHistory';
 import FirebaseChange from '../../undo/FirebaseChange';
@@ -14,10 +13,9 @@ import ThemeEntryAddition from './ThemeEntryAddition';
 const undoHistory = UndoHistory.getHistory('crossword');
 const bem = bemNamesFactory('theme-entries');
 
-const ThemeEntries = ({ fbRef }) => {
-  const params = useParams();
-  const entries = useSelector(state => getThemeEntries(state, params));
-  const currentAnswers = useSelector(state => getCurrentAnswers(state, params));
+const ThemeEntries = ({ fbRef, id }) => {
+  const entries = useSelector(state => getThemeEntries(state, { id }));
+  const currentAnswers = useSelector(state => getCurrentAnswers(state, { id }));
 
   const onAdd = text =>
     undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));

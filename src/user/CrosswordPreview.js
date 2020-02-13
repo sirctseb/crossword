@@ -30,7 +30,7 @@ const CrosswordPreview = ({ id, title }) => {
   // const getCrossword = useState(makeGetCrossword());
   const getCrossword = useMemo(makeGetCrossword, []);
   // TODO wait what? Couldn't we curry the id when we make the selector?
-  const crossword = useSelector(state => getCrossword(state, { crosswordId: id }));
+  const crossword = useSelector(state => getCrossword(state, { id }));
 
   return <div className={bem()}>
     {

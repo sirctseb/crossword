@@ -13,7 +13,9 @@ export default (
           <User />
         </Route>
         <Route path='/:crosswordId'>
-          <Editor />
+          {
+            ({ match: { params: { crosswordId } } }) => <Editor id={crosswordId} />
+          }
         </Route>
       </Switch>
     </App>

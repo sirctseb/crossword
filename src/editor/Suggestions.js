@@ -1,5 +1,4 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { bemNamesFactory } from 'bem-names';
 
@@ -19,9 +18,8 @@ const renderSuggestions = suggestions =>
       no matches
     </div>);
 
-const Suggestions = () => {
-  const params = useParams();
-  const { across, down } = useSelector(state => getAmendedSuggestions(state, params));
+const Suggestions = ({ id }) => {
+  const { across, down } = useSelector(state => getAmendedSuggestions(state, { id }));
 
   return (
     <div className={bem()}>

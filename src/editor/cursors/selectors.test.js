@@ -19,7 +19,7 @@ describe('cursor selectors', () => {
   describe('getCursors', () => {
     it('returns reference to the cursors for the crossword id', () => {
       const cursors = {};
-      expect(test.getCursors({ firebase: { data: { cursors: { cwid: cursors } } } }, { crosswordId: 'cwid' })).to.equal(cursors);
+      expect(test.getCursors({ firebase: { data: { cursors: { cwid: cursors } } } }, { id: 'cwid' })).to.equal(cursors);
     });
   });
 
@@ -31,7 +31,7 @@ describe('cursor selectors', () => {
       };
       expect(test.getRemoteCursors(
         { firebase: { data: { cursors: { cwid: cursors } } } },
-        { crosswordId: 'cwid', cursorId: 'localId' },
+        { id: 'cwid', cursorId: 'localId' },
       )).to.deep.equal({
         remoteId: 'b',
       });

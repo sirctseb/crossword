@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, bindActionCreators } from 'redux';
 import { firebaseConnect } from 'react-redux-firebase';
-import { withRouter } from 'react-router-dom';
 import { get } from 'lodash';
 import { bemNamesFactory } from 'bem-names';
 import { GlobalHotKeys } from 'react-hotkeys';
@@ -22,18 +21,17 @@ import usePublishCursor from './usePublishCursor';
 import useEditorHotKeys from './useEditorHotKeys';
 
 const enhance = compose(
-  withRouter,
-  firebaseConnect(props => ([
-    `crosswords/${props.match.params.crosswordId}`,
+  firebaseConnect(({ id }) => ([
+    `crosswords/${id}`,
   ])),
   connect(
-    (state, { match: { params: props } }) =>
+    (state, props) =>
       (selectors.getCrossword(state, props) ?
         ({
           crossword: selectors.getCrossword(state, props),
           acrossPattern: selectors.getAcrossPattern(state, props),
           downPattern: selectors.getDownPattern(state, props),
-          path: `crosswords/${props.crosswordId}`,
+          path: `crosswords/${props.id}`,
           editor: state.editor,
           size: selectors.getSize(state, props),
           cursorContent: selectors.getCursorContent(state, props),
@@ -92,7 +90,7 @@ const Editor = ({
   clueAddresses: { across: acrossClues, down: downClues },
   isBlockedBox,
   size,
-  match: { params: { crosswordId } },
+  id: crosswordId,
 }) => {
   const [fbRef] = useState(firebase.ref());
 
@@ -230,8 +228,8 @@ const Editor = ({
               onClueBlur={onClueBlur} />
           </div>
         </div>
-        <Suggestions />
-        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} />
+        <Suggestions id={crosswordId}/>
+        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} id={crosswordId} />
         <button onClick={() => undoHistory.undo()}>Undo</button>
         <button onClick={() => undoHistory.redo()}>Redo</button>
       </div>
