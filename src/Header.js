@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useFirebase } from 'react-redux-firebase';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
 
 import { getAuth } from './selectors';
@@ -63,9 +63,9 @@ const Header = () => {
         }
         {
           !auth.isEmpty &&
-          <a className='header__nav-link' href={'/user'}>
+          <Link className='header__nav-link' to={'/user'}>
             user
-          </a>
+          </Link>
         }
       </nav>
       {

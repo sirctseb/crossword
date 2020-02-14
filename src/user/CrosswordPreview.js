@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useFirebaseConnect } from 'react-redux-firebase';
 import { bemNamesFactory } from 'bem-names';
@@ -39,9 +40,9 @@ const CrosswordPreview = ({ id, title }) => {
         {drawBoxes(crossword)}
       </div>
     }
-    <a href={`/${id}`}>
+    <Link to={`/${id}`}>
       { title }
-    </a>
+    </Link>
   </div>;
 };
 
