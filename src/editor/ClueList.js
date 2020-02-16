@@ -13,7 +13,7 @@ const displayNames = {
 const bem = bemNamesFactory('clue-list');
 
 const ClueList = ({
-  onClueBlur, clueLabels, clueData, clueInput, direction, actions: { changeClue },
+  onClueBlur, clueLabels, clueData, clueInput, direction, onChangeClue,
 }) => (
   <div className='clue-list'>
     {displayNames[direction]}
@@ -26,12 +26,12 @@ const ClueList = ({
             className={bem('clue-input')}
             value={(
               row === clueInput.row &&
-                                  column === clueInput.column &&
-                                  clueInput.direction === direction &&
-                                  clueInput.value
+              column === clueInput.column &&
+              clueInput.direction === direction &&
+              clueInput.value
             ) || get(clueData, [row, column], '')}
             onChange={(evt) => {
-              changeClue({
+              onChangeClue({
                 value: evt.target.value, row, column, direction,
               });
             }}
@@ -47,7 +47,7 @@ ClueList.propTypes = {
   clueLabels: propTypes.arrayOf(propTypes.object).isRequired,
   clueData: propTypes.oneOfType([propTypes.object, propTypes.array]).isRequired,
   clueInput: propTypes.object.isRequired,
-  actions: propTypes.object.isRequired,
+  onChangeClue: propTypes.func.isRequired,
   onClueBlur: propTypes.func.isRequired,
 };
 

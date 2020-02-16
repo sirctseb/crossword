@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import dirtyChai from 'dirty-chai';
-import { test } from './selectors';
+import { test } from './derivations';
 
 chai.use(dirtyChai);
 

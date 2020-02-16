@@ -32,7 +32,6 @@ const enhance = compose(
           acrossPattern: selectors.getAcrossPattern(state, props),
           downPattern: selectors.getDownPattern(state, props),
           path: `crosswords/${props.id}`,
-          editor: state.editor,
           size: selectors.getSize(state, props),
           cursorContent: selectors.getCursorContent(state, props),
           isCursorAnswer: selectors.getIsCursorAnswer(state, props),
@@ -75,7 +74,6 @@ const emptyBox = {};
 
 const Editor = ({
   crossword,
-  editor,
   firebase,
   firebase: { set },
   path,
@@ -92,7 +90,10 @@ const Editor = ({
   size,
   id: crosswordId,
 }) => {
+  // TODO this is not state. should be useRef
   const [fbRef] = useState(firebase.ref());
+  const [cursor, setCursor] = useState({ row: 0, column: 0, direction: 'across' });
+  const [clueInput, setClueInput] = useState({ row: 0, column: 0, direction: 'across', value: '' });
 
   const makeUndoableChange = useCallback((localPath, newValue, oldValue) => {
     undoHistory.add(FirebaseChange.FromValues(
@@ -103,12 +104,12 @@ const Editor = ({
   }, [path]);
 
   const [cursorRef, publishCursor] = usePublishCursor(crosswordId);
-  const handleBoxFocus = useCallback((cursor) => {
-    actions.setCursor(cursor, crosswordId);
-    publishCursor(cursor);
+  const handleBoxFocus = useCallback((newCursor) => {
+    setCursor(newCursor);
+    publishCursor(newCursor);
   }, [crosswordId, cursorRef]);
 
-  const hotkeysProps = useEditorHotKeys(editor.cursor.row, editor.cursor.column, size, isBlockedBox, actions.toggleCursorDirection);
+  const hotkeysProps = useEditorHotKeys(cursor.row, cursor.column, size, isBlockedBox, actions.toggleCursorDirection);
 
   // TODO revisit this optimization-by-nullifying
   // so yeah, naturally this would change every time the cursor moves.
@@ -126,14 +127,12 @@ const Editor = ({
   useEffect(() => {
     actions.getSuggestions(acrossPattern);
     actions.getSuggestions(downPattern);
-  }, [editor.cursor.row, editor.cursor.column, cursorContent]);
+  }, [cursor.row, cursor.column, cursorContent]);
 
   const onClueBlur = () => {
     const {
-      clueInput: {
-        direction, row, column, value,
-      },
-    } = editor;
+      direction, row, column, value,
+    } = clueInput;
 
     undoHistory.add(FirebaseChange.FromValues(
       fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
@@ -212,8 +211,8 @@ const Editor = ({
             <ClueList direction={ACROSS}
               clueLabels={acrossClues}
               clueData={get(crossword.clues, 'across', [])}
-              clueInput={editor.clueInput}
-              actions={actions}
+              clueInput={clueInput}
+              onChangeClue={setClueInput}
               onClueBlur={onClueBlur} />
           </div>
           <div className={bem('grid')}>
@@ -223,8 +222,8 @@ const Editor = ({
             <ClueList direction={DOWN}
               clueLabels={downClues}
               clueData={get(crossword.clues, 'down', [])}
-              clueInput={editor.clueInput}
-              actions={actions}
+              clueInput={clueInput}
+              onChangeClue={setClueInput}
               onClueBlur={onClueBlur} />
           </div>
         </div>
