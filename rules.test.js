@@ -54,7 +54,7 @@ describe('crossword', () => {
       [`users/${alice}/crosswords/cw-id`]: {
         title: 'Untitled',
       },
-      // 'permissions/cw-id': { owner: uid },
+      // 'permissions/cw-id': { owner: alice },
     })).to.be.rejected();
   });
 
@@ -80,6 +80,80 @@ describe('crossword', () => {
       },
       'permissions/cw-id': { owner: bob },
     })).to.be.rejected();
+  });
+
+  it('cannot be created without the crossword', () => {
+    const app = authedApp({ uid: alice });
+
+    return expect(app.ref().update({
+      // 'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitled' },
+      [`users/${alice}/crosswords/cw-id`]: {
+        title: 'Untitled',
+      },
+      'permissions/cw-id': { owner: alice },
+    })).to.be.rejected();
+  });
+
+  describe('global editability', () => {
+    describe('as an admin', () => {
+      // TODO would like to assign to an app ref here. does that break parallel tests?
+      describe('when the crossword exists', () => {
+        beforeEach(() =>
+          adminApp().ref().update({
+            'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitled' },
+            [`users/${alice}/crosswords/cw-id`]: {
+              title: 'Untitled',
+            },
+            'permissions/cw-id': { owner: bob },
+          }));
+
+        it('can be established', () => {
+          return expect(adminApp().ref().update({
+            'permissions/cw-id/global': true,
+          })).to.be.fulfilled();
+        });
+      });
+
+      // TODO we want this behavior but it looks like admin accounts
+      // are not subject to the rules. may consider making a service account
+      // that is subject to rules
+      // describe('when the crossword does not exist', () => {
+      //   it('cannot be established', () =>
+      //     expect(adminApp().ref().update({
+      //       'permissions/cw-id/global': true,
+      //     })).to.be.rejected());
+      // });
+    });
+
+    describe('as a user when the crossword exists', () => {
+      beforeEach(() =>
+        adminApp().ref().update({
+          'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitled' },
+          [`users/${alice}/crosswords/cw-id`]: {
+            title: 'Untitled',
+          },
+          'permissions/cw-id': { owner: bob },
+        }));
+
+      it('cannot be set', () => {
+        return expect(authedApp({ uid: alice }).ref().update({
+          'permissions/cw-id/global': true,
+        })).to.be.rejected();
+      });
+
+      describe('when it is already global', () => {
+        beforeEach(() =>
+          adminApp().ref().update({
+            'permissions/cw-id/global': true,
+          }));
+
+        it('cannot be unset', () => {
+          return expect(authedApp({ uid: alice }).ref().update({
+            'permissions/cw-id/global': false,
+          })).to.be.rejected();
+        });
+      });
+    });
   });
 });
 
