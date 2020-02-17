@@ -310,4 +310,18 @@ describe('cursor', () => {
       })).to.be.rejected();
     });
   });
+
+  describe('communal crossword', () => {
+    // TODO yeah we should really have a service account for these things
+    // the only interesting test here is that users can write this stuff
+    it('can be set by an admin', () =>
+      expect(adminApp().ref().update({
+        'communityCrossword/current': 'cw-id',
+      })).to.be.fulfilled());
+
+    it('cannot be set by non-admin', () =>
+      expect(authedApp({ uid: alice }).ref().update({
+        'communityCrossword/current': 'cw-id',
+      })).to.be.rejected());
+  });
 });
