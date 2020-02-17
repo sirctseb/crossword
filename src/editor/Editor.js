@@ -8,7 +8,7 @@ import { bemNamesFactory } from 'bem-names';
 import { GlobalHotKeys } from 'react-hotkeys';
 
 import * as selectors from './selectors';
-import * as editorActions from './actions';
+import * as suggestionsActions from '../suggestions/actions';
 import { DOWN, ACROSS } from './constants';
 import UndoHistory from '../undo/UndoHistory';
 import FirebaseChange from '../undo/FirebaseChange';
@@ -19,32 +19,21 @@ import Suggestions from './Suggestions';
 import Wait from '../Wait';
 import usePublishCursor from './usePublishCursor';
 import useEditorHotKeys from './useEditorHotKeys';
+import calculateDerivedData from './derivations';
 
 const enhance = compose(
   firebaseConnect(({ id }) => ([
     `crosswords/${id}`,
   ])),
   connect(
-    (state, props) =>
-      (selectors.getCrossword(state, props) ?
-        ({
-          crossword: selectors.getCrossword(state, props),
-          acrossPattern: selectors.getAcrossPattern(state, props),
-          downPattern: selectors.getDownPattern(state, props),
-          path: `crosswords/${props.id}`,
-          size: selectors.getSize(state, props),
-          cursorContent: selectors.getCursorContent(state, props),
-          isCursorAnswer: selectors.getIsCursorAnswer(state, props),
-          isCursorBox: selectors.getIsCursorBox(state, props),
-          isBlockedBox: selectors.getIsBlockedBox(state, props),
-          cursorAfterAdvancement: selectors.getCursorAfterAdvancement(state, props),
-          clueAddresses: selectors.getClueAddresses(state, props),
-          labelMap: selectors.getLabelMap(state, props),
-        }) :
-        ({
-          loading: true,
-        })),
-    dispatch => ({ actions: bindActionCreators(editorActions, dispatch) }),
+    (state, props) => (selectors.getCrossword(state, props) ?
+      ({
+        crossword: selectors.getCrossword(state, props),
+      }) :
+      ({
+        loading: true,
+      })),
+    dispatch => ({ actions: bindActionCreators(suggestionsActions, dispatch) }),
   ),
   C => Wait(C, { toggle: ({ loading }) => !loading }),
 );
@@ -76,24 +65,35 @@ const Editor = ({
   crossword,
   firebase,
   firebase: { set },
-  path,
-  cursorContent,
-  cursorAfterAdvancement,
-  acrossPattern,
-  downPattern,
+
   actions,
-  isCursorAnswer,
-  isCursorBox,
-  labelMap,
-  clueAddresses: { across: acrossClues, down: downClues },
-  isBlockedBox,
-  size,
+
   id: crosswordId,
 }) => {
   // TODO this is not state. should be useRef
   const [fbRef] = useState(firebase.ref());
   const [cursor, setCursor] = useState({ row: 0, column: 0, direction: 'across' });
-  const [clueInput, setClueInput] = useState({ row: 0, column: 0, direction: 'across', value: '' });
+  const [clueInput, setClueInput] = useState({
+    row: 0, column: 0, direction: 'across', value: '',
+  });
+
+  const path = `crosswords/${crosswordId}`;
+
+  const {
+    cursorContent,
+    cursorAfterAdvancement,
+    acrossPattern,
+    downPattern,
+    isCursorAnswer,
+    isCursorBox,
+    labelMap,
+    clueAddresses: { across: acrossClues, down: downClues },
+    isBlockedBox,
+    size,
+    themeSuggestions,
+    currentAnswers,
+  } = calculateDerivedData(crossword, cursor);
+
 
   const makeUndoableChange = useCallback((localPath, newValue, oldValue) => {
     undoHistory.add(FirebaseChange.FromValues(
@@ -105,11 +105,17 @@ const Editor = ({
 
   const [cursorRef, publishCursor] = usePublishCursor(crosswordId);
   const handleBoxFocus = useCallback((newCursor) => {
-    setCursor(newCursor);
+    // TODO so box only gives us {row, column}, and direction is undefined after this is called
+    // so who's responsible for merging that in now? if we close over the direction value, then
+    // we have to recompute this callback on direction change. fine i guess, but surprising.
+    // but the alternative is to make the box merge in the direction? not the box's responsibility
+    // so now we rerender every box on direction change. ok i guess. this wasn't a problem
+    // with reducers
+    setCursor({ direction: cursor.direction, ...newCursor });
     publishCursor(newCursor);
-  }, [crosswordId, cursorRef]);
+  }, [crosswordId, cursorRef, cursor.direction]);
 
-  const hotkeysProps = useEditorHotKeys(cursor.row, cursor.column, size, isBlockedBox, actions.toggleCursorDirection);
+  const hotkeysProps = useEditorHotKeys(cursor, size, isBlockedBox, setCursor);
 
   // TODO revisit this optimization-by-nullifying
   // so yeah, naturally this would change every time the cursor moves.
@@ -139,7 +145,7 @@ const Editor = ({
       value,
       get(crossword, `clues.${direction}.${row}.${column}`),
     ));
-    actions.changeClue({
+    setClueInput({
       value: null,
       row: null,
       column: null,
@@ -227,8 +233,11 @@ const Editor = ({
               onClueBlur={onClueBlur} />
           </div>
         </div>
-        <Suggestions id={crosswordId}/>
-        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')} id={crosswordId} />
+        <Suggestions id={crosswordId} themeSuggestions={themeSuggestions}
+          acrossPattern={acrossPattern} downPattern={downPattern} />
+        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')}
+          themeEntries={Object.keys(crossword.themeEntries) || []}
+          currentAnswers={currentAnswers} />
         <button onClick={() => undoHistory.undo()}>Undo</button>
         <button onClick={() => undoHistory.redo()}>Redo</button>
       </div>
@@ -238,17 +247,6 @@ const Editor = ({
 
 Editor.propTypes = {
   crossword: PropTypes.object.isRequired,
-  acrossPattern: PropTypes.string.isRequired,
-  downPattern: PropTypes.string.isRequired,
-  path: PropTypes.string.isRequired,
-  editor: PropTypes.object.isRequired,
-  isCursorAnswer: PropTypes.func.isRequired,
-  actions: PropTypes.object.isRequired,
-  isCursorBox: PropTypes.func.isRequired,
-  cursorContent: PropTypes.string,
-  cursorAfterAdvancement: PropTypes.object.isRequired,
-  clueAddresses: PropTypes.object.isRequired,
-  labelMap: PropTypes.object.isRequired,
 };
 
 export default enhance(Editor);

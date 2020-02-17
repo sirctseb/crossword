@@ -1,29 +1,24 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
 import UndoHistory from '../../undo/UndoHistory';
 import FirebaseChange from '../../undo/FirebaseChange';
 
-import { getThemeEntries, getCurrentAnswers } from '../selectors';
 import ThemeEntryList from './ThemeEntryList';
 import ThemeEntryAddition from './ThemeEntryAddition';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 const bem = bemNamesFactory('theme-entries');
 
-const ThemeEntries = ({ fbRef, id }) => {
-  const entries = useSelector(state => getThemeEntries(state, { id }));
-  const currentAnswers = useSelector(state => getCurrentAnswers(state, { id }));
-
+const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
   const onAdd = text =>
     undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
 
   const onDelete = text =>
     undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
 
-  const annotatedEntries = entries.map(entry => ({
+  const annotatedEntries = themeEntries.map(entry => ({
     text: entry,
     used: currentAnswers.includes(entry),
   }));
@@ -38,6 +33,8 @@ const ThemeEntries = ({ fbRef, id }) => {
 
 ThemeEntries.propTypes = {
   fbRef: PropTypes.object.isRequired,
+  themeEntries: PropTypes.arrayOf(PropTypes.string).isRequired,
+  currentAnswers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default ThemeEntries;

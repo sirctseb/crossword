@@ -1,4 +1,5 @@
 import UndoHistory from '../undo/UndoHistory';
+import { ACROSS, DOWN } from './constants';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
@@ -12,7 +13,7 @@ const keyMap = {
   toggleCursorDirection: ';',
 };
 
-export default (row, column, size, isBlockedBox, toggleCursorDirection) => {
+export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
   const makeMoveCursor = vector => () => {
     // TODO there should be a selector for this
     if (!document.activeElement.classList.contains('box')) return;
@@ -24,6 +25,7 @@ export default (row, column, size, isBlockedBox, toggleCursorDirection) => {
     columnIter += vector[1];
     while (rowIter >= 0 && columnIter >= 0 && rowIter < size && columnIter < size) {
       if (!isBlockedBox(rowIter, columnIter)) {
+        // TODO might have to revisit this dom-first focus definition with more than one Editor
         document.querySelector(`.box--at-${rowIter}-${columnIter}`).focus();
         return;
       }
@@ -37,6 +39,7 @@ export default (row, column, size, isBlockedBox, toggleCursorDirection) => {
   const left = makeMoveCursor([0, -1]);
   const up = makeMoveCursor([-1, 0]);
   const down = makeMoveCursor([1, 0]);
+  const toggleCursorDirection = () => setCursor({ row, column, direction: direction === ACROSS ? DOWN : ACROSS });
 
   const handlers = {
     undo: (evt) => {

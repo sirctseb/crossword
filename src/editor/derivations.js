@@ -273,7 +273,7 @@ const calculateCursorAfterAdvancement = (
   findNextBlank(crossword, row, column, direction, addresses) ||
   { row, column };
 
-export const calculateDerivedData = (crossword, cursor) => {
+export default (crossword, cursor) => {
   const cursorContent = get(crossword, ['boxes', cursor.row, cursor.column, 'content']);
   const isCursorAnswer = calculateIsCursorAnswer(crossword, cursor);
   const isCursorBox = (row, column) => row === cursor.row && column === cursor.column;
@@ -285,7 +285,7 @@ export const calculateDerivedData = (crossword, cursor) => {
   const acrossPattern = calculateAcrossPattern(cursor, crossword);
   const downPattern = calculateDownPattern(cursor, crossword);
   const themeSuggestions = calculateThemeSuggestions(
-    crossword.themeEntries,
+    Object.keys(crossword.themeEntries || {}),
     acrossPattern,
     downPattern
   );
@@ -302,5 +302,7 @@ export const calculateDerivedData = (crossword, cursor) => {
     cursorAfterAdvancement,
     themeSuggestions,
     currentAnswers,
+    acrossPattern,
+    downPattern,
   };
 };

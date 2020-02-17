@@ -1,8 +1,8 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
 import { bemNamesFactory } from 'bem-names';
 
-import { getAmendedSuggestions } from './selectors';
+import useSuggestions from '../suggestions/useSuggestions';
+import { ACROSS, DOWN } from './constants';
 
 const bem = bemNamesFactory('suggestions');
 
@@ -18,8 +18,17 @@ const renderSuggestions = suggestions =>
       no matches
     </div>);
 
-const Suggestions = ({ id }) => {
-  const { across, down } = useSelector(state => getAmendedSuggestions(state, { id }));
+const Suggestions = ({ themeSuggestions, acrossPattern, downPattern }) => {
+  const globalSuggestions = useSuggestions(acrossPattern, downPattern);
+
+  const across = [
+    ...themeSuggestions[ACROSS],
+    ...globalSuggestions[ACROSS],
+  ];
+  const down = [
+    ...themeSuggestions[DOWN],
+    ...globalSuggestions[DOWN],
+  ];
 
   return (
     <div className={bem()}>

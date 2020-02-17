@@ -8,9 +8,9 @@ import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import firebase from 'firebase';
 import { configure } from 'react-hotkeys';
+import suggestionsReducer from './suggestions/reducer';
 
 import routes from './routes';
-import editorReducer from './editor/reducer';
 
 import './styles/main.scss';
 
@@ -34,7 +34,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(
   combineReducers({
     firebase: firebaseReducer,
-    editor: editorReducer,
+    suggestions: suggestionsReducer,
   }),
   composeEnhancers(applyMiddleware(createLogger(), thunk)),
 );

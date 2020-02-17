@@ -248,7 +248,7 @@ describe('selectors', () => {
           '--',
           '--',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+        const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
         expect(subject).to.be.null();
@@ -260,7 +260,7 @@ describe('selectors', () => {
           '---',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+        const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
         expect(subject.row).to.equal(0);
@@ -273,7 +273,7 @@ describe('selectors', () => {
           '-!-',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+        const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
         expect(subject.row).to.equal(1);
@@ -286,7 +286,7 @@ describe('selectors', () => {
           '---',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+        const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 2, 'down', addresses, isBang);
         expect(subject.row).to.equal(0);
@@ -299,7 +299,7 @@ describe('selectors', () => {
           '---',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).down;
+        const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
         expect(subject).to.be.null();
@@ -313,7 +313,7 @@ describe('selectors', () => {
           '!--',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).across;
+        const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 1, 'across', addresses, isBang);
         expect(subject.row).to.equal(1);
@@ -326,7 +326,7 @@ describe('selectors', () => {
           'b!-',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).across;
+        const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 0, 'across', addresses, isBang);
         expect(subject.row).to.equal(1);
@@ -339,7 +339,7 @@ describe('selectors', () => {
           '---',
           '---',
         ]);
-        const addresses = test.getClueAddresses.resultFunc(crossword).across;
+        const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 2, 'across', addresses, isBang);
         expect(subject.row).to.equal(0);
