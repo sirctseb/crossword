@@ -153,6 +153,22 @@ describe('crossword', () => {
           'crosswords/cw-id/boxes/0/0/content': 'a',
         })).to.be.rejected());
     });
+
+    describe('global', () => {
+      beforeEach(() => adminApp().ref().update({
+        'permissions/cw-id/global': true,
+      }));
+
+      it('can be edited by non-owner, non-collaborator', () =>
+        expect(authedApp({ uid: charlie }).ref().update({
+          'crosswords/cw-id/boxes/0/0/content': 'a',
+        })).to.be.fulfilled());
+
+      it('cannot have invalid data written', () =>
+        expect(authedApp({ uid: alice }).ref().update({
+          'crosswords/cw-id/invalid': 'a',
+        })).to.be.rejected());
+    });
   });
 
   describe('global editability', () => {
