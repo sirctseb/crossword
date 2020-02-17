@@ -94,6 +94,67 @@ describe('crossword', () => {
     })).to.be.rejected();
   });
 
+  describe('collaborators', () => {
+    beforeEach(() => adminApp().ref().update({
+      'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitled' },
+      [`users/${alice}/crosswords/cw-id`]: {
+        title: 'Untitled',
+      },
+      'permissions/cw-id': { owner: alice },
+    }));
+
+    it('can be added by the owner', () =>
+      expect(authedApp({ uid: alice }).ref().update({
+        'permissions/cw-id/collaborators': { [bob]: true },
+      })).to.be.fulfilled());
+
+    it('cannot be added by a non-owner', () =>
+      expect(authedApp({ uid: bob }).ref().update({
+        'permissions/cw-id/collaborators': { [bob]: true },
+      })).to.be.rejected())
+  });
+
+  describe('editing', () => {
+    beforeEach(() => adminApp().ref().update({
+      'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitled' },
+      [`users/${alice}/crosswords/cw-id`]: {
+        title: 'Untitled',
+      },
+      'permissions/cw-id': { owner: alice },
+    }));
+
+    it('can be edited by the owner', () =>
+      expect(authedApp({ uid: alice }).ref().update({
+        'crosswords/cw-id/boxes/0/0/content': 'a',
+      })).to.be.fulfilled());
+
+    it('cannot be edited by a non-owner', () =>
+      expect(authedApp({ uid: bob }).ref().update({
+        'crosswords/cw-id/boxes/0/0/content': 'a',
+      })).to.be.rejected());
+
+    it('cant have invalid data written', () =>
+      expect(authedApp({ uid: alice }).ref().update({
+        'crosswords/cw-id/invalid': 'a',
+      })).to.be.rejected());
+
+    describe('collaborators', () => {
+      beforeEach(() => adminApp().ref().update({
+        'permissions/cw-id/collaborators': { [bob]: true },
+      }));
+
+      it('can be edited by a collaborator', () =>
+        expect(authedApp({ uid: bob }).ref().update({
+          'crosswords/cw-id/boxes/0/0/content': 'a',
+        })).to.be.fulfilled());
+
+      it('cannot be edited by a non-owner, non-collaborator', () =>
+        expect(authedApp({ uid: charlie }).ref().update({
+          'crosswords/cw-id/boxes/0/0/content': 'a',
+        })).to.be.rejected());
+    });
+  });
+
   describe('global editability', () => {
     describe('as an admin', () => {
       // TODO would like to assign to an app ref here. does that break parallel tests?
