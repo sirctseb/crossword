@@ -23,7 +23,8 @@ type Crossword {
 
     read() {
         auth.uid == root.permissions[key()].owner ||
-        root.permissions[key()].collaborators[auth.uid]
+        root.permissions[key()].collaborators[auth.uid] ||
+        root.permissions[key()].global
     }
 
     create() {
@@ -37,7 +38,8 @@ type Crossword {
 
     update() {
         auth.uid == root.permissions[key()].owner ||
-        root.permissions[key()].collaborators[auth.uid]
+        root.permissions[key()].collaborators[auth.uid] ||
+        root.permissions[key()].global
     }
 }
 
