@@ -103,7 +103,8 @@ type Permissions {
 
     create() {
         auth.uid != null &&
-        auth.uid == this.owner
+        auth.uid == this.owner &&
+        root.crosswords[key()] != null
     }
     update() {
         auth.uid == this.owner
@@ -112,11 +113,13 @@ type Permissions {
         auth.uid == this.owner
     }
     validate() {
+        auth.token.isAdmin == true ||
         this.owner == auth.uid &&
         (
             prior(this.owner) == null ||
             this.owner == prior(this.owner)
-        )
+        ) &&
+        this.global == prior(this.global)
     }
 }
 
