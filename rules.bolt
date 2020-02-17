@@ -166,3 +166,18 @@ path /cursors/{cwid} is Cursor[] {
         root.permissions[cwid].collaborators[auth.uid]
     }
 }
+
+type CommunalCrossword {
+  current: CrosswordId
+
+  archive: CrosswordId[]
+
+  write() {
+    return false;
+  }
+  read() {
+    return true;
+  }
+}
+
+path /communalCrossword is CommunalCrossword {}
