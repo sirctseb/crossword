@@ -92,6 +92,10 @@ const Editor = ({
     size,
     themeSuggestions,
     currentAnswers,
+
+    showClues,
+    showSuggestions,
+    showThemeEntries,
   } = calculateDerivedData(crossword, cursor);
 
 
@@ -213,33 +217,43 @@ const Editor = ({
           checked={crossword.symmetric}
           onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
         <div className={bem('clues-and-grid')}>
-          <div className={bem('clues-wrapper')}>
-            <ClueList direction={ACROSS}
-              clueLabels={acrossClues}
-              clueData={get(crossword.clues, 'across', [])}
-              clueInput={clueInput}
-              onChangeClue={setClueInput}
-              onClueBlur={onClueBlur} />
-          </div>
+          {
+            showClues &&
+            <div className={bem('clues-wrapper')}>
+              <ClueList direction={ACROSS}
+                clueLabels={acrossClues}
+                clueData={get(crossword.clues, 'across', [])}
+                clueInput={clueInput}
+                onChangeClue={setClueInput}
+                onClueBlur={onClueBlur} />
+            </div>
+          }
           <div className={bem('grid')}>
             {rows}
           </div>
-          <div className={bem('clues-wrapper')}>
-            <ClueList direction={DOWN}
-              clueLabels={downClues}
-              clueData={get(crossword.clues, 'down', [])}
-              clueInput={clueInput}
-              onChangeClue={setClueInput}
-              onClueBlur={onClueBlur} />
-          </div>
+          {
+            showClues &&
+            <div className={bem('clues-wrapper')}>
+              <ClueList direction={DOWN}
+                clueLabels={downClues}
+                clueData={get(crossword.clues, 'down', [])}
+                clueInput={clueInput}
+                onChangeClue={setClueInput}
+                onClueBlur={onClueBlur} />
+            </div>
+          }
         </div>
-        <Suggestions id={crosswordId} themeSuggestions={themeSuggestions}
-          acrossPattern={acrossPattern} downPattern={downPattern} />
-        <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')}
-          themeEntries={Object.keys(crossword.themeEntries) || []}
-          currentAnswers={currentAnswers} />
-        <button onClick={() => undoHistory.undo()}>Undo</button>
-        <button onClick={() => undoHistory.redo()}>Redo</button>
+        {
+          showSuggestions &&
+          <Suggestions id={crosswordId} themeSuggestions={themeSuggestions}
+            acrossPattern={acrossPattern} downPattern={downPattern} />
+        }
+        {
+          showThemeEntries &&
+          <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')}
+            themeEntries={Object.keys(crossword.themeEntries) || []}
+            currentAnswers={currentAnswers} />
+        }
       </div>
     </GlobalHotKeys>
   );
@@ -247,6 +261,15 @@ const Editor = ({
 
 Editor.propTypes = {
   crossword: PropTypes.object.isRequired,
+  showClues: PropTypes.bool,
+  showSuggestions: PropTypes.bool,
+  showThemeEntries: PropTypes.bool,
+};
+
+Editor.defaultProps = {
+  showClues: true,
+  showSuggestions: true,
+  showThemeEntries: true,
 };
 
 export default enhance(Editor);
