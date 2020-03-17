@@ -37,9 +37,11 @@ type Crossword {
     }
 
     update() {
-        auth.uid == root.permissions[key()].owner ||
-        root.permissions[key()].collaborators[auth.uid] ||
-        root.permissions[key()].global
+        !root.permissions[key()].readonly && (
+          auth.uid == root.permissions[key()].owner ||
+          root.permissions[key()].collaborators[auth.uid] ||
+          root.permissions[key()].global
+        )
     }
 }
 
@@ -102,6 +104,7 @@ type Permissions {
     owner: UserId,
     collaborators: Presence<UserId>,
     global: Boolean | Null,
+    readonly: Boolean | Null,
 
     create() {
         auth.uid != null &&
@@ -121,7 +124,8 @@ type Permissions {
             prior(this.owner) == null ||
             this.owner == prior(this.owner)
         ) &&
-        this.global == prior(this.global)
+        this.global == prior(this.global) &&
+        this.readonly == prior(this.readonly)
     }
 }
 
