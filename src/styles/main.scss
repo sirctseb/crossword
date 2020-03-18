@@ -1,5 +1,12 @@
 @import 'variables';
 
+body {
+  // we use some absolutely positioned elements that fall off-screen
+  // (e.g. previous preview and current preview in communal crossword ui)
+  // that make the page scroll. this prevents that
+  overflow: hidden;
+}
+
 // components
 @import 'box';
 @import 'box-controls';
@@ -15,3 +22,56 @@
 @import 'theme-entry-list';
 @import 'user-section';
 @import 'word-list';
+
+.archive-list {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow-x: scroll;
+  margin-right: 80px;
+
+  &__list {
+    display: flex;
+    justify-content: space-evenly;
+  }
+
+  &__current {
+    position: absolute;
+    right: 0;
+    width: 30px;
+    height: 200px;
+  }
+
+  &__relative-reset {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+
+  &__previews {
+    position: absolute;
+    transition: right 0.3s;
+    right: -90px;
+    z-index: 1;
+    padding: 8px;
+    background-color: white;
+  }
+
+  &__current-actuator {
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+
+    &:hover ~ .archive-list__previews {
+      right: 10px;
+    }
+  }
+}
