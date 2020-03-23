@@ -1,10 +1,9 @@
 const test = require('./testConfig');
+const admin = require('firebase-admin');
 
 const { expect } = require('chai');
 
-// TODO mock initializeApp for index.js if we use it there
 const functions = require('./index.js');
-const admin = require('firebase-admin');
 
 const wrapped = test.wrap(functions.decorateCursor);
 const aliceAuth = {
