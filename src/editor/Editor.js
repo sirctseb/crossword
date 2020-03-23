@@ -68,6 +68,10 @@ const Editor = ({
 
   actions,
 
+  showClues,
+  showSuggestions,
+  showThemeEntries,
+
   id: crosswordId,
 }) => {
   // TODO this is not state. should be useRef
@@ -93,9 +97,6 @@ const Editor = ({
     themeSuggestions,
     currentAnswers,
 
-    showClues,
-    showSuggestions,
-    showThemeEntries,
   } = calculateDerivedData(crossword, cursor);
 
 
