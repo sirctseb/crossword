@@ -252,7 +252,7 @@ const Editor = ({
         {
           showThemeEntries &&
           <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')}
-            themeEntries={Object.keys(crossword.themeEntries) || []}
+            themeEntries={Object.keys(crossword.themeEntries || {})}
             currentAnswers={currentAnswers} />
         }
       </div>
