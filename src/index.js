@@ -6,9 +6,9 @@ import { firebaseReducer, ReactReduxFirebaseProvider } from 'react-redux-firebas
 import { BrowserRouter as Router } from 'react-router-dom';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
-import firebase from 'firebase';
 import { configure } from 'react-hotkeys';
 import suggestionsReducer from './suggestions/reducer';
+import firebase from './firebaseApp';
 
 import routes from './routes';
 
@@ -17,17 +17,6 @@ import './styles/main.scss';
 configure({
   allowCombinationSubmatches: true,
 });
-
-const firebaseConfig = {
-  apiKey: 'AIzaSyCKj_BRXYrNVGLbTlYtq517O7hxpPnZBZ8',
-  authDomain: 'crossword-dev.firebaseapp.com',
-  databaseURL: 'https://crossword-dev.firebaseio.com',
-  projectId: 'crossword-dev',
-  storageBucket: 'crossword-dev.appspot.com',
-  messagingSenderId: '960799145845',
-};
-
-firebase.initializeApp(firebaseConfig);
 
 // eslint-disable-next-line
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
