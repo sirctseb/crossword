@@ -34,7 +34,7 @@ export default () => {
     Communal Crossword
     {
       editing && <CommunalEditLayout onPreviousClick={() => setSelectedCrossword(Selection.none)}>
-        <CrosswordPreview id={archiveList[0]} />
+        <CrosswordPreview id={archiveList[archiveList.length - 1]} />
         <Editor id={current} showSuggestions={false} showThemeEntries={false} showClues={false} />
       </CommunalEditLayout>
     }
