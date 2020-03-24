@@ -69,10 +69,16 @@ describe('finishCommunalCrossword', () => {
         expect(admin.database().ref('/permissions/communal-id/readonly')
           .once('value').then(snapVal)).to.become(true)));
 
-    it('adds the current puzzle to the archive', () =>
-      expect(wrapped({}, aliceContext)).to.be.fulfilled.then(() =>
+    it('adds the current puzzle to the archive', () => {
+      const added = sinon.spy();
+      const crosswordsRef = admin.database().ref('communalCrossword/archive');
+      crosswordsRef.on('child_added', added);
+      return expect(wrapped({}, aliceContext)).to.be.fulfilled.then(() => Promise.all([
+        expect(added).to.have.been.calledOnceWith(sinon.match(snap => snap.val() === 'communal-id')),
         expect(admin.database().ref('/communalCrossword/archive')
-          .once('value').then(snapVal)).to.eventually.contain({ 'communal-id': true })));
+          .once('value').then(snapVal).then(Object.values)).to.eventually.contain('communal-id'),
+      ]));
+    });
 
     it('creates a new global, non-readonly crossword', () => {
       const added = sinon.spy();

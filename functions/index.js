@@ -41,9 +41,10 @@ exports.finishCommunalCrossword = functions.https.onCall(() =>
         }))) {
           const ref = admin.database().ref();
           const newCrosswordId = ref.push().key;
+          const newArchiveEntry = ref.push().key;
           return ref.update({
             [`/permissions/${currentId}/readonly`]: true,
-            [`/communalCrossword/archive/${currentId}`]: true,
+            [`/communalCrossword/archive/${newArchiveEntry}`]: currentId,
             '/communalCrossword/current': newCrosswordId,
             [`/crosswords/${newCrosswordId}`]: { rows: 15, symmetric: true, title: `Puzzle - ${Date()}` },
             [`/permissions/${newCrosswordId}/global`]: true,
