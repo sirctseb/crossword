@@ -6,6 +6,7 @@ import Editor from '../editor/Editor';
 import CrosswordPreview from '../user/CrosswordPreview';
 import ArchiveList from './ArchiveList';
 import CommunalEditLayout from './CommunalEditLayout';
+import Extras from './Extras';
 
 const bem = bemNamesFactory('communal-crossword');
 
@@ -31,11 +32,13 @@ export default () => {
   const archiveList = Object.values(archive);
 
   return <div className={bem()}>
-    Communal Crossword
+    <h2>Communal Crossword</h2>
     {
       editing && <CommunalEditLayout onPreviousClick={() => setSelectedCrossword(Selection.none)}>
         <CrosswordPreview id={archiveList[archiveList.length - 1]} />
-        <Editor id={current} showSuggestions={false} showThemeEntries={false} showClues={false} />
+        <Extras id={current}>
+          <Editor id={current} showSuggestions={false} showThemeEntries={false} showClues={false} />
+        </Extras>
       </CommunalEditLayout>
     }
     {

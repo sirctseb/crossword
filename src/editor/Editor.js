@@ -135,6 +135,8 @@ const Editor = ({
     }
   }, [cursorAfterAdvancement.row, cursorAfterAdvancement.column]);
 
+  // TODO as is obvious from the arguments to the actions, this should
+  // be memoized on acrossPattern and downPattern
   useEffect(() => {
     actions.getSuggestions(acrossPattern);
     actions.getSuggestions(downPattern);

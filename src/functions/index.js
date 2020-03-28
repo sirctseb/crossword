@@ -5,3 +5,4 @@ const functions = firebaseApp.functions();
 firebaseApp.functions().httpsCallable('matchingAnswers');
 
 export const matchingAnswers = functions.httpsCallable('matchingAnswers');
+export const finishCommunalCrossword = functions.httpsCallable('finishCommunalCrossword');
