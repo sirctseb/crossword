@@ -18,10 +18,11 @@ exports.matchingAnswers = functions.https.onCall(({ regex }) =>
   words.filter(word => word.match(regex)));
 
 exports.decorateCursor = functions.database.ref('/cursors/{crosswordId}/{cursorId}').onCreate((snapshot, context) =>
-  snapshot.ref.update({
-    displayName: context.auth.displayName,
-    photoUrl: context.auth.photoUrl,
-  }));
+  admin.auth().getUser(context.auth.uid).then(user =>
+    snapshot.ref.update({
+      displayName: user.displayName,
+      photoUrl: user.photoURL,
+    })));
 
 const snapVal = snap => snap.val();
 
