@@ -1,6 +1,9 @@
 {
   "name": "crossword-functions",
   "description": "Cloud Functions for Crosswords",
+  "engines": {
+    "node": "10"
+  },
   "scripts": {
     "test": "mocha  --opts mocha.opts '*.test.js' --exit"
   },
