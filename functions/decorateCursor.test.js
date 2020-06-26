@@ -9,13 +9,17 @@ const wrapped = test.wrap(functions.decorateCursor);
 const aliceAuth = {
   uid: 'alice',
   displayName: 'Alice Inwonderland',
-  photoUrl: 'photoUrl',
+  photoUrl: 'https://example.com',
 };
 const aliceContext = {
   auth: aliceAuth,
 };
 
 describe('Cursor Decoration', () => {
+  // ensure the alice user exists
+  // TODO update every time in case values change?
+  before(() => admin.auth().createUser(aliceAuth).catch(() => null));
+
   describe('decorateCursor', () => {
     it('adds a user\'s display name to the cursor', () => {
       const newCursor = test.database.makeDataSnapshot({ userId: aliceAuth.uid, row: 0, column: 0 }, '/cursors/cw-id/cursor-id');
