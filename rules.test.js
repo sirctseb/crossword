@@ -285,7 +285,44 @@ describe('crossword', () => {
   });
 });
 
-describe('cursor', () => {
+describe('cursors', () => {
+  describe('when they exist', () => {
+    beforeEach(() =>
+      adminApp.ref().update({
+        'crosswords/cw-id': { rows: 15, symmetric: true, title: 'untitiled ' },
+        [`users/${alice}/crosswords/cw-id`]: {
+          title: 'Untitled',
+        },
+        'cursors/cw-id': {
+          'cursor-id-alice': {
+            userId: alice,
+          },
+          'cursor-id-bob': {
+            userId: bob,
+          },
+        },
+        'permissions/cw-id': {
+          owner: alice,
+          collaborators: { bob: true },
+        },
+      }));
+
+    it('can be read by cw owner', () => {
+      const app = authedApp(alice);
+      return expect(app.ref().child('cursors/cw-id').once('value')).to.be.fulfilled();
+    });
+
+    it('can be read by collaborator', () => {
+      const app = authedApp(bob);
+      return expect(app.ref().child('cursors/cw-id').once('value')).to.be.fulfilled();
+    });
+
+    it('cannot be read by non-permitted', () => {
+      const app = authedApp(charlie);
+      return expect(app.ref().child('cursors/cw-id').once('value')).to.be.rejected();
+    });
+  });
+
   describe('with cw in place', () => {
     beforeEach(() =>
       adminApp.ref().update({
