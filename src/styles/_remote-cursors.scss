@@ -1,0 +1,23 @@
+.remote-cursors {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  z-index: 4;
+
+  &__cursor {
+    height: 100%;
+
+    .remote-cursors__cursor-details {
+      display: none;
+    }
+
+    &:hover {
+      .remote-cursors__cursor-details {
+        display: block;
+      }
+    }
+  }
+}
+

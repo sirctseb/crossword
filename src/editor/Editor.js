@@ -18,6 +18,7 @@ import ThemeEntries from './themeEntries';
 import Suggestions from './Suggestions';
 import Wait from '../Wait';
 import usePublishCursor from './usePublishCursor';
+import useRemoteCursors from './cursors/useRemoteCursors';
 import useEditorHotKeys from './useEditorHotKeys';
 import calculateDerivedData from './derivations';
 
@@ -171,6 +172,8 @@ const Editor = ({
     // TODO should take rows and symmetric as params so we don't leak impl details here
   }, [path, crossword.rows, crossword.symmetric]);
 
+  const remoteCursors = useRemoteCursors(crosswordId, cursorRef);
+
   const rows = [];
 
   for (let row = 0; row < crossword.rows; row += 1) {
@@ -191,6 +194,7 @@ const Editor = ({
           onBoxFocus={handleBoxFocus}
           cursor={isCursorBox(row, column)}
           onAfterSetContent={isCursorAnswer(row, column) ? handleAfterSetContent : null}
+          remoteCursors={get(remoteCursors, [row, column], [])}
         />
       ));
     }

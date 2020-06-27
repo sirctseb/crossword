@@ -2,6 +2,7 @@ import React, { useState, memo } from 'react';
 import { bemNamesFactory } from 'bem-names';
 import propTypes from 'prop-types';
 
+import RemoteCursors from './cursors/RemoteCursors';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
@@ -25,6 +26,7 @@ const Box = ({
   onBlock,
   onBoxFocus,
   onAfterSetContent,
+  remoteCursors,
 }) => {
   const [rebus, setRebus] = useState(false);
 
@@ -93,6 +95,9 @@ const Box = ({
       }}
       onFocus={handleFocus}
       onMouseDown={handleMouseDown}>
+      { remoteCursors.length > 0 &&
+        <RemoteCursors cursors={remoteCursors} />
+      }
       <BoxControls onToggleAttribute={handleToggleAttribute}
         box={box}
         onBlock={handleOnBlock} />

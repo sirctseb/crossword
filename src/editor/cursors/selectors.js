@@ -9,12 +9,19 @@ const getCursorSets = state => state.firebase.data.cursors;
 
 export const getCursors = createSelector(
   [getCrosswordId, getCursorSets],
-  (crosswordId, cursorSets) => cursorSets && cursorSets[crosswordId],
+  (crosswordId, cursorSets) => {
+    return cursorSets && cursorSets[crosswordId];
+  }
 );
 
 export const getRemoteCursors = createSelector(
   [getLocalCursorId, getCursors],
-  (localCursorId, cursors) => omit(cursors, localCursorId),
+  (localCursorId, cursors) => {
+    return omit(
+      cursors,
+      localCursorId
+    );
+  }
 );
 
 export const test = {
