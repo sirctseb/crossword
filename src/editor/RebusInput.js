@@ -1,14 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import useClickOutside from './useClickOutside';
 
 const RebusInput = ({ onClose, content }) => {
   const [value, setValue] = useState(content);
+  const nodeRef = useRef();
+  useClickOutside(nodeRef.current, onClose);
 
   const inputElement = useRef(null);
   useEffect(() => inputElement.current.focus(), [inputElement]);
 
   return (
-    <div className='rebus-input'>
+    <div className='rebus-input' ref={nodeRef}>
       <input className='rebus-input__input'
         ref={inputElement}
         value={value || ''}
