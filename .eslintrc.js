@@ -1,40 +1,51 @@
 module.exports = {
-  extends: 'airbnb-base',
-  plugins: [
-    'import',
-    'react',
-    'babel',
-    'mocha',
+  root: true,
+  env: {
+    browser: true,
+    mocha: true,
+  },
+  settings: {
+    react: {
+      pragma: 'React',
+      version: 'detect',
+    },
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:prettier/recommended',
+    // 'plugin:compat/recommended',
+    // 'plugin:jsx-a11y/recommended',
   ],
+  plugins: ['@typescript-eslint', 'eslint-plugin-react', 'jsx-a11y', 'mocha', 'prettier'],
   rules: {
-    indent: ['error', 2],
+    eqeqeq: ['error', 'always'],
     'react/jsx-uses-react': 1,
     'react/jsx-uses-vars': 1,
     'react/react-in-jsx-scope': 1,
     'import/prefer-default-export': 0,
-    'class-methods-use-this': [1, {
-      exceptMethods: [
-        'componentDidMount',
-        'componentDidUpdate',
-        'componentWillMount',
-        'componentWillReceiveProps',
-        'componentWillUnmount',
-        'componentWillUpdate',
-        'render',
-        'shouldComponentUpdate',
-      ],
-    }],
-    'comma-dangle': ['error', 'always-multiline'],
+    'class-methods-use-this': [
+      1,
+      {
+        exceptMethods: [
+          'componentDidMount',
+          'componentDidUpdate',
+          'componentWillMount',
+          'componentWillReceiveProps',
+          'componentWillUnmount',
+          'componentWillUpdate',
+          'render',
+          'shouldComponentUpdate',
+        ],
+      },
+    ],
   },
-  parser: 'babel-eslint',
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: 'module',
     ecmaFeatures: {
       jsx: true,
     },
-  },
-  env: {
-    browser: true,
-    mocha: true,
+    ecmaVersion: 2019,
+    sourceType: 'module',
   },
 };
