@@ -7,16 +7,18 @@ describe('reduceCursors', () => {
   });
 
   it('creates a map from [row][column] to an array with an element with a row and a column', () => {
-    const elements = [{
-      row: 0,
-      column: 0,
-      testPayload: '00',
-    },
-    {
-      row: 1,
-      column: 1,
-      testPayload: '11',
-    }];
+    const elements = [
+      {
+        row: 0,
+        column: 0,
+        testPayload: '00',
+      },
+      {
+        row: 1,
+        column: 1,
+        testPayload: '11',
+      },
+    ];
 
     expect(test.reduceCursors(elements)).to.deep.include({
       0: { 0: [{ row: 0, column: 0, testPayload: '00' }] },
@@ -25,28 +27,33 @@ describe('reduceCursors', () => {
   });
 
   it('puts entries with the same row and column into the same array', () => {
-    const elements = [{
-      row: 0,
-      column: 0,
-      testPayload: '00',
-    },
-    {
-      row: 0,
-      column: 0,
-      testPayload: 'zerozero',
-    }];
+    const elements = [
+      {
+        row: 0,
+        column: 0,
+        testPayload: '00',
+      },
+      {
+        row: 0,
+        column: 0,
+        testPayload: 'zerozero',
+      },
+    ];
 
     expect(test.reduceCursors(elements)).to.deep.include({
       0: {
-        0: [{
-          row: 0,
-          column: 0,
-          testPayload: '00',
-        }, {
-          row: 0,
-          column: 0,
-          testPayload: 'zerozero',
-        }],
+        0: [
+          {
+            row: 0,
+            column: 0,
+            testPayload: '00',
+          },
+          {
+            row: 0,
+            column: 0,
+            testPayload: 'zerozero',
+          },
+        ],
       },
     });
   });

@@ -9,15 +9,15 @@ const ThemeEntryAddition = ({ onAdd }) => {
 
   return (
     <div className={bem()}>
-      <input className={bem('input')}
-        value={input}
-        onChange={evt => setInput(evt.target.value)} />
-      <div className={bem('add')}
+      <input className={bem('input')} value={input} onChange={(evt) => setInput(evt.target.value)} />
+      <div
+        className={bem('add')}
         onClick={() => {
           onAdd(input);
           setInput('');
-        }}>
-          +
+        }}
+      >
+        +
       </div>
     </div>
   );

@@ -4,9 +4,9 @@ import { test } from './derivations';
 
 chai.use(dirtyChai);
 
-const makeCrossword = board => ({
+const makeCrossword = (board) => ({
   rows: board.length,
-  boxes: board.map(row => row.split('').map(entry => ({ blocked: entry === 'b', content: entry }))),
+  boxes: board.map((row) => row.split('').map((entry) => ({ blocked: entry === 'b', content: entry }))),
 });
 
 describe('selectors', () => {
@@ -216,24 +216,20 @@ describe('selectors', () => {
       },
     };
     it('finds when it is after the input', () => {
-      const subject = test.findInCycle(crossword, 0, 0, 'across', candidate => candidate.box.flag);
+      const subject = test.findInCycle(crossword, 0, 0, 'across', (candidate) => candidate.box.flag);
       expect(subject.column).to.equal(1);
     });
     it('finds when it is before the input', () => {
-      const subject = test.findInCycle(crossword, 0, 2, 'across', candidate => candidate.box.flag);
+      const subject = test.findInCycle(crossword, 0, 2, 'across', (candidate) => candidate.box.flag);
       expect(subject.column).to.equal(1);
     });
   });
 
-  const isBang = candidate => candidate.box.content === '!';
+  const isBang = (candidate) => candidate.box.content === '!';
 
   describe('makeCrossword', () => {
     it('generates a crossword', () => {
-      const subject = makeCrossword([
-        'b!-',
-        '---',
-        '---',
-      ]);
+      const subject = makeCrossword(['b!-', '---', '---']);
 
       expect(subject.rows).to.equal(3);
       expect(subject.boxes[0][0].blocked).to.equal(true);
@@ -244,10 +240,7 @@ describe('selectors', () => {
   describe('findNext', () => {
     describe('down', () => {
       it('returns null if nothing found', () => {
-        const crossword = makeCrossword([
-          '--',
-          '--',
-        ]);
+        const crossword = makeCrossword(['--', '--']);
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
@@ -255,11 +248,7 @@ describe('selectors', () => {
       });
 
       it('advances to the next column', () => {
-        const crossword = makeCrossword([
-          '-!-',
-          '---',
-          '---',
-        ]);
+        const crossword = makeCrossword(['-!-', '---', '---']);
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
@@ -268,11 +257,7 @@ describe('selectors', () => {
       });
 
       it('advances past the first row of answers to one that starts lower', () => {
-        const crossword = makeCrossword([
-          '-b-',
-          '-!-',
-          '---',
-        ]);
+        const crossword = makeCrossword(['-b-', '-!-', '---']);
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
@@ -281,11 +266,7 @@ describe('selectors', () => {
       });
 
       it('wraps around to an earlier answer', () => {
-        const crossword = makeCrossword([
-          '!--',
-          '---',
-          '---',
-        ]);
+        const crossword = makeCrossword(['!--', '---', '---']);
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 2, 'down', addresses, isBang);
@@ -294,11 +275,7 @@ describe('selectors', () => {
       });
 
       it('returns null given a blocked box', () => {
-        const crossword = makeCrossword([
-          'b!-',
-          '---',
-          '---',
-        ]);
+        const crossword = makeCrossword(['b!-', '---', '---']);
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, 'down', addresses, isBang);
@@ -308,11 +285,7 @@ describe('selectors', () => {
 
     describe('across', () => {
       it('advances to the next row', () => {
-        const crossword = makeCrossword([
-          '---',
-          '!--',
-          '---',
-        ]);
+        const crossword = makeCrossword(['---', '!--', '---']);
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 1, 'across', addresses, isBang);
@@ -321,11 +294,7 @@ describe('selectors', () => {
       });
 
       it('advances past the first row of answers to one that starts after', () => {
-        const crossword = makeCrossword([
-          '---',
-          'b!-',
-          '---',
-        ]);
+        const crossword = makeCrossword(['---', 'b!-', '---']);
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 0, 'across', addresses, isBang);
@@ -334,11 +303,7 @@ describe('selectors', () => {
       });
 
       it('wraps around to an earlier answer', () => {
-        const crossword = makeCrossword([
-          '!--',
-          '---',
-          '---',
-        ]);
+        const crossword = makeCrossword(['!--', '---', '---']);
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 2, 'across', addresses, isBang);

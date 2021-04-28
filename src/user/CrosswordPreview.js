@@ -15,12 +15,22 @@ const drawBoxes = ({ rows, boxes }) => {
   for (let row = 0; row < rows; row += 1) {
     const boxElements = [];
     for (let column = 0; column < rows; column += 1) {
-      boxElements.push(<div key={`box-${row}-${column}`}
-        className={bem('box', {
-          blocked: get(boxes, [row, column, 'blocked']),
-        })}>{get(boxes, [row, column, 'content'])}</div>);
+      boxElements.push(
+        <div
+          key={`box-${row}-${column}`}
+          className={bem('box', {
+            blocked: get(boxes, [row, column, 'blocked']),
+          })}
+        >
+          {get(boxes, [row, column, 'content'])}
+        </div>
+      );
     }
-    rowElements.push(<div key={`row-${row}`} className={bem('row')}>{boxElements}</div>);
+    rowElements.push(
+      <div key={`row-${row}`} className={bem('row')}>
+        {boxElements}
+      </div>
+    );
   }
   return rowElements;
 };
@@ -31,19 +41,14 @@ const CrosswordPreview = ({ id, title }) => {
   // const getCrossword = useState(makeGetCrossword());
   const getCrossword = useMemo(makeGetCrossword, []);
   // TODO wait what? Couldn't we curry the id when we make the selector?
-  const crossword = useSelector(state => getCrossword(state, { id }));
+  const crossword = useSelector((state) => getCrossword(state, { id }));
 
-  return <div className={bem()}>
-    {
-      crossword &&
-      <div className={bem('grid', [`size-${crossword.rows}`])}>
-        {drawBoxes(crossword)}
-      </div>
-    }
-    <Link to={`/${id}`}>
-      { title }
-    </Link>
-  </div>;
+  return (
+    <div className={bem()}>
+      {crossword && <div className={bem('grid', [`size-${crossword.rows}`])}>{drawBoxes(crossword)}</div>}
+      <Link to={`/${id}`}>{title}</Link>
+    </div>
+  );
 };
 
 CrosswordPreview.defaultProps = {

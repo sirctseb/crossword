@@ -12,16 +12,18 @@ const bem = bemNamesFactory('user');
 const User = () => {
   const userId = useSelector(getUserId) || null;
 
-  return userId && <div className={bem()}>
-    <UserSection>
-      <PreviewList userId={userId}>
-        My Crosswords
-      </PreviewList>
-    </UserSection>
-    <UserSection>
-      <WordList userId={userId} />
-    </UserSection>
-  </div>;
+  return (
+    userId && (
+      <div className={bem()}>
+        <UserSection>
+          <PreviewList userId={userId}>My Crosswords</PreviewList>
+        </UserSection>
+        <UserSection>
+          <WordList userId={userId} />
+        </UserSection>
+      </div>
+    )
+  );
 };
 
 export default User;

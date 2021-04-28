@@ -14,7 +14,7 @@ const keyMap = {
 };
 
 export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
-  const makeMoveCursor = vector => () => {
+  const makeMoveCursor = (vector) => () => {
     // TODO there should be a selector for this
     if (!document.activeElement.classList.contains('box')) return;
 
@@ -39,9 +39,12 @@ export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
   const left = makeMoveCursor([0, -1]);
   const up = makeMoveCursor([-1, 0]);
   const down = makeMoveCursor([1, 0]);
-  const toggleCursorDirection = () => setCursor({
-    row, column, direction: direction === ACROSS ? DOWN : ACROSS,
-  });
+  const toggleCursorDirection = () =>
+    setCursor({
+      row,
+      column,
+      direction: direction === ACROSS ? DOWN : ACROSS,
+    });
 
   const handlers = {
     undo: (evt) => {

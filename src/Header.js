@@ -28,55 +28,50 @@ const Header = () => {
   const handleNew = () => {
     const fbRef = firebase.ref();
     const cwRef = fbRef.push();
-    fbRef.update({
-      [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
-      [`users/${auth.uid}/crosswords/${cwRef.key}`]: {
-        title: 'Untitled',
-      },
-      [`permissions/${cwRef.key}`]: { owner: auth.uid },
-    }).then(() => history.push(`/${cwRef.key}`));
+    fbRef
+      .update({
+        [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
+        [`users/${auth.uid}/crosswords/${cwRef.key}`]: {
+          title: 'Untitled',
+        },
+        [`permissions/${cwRef.key}`]: { owner: auth.uid },
+      })
+      .then(() => history.push(`/${cwRef.key}`));
   };
 
   return (
-    <header className='header'>
-      <h1 className='header__heading'>
-        Crossword
-      </h1>
-      <nav className='header__nav'>
-        {
-          (auth.isEmpty && !showLogin) &&
-          <a className='header__nav-link' onClick={handleShowLogin}>
+    <header className="header">
+      <h1 className="header__heading">Crossword</h1>
+      <nav className="header__nav">
+        {auth.isEmpty && !showLogin && (
+          <a className="header__nav-link" onClick={handleShowLogin}>
             login
           </a>
-        }
-        {
-          !auth.isEmpty &&
-          <a className='header__nav-link' onClick={handleLogout}>
+        )}
+        {!auth.isEmpty && (
+          <a className="header__nav-link" onClick={handleLogout}>
             logout
           </a>
-        }
-        {
-          !auth.isEmpty &&
-          <a className='header__nav-link' onClick={handleNew}>
+        )}
+        {!auth.isEmpty && (
+          <a className="header__nav-link" onClick={handleNew}>
             new
           </a>
-        }
-        {
-          !auth.isEmpty &&
-          <Link className='header__nav-link' to={'/user'}>
+        )}
+        {!auth.isEmpty && (
+          <Link className="header__nav-link" to={'/user'}>
             user
           </Link>
-        }
+        )}
       </nav>
-      {
-        showLogin &&
-        <div className='header__login-controls'>
+      {showLogin && (
+        <div className="header__login-controls">
           <FirebaseAuth uiConfig={firebaseAuthConfig} firebaseAuth={firebase.auth()} />
-          <a className='header__hide-login-button' onClick={handleHideLogin}>
+          <a className="header__hide-login-button" onClick={handleHideLogin}>
             hide
           </a>
         </div>
-      }
+      )}
     </header>
   );
 };

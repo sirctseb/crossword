@@ -11,8 +11,9 @@ const RebusInput = ({ onClose, content }) => {
   useEffect(() => inputElement.current.focus(), [inputElement]);
 
   return (
-    <div className='rebus-input' ref={nodeRef}>
-      <input className='rebus-input__input'
+    <div className="rebus-input" ref={nodeRef}>
+      <input
+        className="rebus-input__input"
         ref={inputElement}
         value={value || ''}
         onKeyDown={(evt) => {
@@ -23,7 +24,8 @@ const RebusInput = ({ onClose, content }) => {
             onClose(value);
           }
         }}
-        onChange={evt => setValue(evt.target.value)}/>
+        onChange={(evt) => setValue(evt.target.value)}
+      />
     </div>
   );
 };

@@ -12,13 +12,11 @@ const undoHistory = UndoHistory.getHistory('crossword');
 const bem = bemNamesFactory('theme-entries');
 
 const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
-  const onAdd = text =>
-    undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+  const onAdd = (text) => undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
 
-  const onDelete = text =>
-    undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
+  const onDelete = (text) => undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
 
-  const annotatedEntries = themeEntries.map(entry => ({
+  const annotatedEntries = themeEntries.map((entry) => ({
     text: entry,
     used: currentAnswers.includes(entry),
   }));

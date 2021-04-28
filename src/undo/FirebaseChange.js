@@ -9,7 +9,7 @@ export default class FirebaseChange {
     return new FirebaseChange(
       ref.parent,
       { [ref.key]: newValue === undefined ? null : newValue },
-      { [ref.key]: oldValue === undefined ? null : oldValue },
+      { [ref.key]: oldValue === undefined ? null : oldValue }
     );
   }
 

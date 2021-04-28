@@ -10,22 +10,27 @@ const bem = bemNamesFactory('extras');
 
 const full = ({ boxes, rows }) => {
   const range = [...Array(rows).keys()];
-  return range.every(row => range.every((column) => {
-    const { blocked, content } = get(boxes, [row, column], {});
-    return blocked || content;
-  }));
+  return range.every((row) =>
+    range.every((column) => {
+      const { blocked, content } = get(boxes, [row, column], {});
+      return blocked || content;
+    })
+  );
 };
 
 const Extras = ({ children, id }) => {
   const getCrossword = useMemo(makeGetCrossword, []);
-  const crossword = useSelector(state => getCrossword(state, { id }));
-  return <div className={bem()}>
-    {children}
-    {
-      crossword && full(crossword) &&
-      <button className={bem('finish')} onClick={() => finishCommunalCrossword()}>Finish</button>
-    }
-  </div>;
+  const crossword = useSelector((state) => getCrossword(state, { id }));
+  return (
+    <div className={bem()}>
+      {children}
+      {crossword && full(crossword) && (
+        <button className={bem('finish')} onClick={() => finishCommunalCrossword()}>
+          Finish
+        </button>
+      )}
+    </div>
+  );
 };
 
 export default Extras;

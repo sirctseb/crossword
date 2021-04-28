@@ -10,15 +10,17 @@ export default (
   <Route>
     <App>
       <Switch>
-        <Route path='/user'>
+        <Route path="/user">
           <User />
         </Route>
-        <Route path='/:crosswordId'>
-          {
-            ({ match: { params: { crosswordId } } }) => <Editor id={crosswordId} />
-          }
+        <Route path="/:crosswordId">
+          {({
+            match: {
+              params: { crosswordId },
+            },
+          }) => <Editor id={crosswordId} />}
         </Route>
-        <Route path='/' exact>
+        <Route path="/" exact>
           <CommunalCrossword />
         </Route>
       </Switch>

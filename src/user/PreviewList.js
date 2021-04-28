@@ -13,18 +13,16 @@ const PreviewList = ({ userId, children }) => {
   useFirebaseConnect(`users/${userId}/crosswords`);
   const crosswords = useSelector(getUserCrosswords);
 
-  return <div className={bem()}>
-    <div className={bem('title')}>
-      { children }
+  return (
+    <div className={bem()}>
+      <div className={bem('title')}>{children}</div>
+      <div className={bem('list')}>
+        {Object.keys(crosswords).map((id) => (
+          <CrosswordPreview id={id} key={id} {...crosswords[id]} />
+        ))}
+      </div>
     </div>
-    <div className={bem('list')}>
-      {
-        Object.keys(crosswords).map(id =>
-          <CrosswordPreview id={id} key={id}
-            {...crosswords[id]} />)
-      }
-    </div>
-  </div>;
+  );
 };
 
 PreviewList.propTypes = {

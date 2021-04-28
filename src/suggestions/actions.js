@@ -8,9 +8,8 @@ const getSuggestionsSuccess = (pattern, suggestions) => ({
   suggestions,
 });
 
-export const getSuggestions = pattern => (dispatch, getState) => {
+export const getSuggestions = (pattern) => (dispatch, getState) => {
   if (!(pattern in getState().suggestions)) {
-    matchingAnswers({ regex: pattern })
-      .then(results => dispatch(getSuggestionsSuccess(pattern, results.data)));
+    matchingAnswers({ regex: pattern }).then((results) => dispatch(getSuggestionsSuccess(pattern, results.data)));
   }
 };

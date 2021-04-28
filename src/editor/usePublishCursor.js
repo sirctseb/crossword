@@ -5,15 +5,10 @@ export default (crosswordId) => {
   const [cursorRef, setCursorRef] = useState(null);
   const firebase = useFirebase();
 
-  const handleBoxFocus = useCallback(
-    cursor => cursorRef.update(cursor),
-    [crosswordId, cursorRef]
-  );
+  const handleBoxFocus = useCallback((cursor) => cursorRef.update(cursor), [crosswordId, cursorRef]);
 
   useEffect(() => {
-    const newCursorRef = firebase
-      .ref(`cursors/${crosswordId}`)
-      .push({ userId: firebase.auth().currentUser.uid });
+    const newCursorRef = firebase.ref(`cursors/${crosswordId}`).push({ userId: firebase.auth().currentUser.uid });
 
     newCursorRef.onDisconnect().set(null);
 

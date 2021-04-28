@@ -4,15 +4,7 @@ import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('box-controls');
 
-const BoxControls = ({
-  box: {
-    blocked,
-    circled,
-    shaded,
-  },
-  onBlock,
-  onToggleAttribute,
-}) => {
+const BoxControls = ({ box: { blocked, circled, shaded }, onBlock, onToggleAttribute }) => {
   const killEvent = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
@@ -29,20 +21,10 @@ const BoxControls = ({
   };
 
   return (
-    <div className='box-controls'>
-      <div className={bem('block', { blocked })}
-        onMouseDown={killEvent}
-        onClick={onBlock} />
-      {
-        !blocked && <div className={bem('circle', { circled })}
-          onMouseDown={killEvent}
-          onClick={handleToggleCircle}/>
-      }
-      {
-        !blocked && <div className={bem('shade', { shaded })}
-          onMouseDown={killEvent}
-          onClick={handleToggleShade}/>
-      }
+    <div className="box-controls">
+      <div className={bem('block', { blocked })} onMouseDown={killEvent} onClick={onBlock} />
+      {!blocked && <div className={bem('circle', { circled })} onMouseDown={killEvent} onClick={handleToggleCircle} />}
+      {!blocked && <div className={bem('shade', { shaded })} onMouseDown={killEvent} onClick={handleToggleShade} />}
     </div>
   );
 };

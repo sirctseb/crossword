@@ -25,7 +25,7 @@ const store = createStore(
     firebase: firebaseReducer,
     suggestions: suggestionsReducer,
   }),
-  composeEnhancers(applyMiddleware(createLogger(), thunk)),
+  composeEnhancers(applyMiddleware(createLogger(), thunk))
 );
 
 const rrfProps = {
@@ -37,10 +37,8 @@ const rrfProps = {
 ReactDOM.render(
   <Provider store={store}>
     <ReactReduxFirebaseProvider {...rrfProps}>
-      <Router>
-        {routes}
-      </Router>
+      <Router>{routes}</Router>
     </ReactReduxFirebaseProvider>
   </Provider>,
-  document.getElementById('react-root'),
+  document.getElementById('react-root')
 );

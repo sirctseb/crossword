@@ -19,7 +19,7 @@ export default () => {
   const [selectedCrossword, setSelectedCrossword] = useState(Selection.current);
 
   useFirebaseConnect('/communalCrossword');
-  const communalCrossword = useSelector(state => state.firebase.data.communalCrossword);
+  const communalCrossword = useSelector((state) => state.firebase.data.communalCrossword);
   if (!isLoaded(communalCrossword)) {
     return 'Loading...';
   }
@@ -31,19 +31,25 @@ export default () => {
   // but getting the archive into ordered and current into data has been hard
   const archiveList = Object.values(archive);
 
-  return <div className={bem()}>
-    <h2>Communal Crossword</h2>
-    {
-      editing && <CommunalEditLayout onPreviousClick={() => setSelectedCrossword(Selection.none)}>
-        <CrosswordPreview id={archiveList[archiveList.length - 1]} />
-        <Extras id={current}>
-          <Editor id={current} showSuggestions={false} showThemeEntries={false} showClues={false} />
-        </Extras>
-      </CommunalEditLayout>
-    }
-    {
-      !editing && <ArchiveList archiveList={archiveList} focusedCrossword={focusedCrossword}
-        current={current} onCurrentClick={() => setSelectedCrossword(current)} />
-    }
-  </div>;
+  return (
+    <div className={bem()}>
+      <h2>Communal Crossword</h2>
+      {editing && (
+        <CommunalEditLayout onPreviousClick={() => setSelectedCrossword(Selection.none)}>
+          <CrosswordPreview id={archiveList[archiveList.length - 1]} />
+          <Extras id={current}>
+            <Editor id={current} showSuggestions={false} showThemeEntries={false} showClues={false} />
+          </Extras>
+        </CommunalEditLayout>
+      )}
+      {!editing && (
+        <ArchiveList
+          archiveList={archiveList}
+          focusedCrossword={focusedCrossword}
+          current={current}
+          onCurrentClick={() => setSelectedCrossword(current)}
+        />
+      )}
+    </div>
+  );
 };

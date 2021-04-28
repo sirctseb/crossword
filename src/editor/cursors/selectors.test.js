@@ -11,8 +11,7 @@ describe('cursor selectors', () => {
   describe('getCursorSets', () => {
     it('returns reference to the cursors in firebase state', () => {
       const cursors = {};
-      expect(test.getCursorSets({ firebase: { data: { cursors } } }))
-        .to.equal(cursors);
+      expect(test.getCursorSets({ firebase: { data: { cursors } } })).to.equal(cursors);
     });
   });
 
@@ -29,10 +28,12 @@ describe('cursor selectors', () => {
         localId: 'a',
         remoteId: 'b',
       };
-      expect(test.getRemoteCursors(
-        { firebase: { data: { cursors: { cwid: cursors } } } },
-        { id: 'cwid', cursorId: 'localId' },
-      )).to.deep.equal({
+      expect(
+        test.getRemoteCursors(
+          { firebase: { data: { cursors: { cwid: cursors } } } },
+          { id: 'cwid', cursorId: 'localId' }
+        )
+      ).to.deep.equal({
         remoteId: 'b',
       });
     });

@@ -23,20 +23,19 @@ import useEditorHotKeys from './useEditorHotKeys';
 import calculateDerivedData from './derivations';
 
 const enhance = compose(
-  firebaseConnect(({ id }) => ([
-    `crosswords/${id}`,
-  ])),
+  firebaseConnect(({ id }) => [`crosswords/${id}`]),
   connect(
-    (state, props) => (selectors.getCrossword(state, props) ?
-      ({
-        crossword: selectors.getCrossword(state, props),
-      }) :
-      ({
-        loading: true,
-      })),
-    dispatch => ({ actions: bindActionCreators(suggestionsActions, dispatch) }),
+    (state, props) =>
+      selectors.getCrossword(state, props)
+        ? {
+            crossword: selectors.getCrossword(state, props),
+          }
+        : {
+            loading: true,
+          },
+    (dispatch) => ({ actions: bindActionCreators(suggestionsActions, dispatch) })
   ),
-  C => Wait(C, { toggle: ({ loading }) => !loading }),
+  (C) => Wait(C, { toggle: ({ loading }) => !loading })
 );
 
 const blockedChange = (row, column, { rows, symmetric }, blocked, crosswordRef) => {
@@ -78,9 +77,7 @@ const Editor = ({
   // TODO this is not state. should be useRef
   const [fbRef] = useState(firebase.ref());
   const [cursor, setCursor] = useState({ row: 0, column: 0, direction: 'across' });
-  const [clueInput, setClueInput] = useState({
-    row: 0, column: 0, direction: 'across', value: '',
-  });
+  const [clueInput, setClueInput] = useState({ row: 0, column: 0, direction: 'across', value: '' });
 
   const path = `crosswords/${crosswordId}`;
 
@@ -97,29 +94,29 @@ const Editor = ({
     size,
     themeSuggestions,
     currentAnswers,
-
   } = calculateDerivedData(crossword, cursor);
 
-
-  const makeUndoableChange = useCallback((localPath, newValue, oldValue) => {
-    undoHistory.add(FirebaseChange.FromValues(
-      fbRef.child(`${path}/${localPath}`),
-      newValue,
-      oldValue,
-    ));
-  }, [path]);
+  const makeUndoableChange = useCallback(
+    (localPath, newValue, oldValue) => {
+      undoHistory.add(FirebaseChange.FromValues(fbRef.child(`${path}/${localPath}`), newValue, oldValue));
+    },
+    [path]
+  );
 
   const [cursorRef, publishCursor] = usePublishCursor(crosswordId);
-  const handleBoxFocus = useCallback((newCursor) => {
-    // TODO so box only gives us {row, column}, and direction is undefined after this is called
-    // so who's responsible for merging that in now? if we close over the direction value, then
-    // we have to recompute this callback on direction change. fine i guess, but surprising.
-    // but the alternative is to make the box merge in the direction? not the box's responsibility
-    // so now we rerender every box on direction change. ok i guess. this wasn't a problem
-    // with reducers
-    setCursor({ direction: cursor.direction, ...newCursor });
-    publishCursor(newCursor);
-  }, [crosswordId, cursorRef, cursor.direction]);
+  const handleBoxFocus = useCallback(
+    (newCursor) => {
+      // TODO so box only gives us {row, column}, and direction is undefined after this is called
+      // so who's responsible for merging that in now? if we close over the direction value, then
+      // we have to recompute this callback on direction change. fine i guess, but surprising.
+      // but the alternative is to make the box merge in the direction? not the box's responsibility
+      // so now we rerender every box on direction change. ok i guess. this wasn't a problem
+      // with reducers
+      setCursor({ direction: cursor.direction, ...newCursor });
+      publishCursor(newCursor);
+    },
+    [crosswordId, cursorRef, cursor.direction]
+  );
 
   const hotkeysProps = useEditorHotKeys(cursor, size, isBlockedBox, setCursor);
 
@@ -129,12 +126,15 @@ const Editor = ({
   // it'll obviously never be called.
   // FURTHERMORE, if we weren't precomputing the next cursor location
   // and grabbing it from the selector, this function wouldn't change anyway
-  const handleAfterSetContent = useCallback((newContent) => {
-    if (newContent !== null) {
-      const { row, column } = cursorAfterAdvancement;
-      document.querySelector(`.box--at-${row}-${column}`).focus();
-    }
-  }, [cursorAfterAdvancement.row, cursorAfterAdvancement.column]);
+  const handleAfterSetContent = useCallback(
+    (newContent) => {
+      if (newContent !== null) {
+        const { row, column } = cursorAfterAdvancement;
+        document.querySelector(`.box--at-${row}-${column}`).focus();
+      }
+    },
+    [cursorAfterAdvancement.row, cursorAfterAdvancement.column]
+  );
 
   // TODO as is obvious from the arguments to the actions, this should
   // be memoized on acrossPattern and downPattern
@@ -144,15 +144,15 @@ const Editor = ({
   }, [cursor.row, cursor.column, cursorContent]);
 
   const onClueBlur = () => {
-    const {
-      direction, row, column, value,
-    } = clueInput;
+    const { direction, row, column, value } = clueInput;
 
-    undoHistory.add(FirebaseChange.FromValues(
-      fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
-      value,
-      get(crossword, `clues.${direction}.${row}.${column}`),
-    ));
+    undoHistory.add(
+      FirebaseChange.FromValues(
+        fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
+        value,
+        get(crossword, `clues.${direction}.${row}.${column}`)
+      )
+    );
     setClueInput({
       value: null,
       row: null,
@@ -161,16 +161,13 @@ const Editor = ({
     });
   };
 
-  const handleBlock = useCallback((row, column, blocked) => {
-    undoHistory.add(blockedChange(
-      row,
-      column,
-      crossword,
-      blocked,
-      fbRef.child(path),
-    ));
-    // TODO should take rows and symmetric as params so we don't leak impl details here
-  }, [path, crossword.rows, crossword.symmetric]);
+  const handleBlock = useCallback(
+    (row, column, blocked) => {
+      undoHistory.add(blockedChange(row, column, crossword, blocked, fbRef.child(path)));
+      // TODO should take rows and symmetric as params so we don't leak impl details here
+    },
+    [path, crossword.rows, crossword.symmetric]
+  );
 
   const remoteCursors = useRemoteCursors(crosswordId, cursorRef);
 
@@ -182,8 +179,9 @@ const Editor = ({
       const box = get(crossword, `boxes.${row}.${column}`, emptyBox);
       const label = labelMap[row][column];
 
-      boxes.push((
-        <Box key={`box-${row}-${column}`}
+      boxes.push(
+        <Box
+          key={`box-${row}-${column}`}
           cursorAnswer={isCursorAnswer(row, column)}
           row={row}
           column={column}
@@ -196,71 +194,77 @@ const Editor = ({
           onAfterSetContent={isCursorAnswer(row, column) ? handleAfterSetContent : null}
           remoteCursors={get(remoteCursors, [row, column], [])}
         />
-      ));
+      );
     }
-    rows.push((
-      <div className='editor__row'
-        key={`row-${row}`}>
+    rows.push(
+      <div className="editor__row" key={`row-${row}`}>
         {boxes}
       </div>
-    ));
+    );
   }
 
   return (
     // TODO would love if hotkeys was pure hook
     <GlobalHotKeys {...hotkeysProps}>
       <div className={bem([`size-${crossword.rows}`])}>
-        <input type='number'
-          className='editor__input'
+        <input
+          type="number"
+          className="editor__input"
           value={crossword.rows}
-          onChange={evt =>
-            undoHistory.add(FirebaseChange.FromValues(
-              fbRef.child(`${path}/rows`),
-              parseInt(evt.target.value, 10),
-              crossword.rows,
-            ))} />
-        <input type='checkbox'
-          className='editor__symmetric'
+          onChange={(evt) =>
+            undoHistory.add(
+              FirebaseChange.FromValues(fbRef.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
+            )
+          }
+        />
+        <input
+          type="checkbox"
+          className="editor__symmetric"
           checked={crossword.symmetric}
-          onChange={evt => set(`${path}/symmetric`, evt.target.checked)} />
+          onChange={(evt) => set(`${path}/symmetric`, evt.target.checked)}
+        />
         <div className={bem('clues-and-grid')}>
-          {
-            showClues &&
+          {showClues && (
             <div className={bem('clues-wrapper')}>
-              <ClueList direction={ACROSS}
+              <ClueList
+                direction={ACROSS}
                 clueLabels={acrossClues}
                 clueData={get(crossword.clues, 'across', [])}
                 clueInput={clueInput}
                 onChangeClue={setClueInput}
-                onClueBlur={onClueBlur} />
+                onClueBlur={onClueBlur}
+              />
             </div>
-          }
-          <div className={bem('grid')}>
-            {rows}
-          </div>
-          {
-            showClues &&
+          )}
+          <div className={bem('grid')}>{rows}</div>
+          {showClues && (
             <div className={bem('clues-wrapper')}>
-              <ClueList direction={DOWN}
+              <ClueList
+                direction={DOWN}
                 clueLabels={downClues}
                 clueData={get(crossword.clues, 'down', [])}
                 clueInput={clueInput}
                 onChangeClue={setClueInput}
-                onClueBlur={onClueBlur} />
+                onClueBlur={onClueBlur}
+              />
             </div>
-          }
+          )}
         </div>
-        {
-          showSuggestions &&
-          <Suggestions id={crosswordId} themeSuggestions={themeSuggestions}
-            acrossPattern={acrossPattern} downPattern={downPattern} />
-        }
-        {
-          showThemeEntries &&
-          <ThemeEntries fbRef={fbRef.child(path).child('themeEntries')}
+        {showSuggestions && (
+          <Suggestions
+            id={crosswordId}
+            themeSuggestions={themeSuggestions}
+            acrossPattern={acrossPattern}
+            downPattern={downPattern}
+          />
+        )}
+        {showThemeEntries && (
+          <ThemeEntries
+            fbRef={fbRef.child(path).child('themeEntries')}
             themeEntries={Object.keys(crossword.themeEntries || {})}
-            currentAnswers={currentAnswers} />
-        }
+            currentAnswers={currentAnswers}
+          />
+        )}
       </div>
     </GlobalHotKeys>
   );

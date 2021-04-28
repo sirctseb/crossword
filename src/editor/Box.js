@@ -13,12 +13,7 @@ const Box = ({
   row,
   column,
   box,
-  box: {
-    blocked,
-    circled,
-    shaded,
-    content,
-  },
+  box: { blocked, circled, shaded, content },
   cursor,
   cursorAnswer: active,
   makeUndoableChange,
@@ -46,11 +41,7 @@ const Box = ({
   };
 
   const setContent = (newContent) => {
-    makeUndoableChange(
-      `boxes/${row}/${column}/content`,
-      newContent,
-      content,
-    );
+    makeUndoableChange(`boxes/${row}/${column}/content`, newContent, content);
     if (onAfterSetContent) {
       onAfterSetContent(newContent);
     }
@@ -66,22 +57,20 @@ const Box = ({
   };
 
   const handleToggleAttribute = (attribute) => {
-    makeUndoableChange(
-      `boxes/${row}/${column}/${attribute}`,
-      !box[attribute],
-      box[attribute],
-    );
+    makeUndoableChange(`boxes/${row}/${column}/${attribute}`, !box[attribute], box[attribute]);
   };
 
   return (
     <div
-      className={
-        bem(
-          {
-            blocked, circled, shaded, active,
-          },
-          [`at-${row}-${column}`],
-        )}
+      className={bem(
+        {
+          blocked,
+          circled,
+          shaded,
+          active,
+        },
+        [`at-${row}-${column}`]
+      )}
       tabIndex={!blocked ? '0' : undefined}
       onKeyPress={(evt) => {
         if (/^[A-Za-z]$/.test(evt.key) && targetFocused(evt)) {
@@ -94,20 +83,13 @@ const Box = ({
         }
       }}
       onFocus={handleFocus}
-      onMouseDown={handleMouseDown}>
-      { remoteCursors.length > 0 &&
-        <RemoteCursors cursors={remoteCursors} />
-      }
-      <BoxControls onToggleAttribute={handleToggleAttribute}
-        box={box}
-        onBlock={handleOnBlock} />
-      {
-        rebus && <RebusInput content={content} onClose={handleRebusClose} />
-      }
-      {
-        clueLabel && <div className={bem('clue-index')}>{ clueLabel }</div>
-      }
-      { content }
+      onMouseDown={handleMouseDown}
+    >
+      {remoteCursors.length > 0 && <RemoteCursors cursors={remoteCursors} />}
+      <BoxControls onToggleAttribute={handleToggleAttribute} box={box} onBlock={handleOnBlock} />
+      {rebus && <RebusInput content={content} onClose={handleRebusClose} />}
+      {clueLabel && <div className={bem('clue-index')}>{clueLabel}</div>}
+      {content}
     </div>
   );
 };
