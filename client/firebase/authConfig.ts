@@ -4,7 +4,7 @@ export default {
   autoUpgradeAnonymousUsers: true,
   callbacks: {
     signInSuccessWithAuthResult: (/* authResult, redirectUrl */) =>
-    // TODO set user info in redux?
+      // TODO set user info in redux?
       true,
     uiShown: () => {
       // TODO ? example code hides a loader

@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useFirebase } from 'react-redux-firebase';
-import { useHistory, Link } from 'react-router-dom';
-import FirebaseAuth from 'react-firebaseui/FirebaseAuth';
+import { useRecoilValue } from 'recoil';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import firebase from '../firebase/app';
+import { firebaseAuth } from '../firebase/auth';
+import FirebaseAuth from '../firebase/FirebaseAuth';
 
-import { getAuth } from './selectors';
-import firebaseAuthConfig from '../config/firebaseAuth';
+import firebaseAuthConfig from '../firebase/authConfig';
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
-  const history = useHistory();
-  const firebase = useFirebase();
-  const auth = useSelector(getAuth);
+  const auth = useRecoilValue(firebaseAuth);
+  const { push } = useRouter();
 
   const handleShowLogin = () => {
     setShowLogin(true);
@@ -26,17 +26,19 @@ const Header = () => {
   };
 
   const handleNew = () => {
-    const fbRef = firebase.ref();
+    const fbRef = firebase.database().ref();
     const cwRef = fbRef.push();
-    fbRef
-      .update({
-        [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
-        [`users/${auth.uid}/crosswords/${cwRef.key}`]: {
-          title: 'Untitled',
-        },
-        [`permissions/${cwRef.key}`]: { owner: auth.uid },
-      })
-      .then(() => history.push(`/${cwRef.key}`));
+    if (!auth.isEmpty && auth.isLoaded) {
+      fbRef
+        .update({
+          [`crosswords/${cwRef.key}`]: { rows: 15, symmetric: true, title: 'untitled' },
+          [`users/${auth.uid}/crosswords/${cwRef.key}`]: {
+            title: 'Untitled',
+          },
+          [`permissions/${cwRef.key}`]: { owner: auth.uid },
+        })
+        .then(() => push(`/${cwRef.key}`));
+    }
   };
 
   return (
@@ -54,13 +56,12 @@ const Header = () => {
           </a>
         )}
         {!auth.isEmpty && (
-          <a className="header__nav-link" onClick={handleNew}>
-            new
-          </a>
+          // <a className="header__nav-link" onClick={handleNew}>
+          <a className="header__nav-link">new</a>
         )}
         {!auth.isEmpty && (
-          <Link className="header__nav-link" to={'/user'}>
-            user
+          <Link href={'/user'}>
+            <a className="header__nav-link">user</a>
           </Link>
         )}
       </nav>
