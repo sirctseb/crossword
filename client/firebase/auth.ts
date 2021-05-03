@@ -9,7 +9,7 @@ export interface LoadedEmptyAuth {
   isLoaded: true;
   isEmpty: true;
 }
-export interface LoadedAuth extends firebase.User {
+export interface LoadedAuth extends firebase.UserInfo {
   isLoaded: true;
   isEmpty: false;
 }
@@ -22,7 +22,11 @@ export const firebaseAuth = atom<AuthState>({
   effects_UNSTABLE: [
     ({ setSelf }) => {
       firebase.auth().onAuthStateChanged((user) => {
-        setSelf(user ? { ...user, isLoaded: true, isEmpty: false } : { isLoaded: true, isEmpty: true });
+        if (!user) {
+          return { isLoaded: true, isEmpty: true };
+        }
+        const { displayName, email, phoneNumber, photoURL, providerId, uid } = user;
+        setSelf({ displayName, email, phoneNumber, photoURL, providerId, uid, isLoaded: true, isEmpty: false });
       });
     },
   ],
