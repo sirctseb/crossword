@@ -4,8 +4,9 @@ import firebase from 'firebase';
 export type BoltMap<Key extends string, Value> = Record<Key, Value>;
 export type FirebaseValue = boolean | string | number | Object;
 
-export function fbValueSubscriptionEffect<T extends FirebaseValue>(path: string): AtomEffect<T> {
+function fbValueSubscriptionEffect<T extends FirebaseValue | null>(path: string): AtomEffect<T> {
   return ({ setSelf }) => {
+    // setSelf(loadValueOnce(path));
     const handler = (snapshot: firebase.database.DataSnapshot | null) => setSelf(snapshot?.val());
     // TODO you can't use the value returned by .on because they have it typed differently than the param
     // to .off
@@ -15,33 +16,36 @@ export function fbValueSubscriptionEffect<T extends FirebaseValue>(path: string)
 }
 
 export function makeAtom<T extends FirebaseValue>(path: string) {
-  return atom<T>({
+  return atom<T | null>({
     key: `fb:${path}`,
-    effects_UNSTABLE: [fbValueSubscriptionEffect<T>(path)],
+    effects_UNSTABLE: [fbValueSubscriptionEffect<T | null>(path)],
     // TODO find out whether this or initializing in effect is better
-    default: firebase
-      .database()
-      .ref(path)
-      .once('value')
-      .then((snapshot) => snapshot.val()),
+    // default: loadValueOnce(path),
+    default: null,
   });
 }
 
+const loadValueOnce = (path: string) => {
+  return firebase
+    .database()
+    .ref(path)
+    .once('value')
+    .then((snapshot) => snapshot.val());
+};
+
+function interpolateAndLoadValueOnce<P extends PathParameters>(params: P, pathSpec: string) {
+  return loadValueOnce(interpolatePathSpec(pathSpec, params));
+}
+
 export function makeAtomFamily<T extends FirebaseValue, P extends PathParameters>(pathSpec: string) {
-  return atomFamily<T, P>({
+  return atomFamily<T | null, P>({
     key: `fb:${pathSpec}`,
     effects_UNSTABLE: (params) => [
       // TODO what would happen if we threw an exception here?
-      fbValueSubscriptionEffect<T>(interpolatePathSpec(pathSpec, params)),
+      fbValueSubscriptionEffect<T | null>(interpolatePathSpec(pathSpec, params)),
     ],
-    // TODO find out whether this or initializing in effect is better
-    default: async (params) => {
-      return await firebase
-        .database()
-        .ref(interpolatePathSpec(pathSpec, params))
-        .once('value')
-        .then((snapshot) => snapshot.val());
-    },
+    // default: (params) => loadValueOnce<T, P>(params, pathSpec),
+    default: null,
   });
 }
 
