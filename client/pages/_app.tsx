@@ -2,10 +2,12 @@ import { RecoilRoot } from 'recoil';
 import { AppProps } from 'next/app';
 import '../styles/globals.css';
 
+import firebase from '../firebase/app';
+
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }) => {
   return (
     <RecoilRoot>
-      <Component {...pageProps} />
+      <Component {...pageProps} firebase={firebase} />
     </RecoilRoot>
   );
 };
