@@ -1,15 +1,11 @@
-$block-class: 'rebus-input';
+.rebusInput {
+  position: absolute;
+  z-index: 4;
+  padding: 4px;
+  background-color: white;
+  border: 1px solid black;
 
-@at-root {
-  .#{$block-class} {
-    position: absolute;
-    z-index: 4;
-    padding: 4px;
-    background-color: white;
-    border: 1px solid black;
-
-    &__input {
-      outline: none;
-    }
+  .input {
+    outline: none;
   }
 }

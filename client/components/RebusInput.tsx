@@ -6,6 +6,8 @@ interface RebusInputProps {
   content?: string;
 }
 
+import styles from './RebusInput.module.scss';
+
 const RebusInput: React.FC<RebusInputProps> = ({ onClose, content }) => {
   const [value, setValue] = useState(content);
   const nodeRef = useRef<HTMLDivElement>(null);
@@ -17,9 +19,9 @@ const RebusInput: React.FC<RebusInputProps> = ({ onClose, content }) => {
   }, [inputElement]);
 
   return (
-    <div className="rebus-input" ref={nodeRef}>
+    <div className={styles.rebusInput} ref={nodeRef}>
       <input
-        className="rebus-input__input"
+        className={styles.input}
         ref={inputElement}
         value={value || ''}
         onKeyDown={(evt) => {

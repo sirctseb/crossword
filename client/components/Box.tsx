@@ -1,12 +1,11 @@
 import React, { useState, memo } from 'react';
-import { bemNamesFactory } from 'bem-names';
+import cn from 'classnames';
 
 import RemoteCursors from './RemoteCursors';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
 const targetFocused = ({ currentTarget }: React.KeyboardEvent) => document.activeElement === currentTarget;
-const bem = bemNamesFactory('box');
 
 interface Box {
   blocked?: boolean;
@@ -29,6 +28,8 @@ interface BoxProps {
   onAfterSetContent: (content: string | null) => any;
   remoteCursors: React.ComponentProps<typeof RemoteCursors>['cursors'];
 }
+
+import styles from './Box.module.scss';
 
 const Box: React.FC<BoxProps> = ({
   row,
@@ -83,12 +84,13 @@ const Box: React.FC<BoxProps> = ({
 
   return (
     <div
-      className={bem(
+      className={cn(
+        styles.Box,
         {
-          blocked,
-          circled,
-          shaded,
-          active,
+          [styles.blocked]: blocked,
+          [styles.circled]: circled,
+          [styles.shaded]: shaded,
+          [styles.active]: active,
         },
         [`at-${row}-${column}`]
       )}
@@ -109,7 +111,7 @@ const Box: React.FC<BoxProps> = ({
       {remoteCursors?.length && <RemoteCursors cursors={remoteCursors} />}
       <BoxControls onToggleAttribute={handleToggleAttribute} box={box} onBlock={handleOnBlock} />
       {rebus && <RebusInput content={content} onClose={handleRebusClose} />}
-      {clueLabel && <div className={bem('clue-index')}>{clueLabel}</div>}
+      {clueLabel && <div className={styles.clueIndex}>{clueLabel}</div>}
       {content}
     </div>
   );

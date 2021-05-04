@@ -1,7 +1,5 @@
 import React from 'react';
-import { bemNamesFactory } from 'bem-names';
-
-const bem = bemNamesFactory('box-controls');
+import cn from 'classnames';
 
 interface Box {
   blocked?: boolean;
@@ -14,6 +12,8 @@ interface BoxControlsProps {
   onBlock: () => any;
   onToggleAttribute: (attribute: keyof Box) => any;
 }
+
+import styles from './BoxControls.module.scss';
 
 const BoxControls: React.FC<BoxControlsProps> = ({ box: { blocked, circled, shaded }, onBlock, onToggleAttribute }) => {
   const killEvent: React.MouseEventHandler = (evt) => {
@@ -32,10 +32,22 @@ const BoxControls: React.FC<BoxControlsProps> = ({ box: { blocked, circled, shad
   };
 
   return (
-    <div className="box-controls">
-      <div className={bem('block', { blocked })} onMouseDown={killEvent} onClick={onBlock} />
-      {!blocked && <div className={bem('circle', { circled })} onMouseDown={killEvent} onClick={handleToggleCircle} />}
-      {!blocked && <div className={bem('shade', { shaded })} onMouseDown={killEvent} onClick={handleToggleShade} />}
+    <div className={styles.boxControls}>
+      <div className={cn(styles.block, { [styles.blocked]: blocked })} onMouseDown={killEvent} onClick={onBlock} />
+      {!blocked && (
+        <div
+          className={cn(styles.circle, { [styles.circled]: circled })}
+          onMouseDown={killEvent}
+          onClick={handleToggleCircle}
+        />
+      )}
+      {!blocked && (
+        <div
+          className={cn(styles.shade, { [styles.shaded]: shaded })}
+          onMouseDown={killEvent}
+          onClick={handleToggleShade}
+        />
+      )}
     </div>
   );
 };

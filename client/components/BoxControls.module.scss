@@ -1,5 +1,3 @@
-$block-class: 'box-controls';
-
 %unindicator {
   position: absolute;
   color: red;
@@ -11,71 +9,69 @@ $block-class: 'box-controls';
   align-items: center;
 }
 
-@at-root {
-  .#{$block-class} {
+.BoxControls {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: 2;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  .block {
     position: absolute;
-    height: 100%;
-    width: 100%;
-    opacity: 0;
-    z-index: 2;
+    right: 0;
+    bottom: 0;
+    background-color: #555;
+    width: 33%;
+    height: 33%;
+    cursor: pointer;
 
     &:hover {
-      opacity: 1;
+      background-color: #333;
     }
 
-    &__block {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      background-color: #555;
-      width: 33%;
-      height: 33%;
-      cursor: pointer;
+    &.blocked::after {
+      @extend %unindicator;
+    }
+  }
 
-      &:hover {
-        background-color: #333;
-      }
+  .circle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: 1px solid #666;
+    border-radius: 50%;
+    width: 9px;
+    height: 9px;
+    cursor: pointer;
 
-      &--blocked::after {
-        @extend %unindicator;
-      }
+    &:hover {
+      border-color: black;
     }
 
-    &__circle {
-      position: absolute;
-      right: 0;
-      top: 0;
-      border: 1px solid #666;
-      border-radius: 50%;
-      width: 9px;
-      height: 9px;
-      cursor: pointer;
+    &.circled::after {
+      @extend %unindicator;
+    }
+  }
 
-      &:hover {
-        border-color: black;
-      }
+  .shade {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    background-color: #aaa;
+    width: 33%;
+    height: 33%;
+    cursor: pointer;
 
-      &--circled::after {
-        @extend %unindicator;
-      }
+    &:hover {
+      background-color: #888;
     }
 
-    &__shade {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      background-color: #aaa;
-      width: 33%;
-      height: 33%;
-      cursor: pointer;
-
-      &:hover {
-        background-color: #888;
-      }
-
-      &--shaded::after {
-        @extend %unindicator;
-      }
+    &.shaded::after {
+      @extend %unindicator;
     }
   }
 }

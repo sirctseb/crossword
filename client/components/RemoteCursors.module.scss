@@ -1,4 +1,4 @@
-.remote-cursors {
+.remoteCursors {
   position: absolute;
   top: 0;
   bottom: 0;
@@ -6,18 +6,17 @@
   width: 3px;
   z-index: 4;
 
-  &__cursor {
+  .cursor {
     height: 100%;
 
-    .remote-cursors__cursor-details {
+    .details {
       display: none;
     }
 
     &:hover {
-      .remote-cursors__cursor-details {
+      .details {
         display: block;
       }
     }
   }
 }
-

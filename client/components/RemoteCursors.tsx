@@ -1,7 +1,4 @@
 import React from 'react';
-import { bemNamesFactory } from 'bem-names';
-
-const bem = bemNamesFactory('remote-cursors');
 
 interface Cursor {
   displayName: string;
@@ -13,13 +10,15 @@ interface RemoteCursorsProps {
   cursors?: Cursor[];
 }
 
+import styles from './RemoteCursors.module.scss';
+
 const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors = null }) =>
   cursors && (
-    <div className={bem()}>
+    <div className={styles.remoteCursors}>
       {cursors.map(({ color, displayName, photoUrl }) => (
-        <div className={bem('cursor')} style={{ backgroundColor: `#${color}` }}>
-          <div className={bem('cursor-details')}>
-            <div className={bem('cursor-name')}>{displayName}</div>
+        <div className={styles.cursor} style={{ backgroundColor: `#${color}` }}>
+          <div className={styles.details}>
+            <div>{displayName}</div>
             <img src={photoUrl} />
           </div>
         </div>
