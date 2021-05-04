@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 import useClickOutside from '../hooks/useClickOutside';
 
-const RebusInput = ({ onClose, content }) => {
+interface RebusInputProps {
+  onClose: (content?: string) => any;
+  content?: string;
+}
+
+const RebusInput: React.FC<RebusInputProps> = ({ onClose, content }) => {
   const [value, setValue] = useState(content);
-  const nodeRef = useRef();
+  const nodeRef = useRef<HTMLDivElement>(null);
   useClickOutside(nodeRef.current, onClose);
 
-  const inputElement = useRef(null);
-  useEffect(() => inputElement.current.focus(), [inputElement]);
+  const inputElement = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    inputElement.current?.focus();
+  }, [inputElement]);
 
   return (
     <div className="rebus-input" ref={nodeRef}>
@@ -28,11 +34,6 @@ const RebusInput = ({ onClose, content }) => {
       />
     </div>
   );
-};
-
-RebusInput.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  content: PropTypes.string,
 };
 
 export default RebusInput;

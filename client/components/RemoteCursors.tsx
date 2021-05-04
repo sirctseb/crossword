@@ -1,10 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('remote-cursors');
 
-const RemoteCursors = ({ cursors }) =>
+interface Cursor {
+  displayName: string;
+  photoUrl: string;
+  color: string;
+}
+
+interface RemoteCursorsProps {
+  cursors?: Cursor[];
+}
+
+const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors = null }) =>
   cursors && (
     <div className={bem()}>
       {cursors.map(({ color, displayName, photoUrl }) => (
@@ -17,15 +26,5 @@ const RemoteCursors = ({ cursors }) =>
       ))}
     </div>
   );
-
-RemoteCursors.propTypes = {
-  cursors: PropTypes.arrayOf(
-    PropTypes.shape({
-      displayName: PropTypes.string,
-      PhotoUrl: PropTypes.string,
-      color: PropTypes.string,
-    })
-  ),
-};
 
 export default RemoteCursors;

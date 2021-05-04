@@ -1,15 +1,36 @@
 import React, { useState, memo } from 'react';
 import { bemNamesFactory } from 'bem-names';
-import propTypes from 'prop-types';
 
 import RemoteCursors from './RemoteCursors';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
-const targetFocused = ({ currentTarget }) => document.activeElement === currentTarget;
+const targetFocused = ({ currentTarget }: React.KeyboardEvent) => document.activeElement === currentTarget;
 const bem = bemNamesFactory('box');
 
-const Box = ({
+interface Box {
+  blocked?: boolean;
+  circled?: boolean;
+  shaded?: boolean;
+  content?: string;
+}
+
+interface BoxProps {
+  row: number;
+  column: number;
+  box: Box;
+  cursor: boolean;
+  cursorAnswer: boolean;
+  // TODO this should be packaged and imported
+  makeUndoableChange: (path: string, oldValue: any, newValue: any) => any;
+  clueLabel: number;
+  onBlock: (row: number, column: number, blocked: boolean) => any;
+  onBoxFocus: ({ row, column }: { row: number; column: number }) => any;
+  onAfterSetContent: (content: string | null) => any;
+  remoteCursors: React.ComponentProps<typeof RemoteCursors>['cursors'];
+}
+
+const Box: React.FC<BoxProps> = ({
   row,
   column,
   box,
@@ -29,7 +50,7 @@ const Box = ({
     onBoxFocus({ row, column });
   };
 
-  const handleMouseDown = (evt) => {
+  const handleMouseDown: React.MouseEventHandler = (evt) => {
     if (cursor) {
       setRebus(true);
       // when rebus goes to true
@@ -40,7 +61,7 @@ const Box = ({
     }
   };
 
-  const setContent = (newContent) => {
+  const setContent = (newContent: string | null) => {
     makeUndoableChange(`boxes/${row}/${column}/content`, newContent, content);
     if (onAfterSetContent) {
       onAfterSetContent(newContent);
@@ -48,7 +69,7 @@ const Box = ({
   };
 
   const handleRebusClose = (newContent = content) => {
-    setContent(newContent);
+    setContent(newContent || null);
     setRebus(false);
   };
 
@@ -56,7 +77,7 @@ const Box = ({
     onBlock(row, column, !blocked);
   };
 
-  const handleToggleAttribute = (attribute) => {
+  const handleToggleAttribute = (attribute: keyof Box) => {
     makeUndoableChange(`boxes/${row}/${column}/${attribute}`, !box[attribute], box[attribute]);
   };
 
@@ -71,7 +92,7 @@ const Box = ({
         },
         [`at-${row}-${column}`]
       )}
-      tabIndex={!blocked ? '0' : undefined}
+      tabIndex={!blocked ? 0 : undefined}
       onKeyPress={(evt) => {
         if (/^[A-Za-z]$/.test(evt.key) && targetFocused(evt)) {
           setContent(evt.key);
@@ -85,31 +106,13 @@ const Box = ({
       onFocus={handleFocus}
       onMouseDown={handleMouseDown}
     >
-      {remoteCursors.length > 0 && <RemoteCursors cursors={remoteCursors} />}
+      {remoteCursors?.length && <RemoteCursors cursors={remoteCursors} />}
       <BoxControls onToggleAttribute={handleToggleAttribute} box={box} onBlock={handleOnBlock} />
       {rebus && <RebusInput content={content} onClose={handleRebusClose} />}
       {clueLabel && <div className={bem('clue-index')}>{clueLabel}</div>}
       {content}
     </div>
   );
-};
-
-Box.propTypes = {
-  row: propTypes.number.isRequired,
-  column: propTypes.number.isRequired,
-  box: propTypes.shape({
-    blocked: propTypes.bool,
-    circled: propTypes.bool,
-    shaded: propTypes.bool,
-    content: propTypes.string,
-  }).isRequired,
-  cursor: propTypes.bool.isRequired,
-  cursorAnswer: propTypes.bool.isRequired,
-  makeUndoableChange: propTypes.func.isRequired,
-  clueLabel: propTypes.number,
-  onBlock: propTypes.func.isRequired,
-  onBoxFocus: propTypes.func.isRequired,
-  onAfterSetContent: propTypes.func,
 };
 
 export default memo(Box);

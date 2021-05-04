@@ -1,21 +1,32 @@
 import React from 'react';
-import propTypes from 'prop-types';
 import { bemNamesFactory } from 'bem-names';
 
 const bem = bemNamesFactory('box-controls');
 
-const BoxControls = ({ box: { blocked, circled, shaded }, onBlock, onToggleAttribute }) => {
-  const killEvent = (evt) => {
+interface Box {
+  blocked?: boolean;
+  circled?: boolean;
+  shaded?: boolean;
+}
+
+interface BoxControlsProps {
+  box: Box;
+  onBlock: () => any;
+  onToggleAttribute: (attribute: keyof Box) => any;
+}
+
+const BoxControls: React.FC<BoxControlsProps> = ({ box: { blocked, circled, shaded }, onBlock, onToggleAttribute }) => {
+  const killEvent: React.MouseEventHandler = (evt) => {
     evt.preventDefault();
     evt.stopPropagation();
   };
 
-  const handleToggleCircle = (evt) => {
+  const handleToggleCircle: React.MouseEventHandler = (evt) => {
     onToggleAttribute('circled');
     evt.stopPropagation();
   };
 
-  const handleToggleShade = (evt) => {
+  const handleToggleShade: React.MouseEventHandler = (evt) => {
     onToggleAttribute('shaded');
     evt.stopPropagation();
   };
@@ -27,12 +38,6 @@ const BoxControls = ({ box: { blocked, circled, shaded }, onBlock, onToggleAttri
       {!blocked && <div className={bem('shade', { shaded })} onMouseDown={killEvent} onClick={handleToggleShade} />}
     </div>
   );
-};
-
-BoxControls.propTypes = {
-  box: propTypes.object.isRequired,
-  onBlock: propTypes.func.isRequired,
-  onToggleAttribute: propTypes.func.isRequired,
 };
 
 export default BoxControls;
