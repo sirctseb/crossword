@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import useClickOutside from './useClickOutside';
+import useClickOutside from '../hooks/useClickOutside';
 
 const RebusInput = ({ onClose, content }) => {
   const [value, setValue] = useState(content);

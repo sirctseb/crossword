@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react';
 import { bemNamesFactory } from 'bem-names';
 import propTypes from 'prop-types';
 
-import RemoteCursors from './cursors/RemoteCursors';
+import RemoteCursors from './RemoteCursors';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
 
