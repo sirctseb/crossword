@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
+import Editor from '../../components/Editor';
 
 import { Crosswords } from '../../firebase-recoil/data';
 
@@ -34,7 +35,12 @@ interface CrosswordContainerProps {
 
 const CrosswordContainer: React.FC<CrosswordContainerProps> = ({ crosswordId }) => {
   const crossword = useRecoilValue(Crosswords({ crosswordId }));
-  return <pre>{JSON.stringify(crossword, undefined, 2)}</pre>;
+
+  if (!crossword) {
+    return null;
+  }
+
+  return <Editor crossword={crossword} />;
 };
 
 export default CrosswordPage;

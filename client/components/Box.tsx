@@ -25,7 +25,7 @@ interface BoxProps {
   clueLabel: number;
   onBlock: (row: number, column: number, blocked: boolean) => any;
   onBoxFocus: ({ row, column }: { row: number; column: number }) => any;
-  onAfterSetContent: (content: string | null) => any;
+  onAfterSetContent: ((content: string | null) => any) | null;
   remoteCursors: React.ComponentProps<typeof RemoteCursors>['cursors'];
 }
 
@@ -85,7 +85,7 @@ const Box: React.FC<BoxProps> = ({
   return (
     <div
       className={cn(
-        styles.Box,
+        styles.box,
         {
           [styles.blocked]: blocked,
           [styles.circled]: circled,
@@ -108,7 +108,7 @@ const Box: React.FC<BoxProps> = ({
       onFocus={handleFocus}
       onMouseDown={handleMouseDown}
     >
-      {remoteCursors?.length && <RemoteCursors cursors={remoteCursors} />}
+      <RemoteCursors cursors={remoteCursors} />
       <BoxControls onToggleAttribute={handleToggleAttribute} box={box} onBlock={handleOnBlock} />
       {rebus && <RebusInput content={content} onClose={handleRebusClose} />}
       {clueLabel && <div className={styles.clueIndex}>{clueLabel}</div>}
