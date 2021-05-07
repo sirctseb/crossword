@@ -1,7 +1,25 @@
-import { get, flatten, range } from 'lodash';
-import { ACROSS, DOWN } from './constants';
+import { get } from 'lodash';
+import { Direction, Crossword, Box } from '../../firebase-recoil/data';
 
-const calculateAcrossPattern = ({ row, column }, crossword) => {
+const range = (count: number) => [...Array(count).keys()];
+const flatten = (arrays: any[][]): any[] => {
+  return arrays.reduce((total, current) => [...total, ...current], []);
+};
+
+interface Coordinate {
+  row: number;
+  column: number;
+}
+
+interface Address extends Coordinate {
+  label: number;
+}
+
+interface Cursor extends Coordinate {
+  direction: Direction;
+}
+
+const calculateAcrossPattern = ({ row, column }: Coordinate, crossword: Crossword): string => {
   const across = [];
   for (let i = column; i >= 0 && !get(crossword, `boxes.${row}.${i}.blocked`); i -= 1) {
     across.push(get(crossword, `boxes.${row}.${i}.content`, '.'));
@@ -13,7 +31,7 @@ const calculateAcrossPattern = ({ row, column }, crossword) => {
   return `^${across.join('')}$`;
 };
 
-const calculateDownPattern = ({ row, column }, crossword) => {
+const calculateDownPattern = ({ row, column }: Coordinate, crossword: Crossword): string => {
   const down = [];
   for (let i = row; i >= 0 && !get(crossword, `boxes.${i}.${column}.blocked`); i -= 1) {
     down.push(get(crossword, `boxes.${i}.${column}.content`, '.'));
@@ -25,18 +43,27 @@ const calculateDownPattern = ({ row, column }, crossword) => {
   return `^${down.join('')}$`;
 };
 
-const calculateThemeSuggestions = (themeEntries, acrossPattern, downPattern) => ({
+interface ThemeSuggestions {
+  across: string[];
+  down: string[];
+}
+
+const calculateThemeSuggestions = (
+  themeEntries: string[],
+  acrossPattern: string,
+  downPattern: string
+): ThemeSuggestions => ({
   across: [...themeEntries.filter((entry) => entry.match(acrossPattern))],
   down: [...themeEntries.filter((entry) => entry.match(downPattern))],
 });
 
-const calculateCurrentAnswers = (crossword) => {
+const calculateCurrentAnswers = (crossword: Crossword): string[] => {
   const MISSING_VALUE = { blocked: true };
-  const coordsToSignifier = (row, column) => {
+  const coordsToSignifier = (row: number, column: number): string => {
     const { content, blocked } = get(crossword, `boxes.${row}.${column}`, MISSING_VALUE);
     return blocked ? '|' : content || '.';
   };
-  const lineToAnswers = (line) =>
+  const lineToAnswers = (line: string[]) =>
     line
       .join('')
       .split('|')
@@ -50,12 +77,12 @@ const calculateCurrentAnswers = (crossword) => {
   );
 };
 
-const calculateIsCursorAnswer = (crossword, cursor) => (row, column) => {
+const calculateIsCursorAnswer = (crossword: Crossword, cursor: Cursor) => (row: number, column: number): boolean => {
   const box = get(crossword, `boxes.${row}.${column}`) || {};
   if (box.blocked) return false;
   if (row === cursor.row && column === cursor.column) return true;
 
-  if (cursor.direction === ACROSS) {
+  if (cursor.direction === Direction.across) {
     if (row !== cursor.row) {
       return false;
     }
@@ -88,18 +115,12 @@ const calculateIsCursorAnswer = (crossword, cursor) => (row, column) => {
   return false;
 };
 
+type CrosswordAddresses = Record<Direction, Address[]>;
 /**
  * Returns a map from directions to a list of boxes with their rows, columns, and labels
- * {
- *   [across|down]: [
- *     {
- *       row, column, label
- *     }
- *   ],
- * }
  */
-const calculateClueAddresses = (crossword) => {
-  const addresses = {
+const calculateClueAddresses = (crossword: Crossword): CrosswordAddresses => {
+  const addresses: CrosswordAddresses = {
     across: [],
     down: [],
   };
@@ -127,9 +148,9 @@ const calculateClueAddresses = (crossword) => {
 /**
  * Returns a map from row to column to the label at that square
  */
-const calculateLabelMap = (addresses) => {
-  const map = {};
-  [ACROSS, DOWN].forEach((direction) => {
+const calculateLabelMap = (addresses: CrosswordAddresses): Record<number, Record<number, number>> => {
+  const map: Record<number, Record<number, number>> = {};
+  [Direction.across, Direction.down].forEach((direction) => {
     addresses[direction].forEach((address) => {
       map[address.row] = map[address.row] || {};
       map[address.row][address.column] = address.label;
@@ -140,9 +161,9 @@ const calculateLabelMap = (addresses) => {
 
 // All the of rest are in service of calculateCursorAfterAdvancement
 
-const firstBoxAddress = (crossword, row, column, direction) => {
-  const columnChange = direction === ACROSS ? -1 : 0;
-  const rowChange = direction === ACROSS ? 0 : -1;
+const firstBoxAddress = (crossword: Crossword, row: number, column: number, direction: Direction) => {
+  const columnChange = direction === Direction.across ? -1 : 0;
+  const rowChange = direction === Direction.across ? 0 : -1;
 
   let rowIter = row;
   let columnIter = column;
@@ -160,21 +181,35 @@ const firstBoxAddress = (crossword, row, column, direction) => {
 /**
  * The address of the labeled box of the answer that contains the given row/column
  */
-const clueAddressAt = (crossword, row, column, direction, clueAddresses) => {
+const clueAddressAt = (
+  crossword: Crossword,
+  row: number,
+  column: number,
+  direction: Direction,
+  clueAddresses: Address[]
+): Address => {
   const firstAddress = firstBoxAddress(crossword, row, column, direction);
-  return clueAddresses.find((address) => address.row === firstAddress.row && address.column === firstAddress.column);
+  return clueAddresses.find(
+    (address) => address.row === firstAddress.row && address.column === firstAddress.column
+  ) as Address; // We promise this is always found and don't want to burden the caller with undefined
 };
 
-const notBlocked = (crossword, row, column) => !get(crossword, ['boxes', row, column, 'blocked']);
-const isAt = (address, row, column) => address.row === row && address.column === column;
-const boxAt = (crossword, row, column) => get(crossword, ['boxes', row, column], {});
-const candidateAt = (crossword, row, column) => ({
+const notBlocked = (crossword: Crossword, row: number, column: number): boolean =>
+  !get(crossword, ['boxes', row, column, 'blocked']);
+const isAt = (address: Coordinate, row: number, column: number): boolean =>
+  address.row === row && address.column === column;
+const boxAt = (crossword: Crossword, row: number, column: number): Box => get(crossword, ['boxes', row, column], {});
+
+interface Candidate extends Coordinate {
+  box: Box;
+}
+const candidateAt = (crossword: Crossword, row: number, column: number): Candidate => ({
   row,
   column,
   box: boxAt(crossword, row, column),
 });
 
-const cycleInAnswerDown = (crossword, row, column) => {
+const cycleInAnswerDown = (crossword: Crossword, row: number, column: number): Candidate => {
   if (row + 1 < crossword.rows && notBlocked(crossword, row + 1, column)) {
     return candidateAt(crossword, row + 1, column);
   }
@@ -185,7 +220,7 @@ const cycleInAnswerDown = (crossword, row, column) => {
   return candidateAt(crossword, rowIter, column);
 };
 
-const cycleInAnswerAcross = (crossword, row, column) => {
+const cycleInAnswerAcross = (crossword: Crossword, row: number, column: number): Candidate => {
   if (column + 1 < crossword.rows && notBlocked(crossword, row, column + 1)) {
     return candidateAt(crossword, row, column + 1);
   }
@@ -201,9 +236,16 @@ const cyclers = {
   down: cycleInAnswerDown,
 };
 
-const cycleInAnswer = (crossword, row, column, direction) => cyclers[direction](crossword, row, column);
+const cycleInAnswer = (crossword: Crossword, row: number, column: number, direction: Direction): Candidate =>
+  cyclers[direction](crossword, row, column);
 
-const findInCycle = (crossword, row, column, direction, where) => {
+const findInCycle = (
+  crossword: Crossword,
+  row: number,
+  column: number,
+  direction: Direction,
+  where: (candidate: Candidate) => boolean
+): Candidate | null => {
   let candidate = candidateAt(crossword, row, column);
   if (where(candidate)) return candidate;
 
@@ -217,12 +259,25 @@ const findInCycle = (crossword, row, column, direction, where) => {
   return null;
 };
 
-const findNext = (crossword, row, column, direction, clueAddresses, where) => {
+const findNext = (
+  crossword: Crossword,
+  row: number,
+  column: number,
+  direction: Direction,
+  clueAddresses: Address[],
+  where: (candidate: Candidate) => boolean
+): Candidate | null => {
   if (!notBlocked(crossword, row, column)) {
     return null;
   }
 
-  let candidate = findInCycle(crossword, row, column, direction, (box) => where(box) && !isAt(box, row, column));
+  let candidate = findInCycle(
+    crossword,
+    row,
+    column,
+    direction,
+    (candidate) => where(candidate) && !isAt(candidate, row, column)
+  );
   if (candidate) return candidate;
 
   const { label } = clueAddressAt(crossword, row, column, direction, clueAddresses);
@@ -253,18 +308,27 @@ export const test = {
   calculateClueAddresses,
 };
 
-const findNextBlank = (crossword, row, column, direction, clueAddresses) =>
-  findNext(crossword, row, column, direction, clueAddresses, (candidate) => !get(candidate.box, 'content'));
+const findNextBlank = (
+  crossword: Crossword,
+  row: number,
+  column: number,
+  direction: Direction,
+  clueAddresses: Address[]
+) => findNext(crossword, row, column, direction, clueAddresses, (candidate) => !get(candidate.box, 'content'));
 
-const calculateCursorAfterAdvancement = (crossword, { row, column, direction }, { [direction]: addresses }) =>
+const calculateCursorAfterAdvancement = (
+  crossword: Crossword,
+  { row, column, direction }: Cursor,
+  { [direction]: addresses }: CrosswordAddresses
+) =>
   // candidateAt(crossword, row, column) ||
   findNextBlank(crossword, row, column, direction, addresses) || { row, column };
 
-export default (crossword, cursor) => {
+export default (crossword: Crossword, cursor: Cursor) => {
   const cursorContent = get(crossword, ['boxes', cursor.row, cursor.column, 'content']);
   const isCursorAnswer = calculateIsCursorAnswer(crossword, cursor);
-  const isCursorBox = (row, column) => row === cursor.row && column === cursor.column;
-  const isBlockedBox = (row, column) => !!get(crossword, `boxes.${row}.${column}.blocked`);
+  const isCursorBox = (row: number, column: number) => row === cursor.row && column === cursor.column;
+  const isBlockedBox = (row: number, column: number) => !!get(crossword, `boxes.${row}.${column}.blocked`);
   const size = crossword.rows;
   const clueAddresses = calculateClueAddresses(crossword);
   const labelMap = calculateLabelMap(clueAddresses);
