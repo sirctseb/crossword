@@ -1,10 +1,5 @@
-import { describe, it } from 'mocha';
-import chai, { expect } from 'chai';
-import dirtyChai from 'dirty-chai';
 import { Candidate, test } from './derivations';
 import { Box, Crossword, Direction } from '../../firebase-recoil/data';
-
-chai.use(dirtyChai);
 
 const makeCrossword = (board: string[]): Crossword => ({
   rows: board.length,
@@ -24,32 +19,32 @@ describe('selectors', () => {
       it('moves to column 0', () => {
         const crossword = makeCrossword(['---', '---', '---']);
         const subject = test.firstBoxAddress(crossword, 1, 1, Direction.across);
-        expect(subject.row).to.equal(1);
-        expect(subject.column).to.equal(0);
+        expect(subject.row).toBe(1);
+        expect(subject.column).toBe(0);
       });
     });
     describe('down', () => {
       it('moves to row 0', () => {
         const crossword = makeCrossword(['---', '---', '---']);
         const subject = test.firstBoxAddress(crossword, 1, 1, Direction.down);
-        expect(subject.row).to.equal(0);
-        expect(subject.column).to.equal(1);
+        expect(subject.row).toBe(0);
+        expect(subject.column).toBe(1);
       });
     });
   });
 
   describe('notBlocked', () => {
     it('returns true with explicit false value', () => {
-      expect(test.notBlocked(cw({ boxes: [[{ blocked: false }]] }), 0, 0)).to.be.true();
+      expect(test.notBlocked(cw({ boxes: [[{ blocked: false }]] }), 0, 0)).toBe(true);
     });
     it('returns true with absent value', () => {
-      expect(test.notBlocked(cw({ boxes: [[{ content: 'a' }]] }), 0, 0)).to.be.true();
+      expect(test.notBlocked(cw({ boxes: [[{ content: 'a' }]] }), 0, 0)).toBe(true);
     });
     it('returns true with no box', () => {
-      expect(test.notBlocked(cw({}), 0, 0)).to.be.true();
+      expect(test.notBlocked(cw({}), 0, 0)).toBe(true);
     });
     it('returns false with true value', () => {
-      expect(test.notBlocked(cw({ boxes: [[{ blocked: true }]] }), 0, 0)).to.be.false();
+      expect(test.notBlocked(cw({ boxes: [[{ blocked: true }]] }), 0, 0)).toBe(false);
     });
   });
 
@@ -57,17 +52,17 @@ describe('selectors', () => {
     it('returns true with same row and column', () => {
       const row = 0;
       const column = 0;
-      expect(test.isAt({ row, column }, row, column)).to.be.true();
+      expect(test.isAt({ row, column }, row, column)).toBe(true);
     });
     it('returns false with different row', () => {
       const row = 0;
       const column = 0;
-      expect(test.isAt({ row, column }, row + 1, column)).to.be.false();
+      expect(test.isAt({ row, column }, row + 1, column)).toBe(false);
     });
     it('returns false with different column', () => {
       const row = 0;
       const column = 0;
-      expect(test.isAt({ row, column }, row, column + 1)).to.be.false();
+      expect(test.isAt({ row, column }, row, column + 1)).toBe(false);
     });
   });
 
@@ -79,12 +74,12 @@ describe('selectors', () => {
       boxes[row] = [];
       boxes[row][column] = {};
       const crossword = cw({ boxes });
-      expect(test.boxAt(crossword, row, column)).to.equal(boxes[row][column]);
+      expect(test.boxAt(crossword, row, column)).toBe(boxes[row][column]);
     });
 
     it('returns a blank box when there is none', () => {
       const subject = test.boxAt(cw(), 0, 0);
-      expect(subject).to.be.a('object');
+      expect(subject).toEqual({});
     });
   });
 
@@ -99,15 +94,15 @@ describe('selectors', () => {
       const crossword = cw({ boxes });
 
       const subject = test.candidateAt(crossword, row, column);
-      expect(subject.box).to.equal(boxes[row][column]);
-      expect(subject.row).to.equal(row);
-      expect(subject.column).to.equal(column);
+      expect(subject.box).toBe(boxes[row][column]);
+      expect(subject.row).toBe(row);
+      expect(subject.column).toBe(column);
     });
 
     it('supplies a blank box when there is none', () => {
       const crossword = cw({ rows: 1 });
       const subject = test.candidateAt(crossword, 0, 0);
-      expect(subject.box).to.be.a('object');
+      expect(subject.box).toEqual({});
     });
   });
 
@@ -116,33 +111,31 @@ describe('selectors', () => {
     const crossword = {
       rows: 4,
       symmetric: true,
-      boxes: [[], [{ blocked: true }], [target], [{ blocked: true }]],
+      boxes: [[{}, { blocked: true }], [target], [{ blocked: true }]],
     };
     it('returns a candidate', () => {
       const subject = test.cycleInAnswerDown(crossword, 0, 0);
-      expect(subject.box).to.equal(target);
-      expect(subject.row).to.be.a('number');
-      expect(subject.column).to.be.a('number');
+      expect(subject.box).toBe(target);
     });
     it('increments the row', () => {
       const subject = test.cycleInAnswerDown(crossword, 0, 0);
-      expect(subject.row).to.equal(1);
+      expect(subject.row).toBe(1);
     });
     it('does not change the column', () => {
       const subject = test.cycleInAnswerDown(crossword, 0, 0);
-      expect(subject.column).to.equal(0);
+      expect(subject.column).toBe(0);
     });
     it('loops when it hits a block', () => {
       const subject = test.cycleInAnswerDown(crossword, 1, 0);
-      expect(subject.row).to.equal(0);
+      expect(subject.row).toBe(0);
     });
     it('loops when it hits the end', () => {
       const subject = test.cycleInAnswerDown(crossword, 3, 2);
-      expect(subject.row).to.equal(0);
+      expect(subject.row).toBe(0);
     });
     it('resets after the preceding block', () => {
       const subject = test.cycleInAnswerDown(crossword, 3, 1);
-      expect(subject.row).to.equal(1);
+      expect(subject.row).toBe(1);
     });
   });
 
@@ -155,29 +148,27 @@ describe('selectors', () => {
     };
     it('returns a candidate', () => {
       const subject = test.cycleInAnswerAcross(crossword, 0, 0);
-      expect(subject.box).to.equal(target);
-      expect(subject.row).to.be.a('number');
-      expect(subject.column).to.be.a('number');
+      expect(subject.box).toBe(target);
     });
     it('increments the row', () => {
       const subject = test.cycleInAnswerAcross(crossword, 0, 0);
-      expect(subject.column).to.equal(1);
+      expect(subject.column).toBe(1);
     });
     it('does not change the column', () => {
       const subject = test.cycleInAnswerAcross(crossword, 0, 0);
-      expect(subject.row).to.equal(0);
+      expect(subject.row).toBe(0);
     });
     it('loops when it hits a block', () => {
       const subject = test.cycleInAnswerAcross(crossword, 0, 1);
-      expect(subject.column).to.equal(0);
+      expect(subject.column).toBe(0);
     });
     it('loops when it hits the end', () => {
       const subject = test.cycleInAnswerAcross(crossword, 2, 3);
-      expect(subject.column).to.equal(0);
+      expect(subject.column).toBe(0);
     });
     it('resets after the preceding block', () => {
       const subject = test.cycleInAnswerAcross(crossword, 1, 3);
-      expect(subject.column).to.equal(1);
+      expect(subject.column).toBe(1);
     });
   });
 
@@ -185,14 +176,14 @@ describe('selectors', () => {
     const crossword = cw({ rows: 2 });
     it('increments row given down', () => {
       const subject = test.cycleInAnswer(crossword, 0, 0, Direction.down);
-      expect(subject.row).to.equal(1);
-      expect(subject.column).to.equal(0);
+      expect(subject.row).toBe(1);
+      expect(subject.column).toBe(0);
     });
 
     it('increments column given across', () => {
       const subject = test.cycleInAnswer(crossword, 0, 0, Direction.across);
-      expect(subject.row).to.equal(0);
-      expect(subject.column).to.equal(1);
+      expect(subject.row).toBe(0);
+      expect(subject.column).toBe(1);
     });
   });
 
@@ -204,11 +195,11 @@ describe('selectors', () => {
     });
     it('finds when it is after the input', () => {
       const subject = test.findInCycle(crossword, 0, 0, Direction.across, (candidate) => candidate.box === target);
-      expect(subject?.column).to.equal(1);
+      expect(subject?.column).toBe(1);
     });
     it('finds when it is before the input', () => {
       const subject = test.findInCycle(crossword, 0, 2, Direction.across, (candidate) => candidate.box === target);
-      expect(subject?.column).to.equal(1);
+      expect(subject?.column).toBe(1);
     });
   });
 
@@ -218,9 +209,9 @@ describe('selectors', () => {
     it('generates a crossword', () => {
       const subject = makeCrossword(['b!-', '---', '---']);
 
-      expect(subject.rows).to.equal(3);
-      expect(subject.boxes?.[0][0].blocked).to.equal(true);
-      expect(subject.boxes?.[0][1].content).to.equal('!');
+      expect(subject.rows).toBe(3);
+      expect(subject.boxes?.[0][0].blocked).toBe(true);
+      expect(subject.boxes?.[0][1].content).toBe('!');
     });
   });
 
@@ -231,7 +222,7 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, Direction.down, addresses, isBang);
-        expect(subject).to.be.null();
+        expect(subject).toBe(null);
       });
 
       it('advances to the next column', () => {
@@ -239,8 +230,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, Direction.down, addresses, isBang);
-        expect(subject?.row).to.equal(0);
-        expect(subject?.column).to.equal(1);
+        expect(subject?.row).toBe(0);
+        expect(subject?.column).toBe(1);
       });
 
       it('advances past the first row of answers to one that starts lower', () => {
@@ -248,8 +239,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, Direction.down, addresses, isBang);
-        expect(subject?.row).to.equal(1);
-        expect(subject?.column).to.equal(1);
+        expect(subject?.row).toBe(1);
+        expect(subject?.column).toBe(1);
       });
 
       it('wraps around to an earlier answer', () => {
@@ -257,8 +248,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 2, Direction.down, addresses, isBang);
-        expect(subject?.row).to.equal(0);
-        expect(subject?.column).to.equal(0);
+        expect(subject?.row).toBe(0);
+        expect(subject?.column).toBe(0);
       });
 
       it('returns null given a blocked box', () => {
@@ -266,7 +257,7 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).down;
 
         const subject = test.findNext(crossword, 0, 0, Direction.down, addresses, isBang);
-        expect(subject).to.be.null();
+        expect(subject).toBe(null);
       });
     });
 
@@ -276,8 +267,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 1, Direction.across, addresses, isBang);
-        expect(subject?.row).to.equal(1);
-        expect(subject?.column).to.equal(0);
+        expect(subject?.row).toBe(1);
+        expect(subject?.column).toBe(0);
       });
 
       it('advances past the first row of answers to one that starts after', () => {
@@ -285,8 +276,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 0, Direction.across, addresses, isBang);
-        expect(subject?.row).to.equal(1);
-        expect(subject?.column).to.equal(1);
+        expect(subject?.row).toBe(1);
+        expect(subject?.column).toBe(1);
       });
 
       it('wraps around to an earlier answer', () => {
@@ -294,8 +285,8 @@ describe('selectors', () => {
         const addresses = test.calculateClueAddresses(crossword).across;
 
         const subject = test.findNext(crossword, 0, 2, Direction.across, addresses, isBang);
-        expect(subject?.row).to.equal(0);
-        expect(subject?.column).to.equal(0);
+        expect(subject?.row).toBe(0);
+        expect(subject?.column).toBe(0);
       });
     });
   });
