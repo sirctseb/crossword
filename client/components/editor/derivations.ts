@@ -57,10 +57,10 @@ const calculateThemeSuggestions = (
 });
 
 const calculateCurrentAnswers = (crossword: Crossword): string[] => {
-  const MISSING_VALUE = { blocked: true };
+  const MISSING_VALUE = { blocked: true, content: undefined };
   const coordsToSignifier = (row: number, column: number): string => {
     const { content, blocked } = crossword.boxes?.[row]?.[column] || MISSING_VALUE;
-    return blocked ? '|' : content || '.';
+    return (blocked && '|') || content || '.';
   };
   const lineToAnswers = (line: string[]) =>
     line
