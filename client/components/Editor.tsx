@@ -1,5 +1,6 @@
-import React from 'react';
-import { Crossword } from '../firebase-recoil/data';
+import React, { useState } from 'react';
+import derivations from './editor/derivations';
+import { Crossword, Direction } from '../firebase-recoil/data';
 
 import Box from '../components/Box';
 
@@ -7,22 +8,30 @@ interface EditorProps {
   crossword: Crossword;
 }
 
+interface Cursor {
+  row: number;
+  column: number;
+  direction: Direction;
+}
+
 const emptyBox = {};
 
 // stubbed
-const isCursorAnswer = (row: number, column: number): boolean => false;
 const makeUndoableChange = (path: string, oldValue: any, newValue: any): void => {};
 const handleBlock = (row: number, column: number, blocked: boolean): void => {};
 const handleBoxFocus = (coords: { row: number; column: number }): void => {};
-const isCursorBox = (row: number, column: number): boolean => false;
 const handleAfterSetContent = (content: string | null): void => {};
 
 const Editor: React.FC<EditorProps> = ({ crossword }) => {
+  const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
+
+  const { isCursorAnswer, isCursorBox } = derivations(crossword, cursor);
+
   const rows = [];
   for (let row = 0; row < crossword.rows; row += 1) {
     const boxes = [];
     for (let column = 0; column < crossword.rows; column += 1) {
-      const box = crossword.boxes[row][column] || emptyBox;
+      const box = crossword.boxes?.[row]?.[column] || emptyBox;
       const label = 1; //labelMap[row][column];
 
       boxes.push(
