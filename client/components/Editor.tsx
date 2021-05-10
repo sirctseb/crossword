@@ -25,14 +25,14 @@ const handleAfterSetContent = (content: string | null): void => {};
 const Editor: React.FC<EditorProps> = ({ crossword }) => {
   const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
 
-  const { isCursorAnswer, isCursorBox } = derivations(crossword, cursor);
+  const { isCursorAnswer, isCursorBox, labelMap } = derivations(crossword, cursor);
 
   const rows = [];
   for (let row = 0; row < crossword.rows; row += 1) {
     const boxes = [];
     for (let column = 0; column < crossword.rows; column += 1) {
       const box = crossword.boxes?.[row]?.[column] || emptyBox;
-      const label = 1; //labelMap[row][column];
+      const label = labelMap[row][column];
 
       boxes.push(
         <Box
