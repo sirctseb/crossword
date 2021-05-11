@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 
-export default (node: HTMLElement | null, onClickOutside: () => any) => {
+const useClickOutside = (node: HTMLElement | null, onClickOutside: () => any) => {
   const handler = useCallback(
     (event) => {
       if (node && !node.contains(event.target)) {
@@ -15,3 +15,5 @@ export default (node: HTMLElement | null, onClickOutside: () => any) => {
     return () => document.removeEventListener('mousedown', handler);
   }, [handler]);
 };
+
+export default useClickOutside;

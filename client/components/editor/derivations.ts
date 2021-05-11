@@ -324,7 +324,7 @@ const calculateCursorAfterAdvancement = (
   // candidateAt(crossword, row, column) ||
   findNextBlank(crossword, row, column, direction, addresses) || { row, column };
 
-export default (crossword: Crossword, cursor: Cursor) => {
+const derivations = (crossword: Crossword, cursor: Cursor) => {
   const cursorContent = crossword.boxes?.[cursor.row]?.[cursor.column]?.content;
   const isCursorAnswer = calculateIsCursorAnswer(crossword, cursor);
   const isCursorBox = (row: number, column: number) => row === cursor.row && column === cursor.column;
@@ -357,3 +357,5 @@ export default (crossword: Crossword, cursor: Cursor) => {
     downPattern,
   };
 };
+
+export default derivations;
