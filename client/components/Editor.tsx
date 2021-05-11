@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import cn from 'classnames';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
 
@@ -6,6 +7,9 @@ import Box from '../components/Box';
 
 interface EditorProps {
   crossword: Crossword;
+  showClues?: boolean;
+  showSuggestions?: boolean;
+  showThemeEntries?: boolean;
 }
 
 interface Cursor {
@@ -13,6 +17,8 @@ interface Cursor {
   column: number;
   direction: Direction;
 }
+
+import styles from './Editor.module.scss';
 
 const emptyBox = {};
 
@@ -22,7 +28,12 @@ const handleBlock = (row: number, column: number, blocked: boolean): void => {};
 const handleBoxFocus = (coords: { row: number; column: number }): void => {};
 const handleAfterSetContent = (content: string | null): void => {};
 
-const Editor: React.FC<EditorProps> = ({ crossword }) => {
+const Editor: React.FC<EditorProps> = ({
+  crossword,
+  showClues = true,
+  showSuggestions = true,
+  showThemeEntries = true,
+}) => {
   const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
 
   const { isCursorAnswer, isCursorBox, labelMap } = derivations(crossword, cursor);
@@ -53,12 +64,77 @@ const Editor: React.FC<EditorProps> = ({ crossword }) => {
       );
     }
     rows.push(
-      <div className="editor__row" key={`row-${row}`}>
+      <div className={styles.row} key={`row-${row}`}>
         {boxes}
       </div>
     );
   }
-  return <div>{rows}</div>;
+  return (
+    <div className={cn(styles.editor, styles[`size${crossword.rows}`])}>
+      <input
+        type="number"
+        value={crossword.rows}
+        onChange={
+          (evt) => null
+          // undoHistory.add(
+          //   FirebaseChange.FromValues(fbRef.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
+          // )
+        }
+      />
+      <input
+        type="checkbox"
+        checked={crossword.symmetric}
+        onChange={
+          (evt) => null
+          // set(`${path}/symmetric`, evt.target.checked)
+        }
+      />
+      <div className={styles.cluesAndGrid}>
+        {showClues && (
+          <div className={styles.cluesWrapper}>
+            {/* <ClueList
+              direction={ACROSS}
+              clueLabels={acrossClues}
+              clueData={get(crossword.clues, 'across', [])}
+              clueInput={clueInput}
+              onChangeClue={setClueInput}
+              onClueBlur={onClueBlur}
+            /> */}
+          </div>
+        )}
+        <div className={styles.grid}>{rows}</div>
+        {showClues && (
+          <div className={styles.cluesWrapper}>
+            {/* <ClueList
+              direction={DOWN}
+              clueLabels={downClues}
+              clueData={get(crossword.clues, 'down', [])}
+              clueInput={clueInput}
+              onChangeClue={setClueInput}
+              onClueBlur={onClueBlur}
+            /> */}
+          </div>
+        )}
+      </div>
+      {
+        showSuggestions && null
+        // <Suggestions
+        //   id={crosswordId}
+        //   themeSuggestions={themeSuggestions}
+        //   acrossPattern={acrossPattern}
+        //   downPattern={downPattern}
+        // />
+      }
+      {
+        showThemeEntries && null
+        // <ThemeEntries
+        //   fbRef={fbRef.child(path).child('themeEntries')}
+        //   themeEntries={Object.keys(crossword.themeEntries || {})}
+        //   currentAnswers={currentAnswers}
+        // />
+      }
+    </div>
+  );
 };
 
 export default Editor;
