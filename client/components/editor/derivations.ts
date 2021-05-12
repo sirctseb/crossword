@@ -10,7 +10,7 @@ interface Coordinate {
   column: number;
 }
 
-interface Address extends Coordinate {
+export interface Address extends Coordinate {
   label: number;
 }
 

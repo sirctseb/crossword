@@ -19,6 +19,7 @@ interface Cursor {
 }
 
 import styles from './Editor.module.scss';
+import ClueList, { ClueValue } from './ClueList';
 
 const emptyBox = {};
 
@@ -35,8 +36,33 @@ const Editor: React.FC<EditorProps> = ({
   showThemeEntries = true,
 }) => {
   const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
+  const [clueInput, setClueInput] = useState<ClueValue>({ row: 0, column: 0, direction: Direction.across, value: '' });
 
-  const { isCursorAnswer, isCursorBox, labelMap } = derivations(crossword, cursor);
+  const {
+    isCursorAnswer,
+    isCursorBox,
+    labelMap,
+    clueAddresses: { across: acrossClues, down: downClues },
+  } = derivations(crossword, cursor);
+
+  const onClueBlur = () => {
+    const { direction, row, column, value } = clueInput;
+
+    // undoHistory.add(
+    //   FirebaseChange.FromValues(
+    //     fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
+    //     value,
+    //     get(crossword, `clues.${direction}.${row}.${column}`)
+    //   )
+    // );
+
+    setClueInput({
+      value: null,
+      row: null,
+      column: null,
+      direction: null,
+    });
+  };
 
   const rows = [];
   for (let row = 0; row < crossword.rows; row += 1) {
@@ -92,27 +118,27 @@ const Editor: React.FC<EditorProps> = ({
       <div className={styles.cluesAndGrid}>
         {showClues && (
           <div className={styles.cluesWrapper}>
-            {/* <ClueList
-              direction={ACROSS}
+            <ClueList
+              direction={Direction.across}
               clueLabels={acrossClues}
-              clueData={get(crossword.clues, 'across', [])}
+              clueData={crossword.clues?.across || []}
               clueInput={clueInput}
               onChangeClue={setClueInput}
               onClueBlur={onClueBlur}
-            /> */}
+            />
           </div>
         )}
         <div className={styles.grid}>{rows}</div>
         {showClues && (
           <div className={styles.cluesWrapper}>
-            {/* <ClueList
-              direction={DOWN}
+            <ClueList
+              direction={Direction.down}
               clueLabels={downClues}
-              clueData={get(crossword.clues, 'down', [])}
+              clueData={crossword.clues?.down || []}
               clueInput={clueInput}
               onChangeClue={setClueInput}
               onClueBlur={onClueBlur}
-            /> */}
+            />
           </div>
         )}
       </div>
