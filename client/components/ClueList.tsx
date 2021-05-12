@@ -1,32 +1,54 @@
 import React from 'react';
-import propTypes from 'prop-types';
-import { bemNamesFactory } from 'bem-names';
-import { get } from 'lodash';
 
-import { DOWN, ACROSS } from './constants';
+import { Direction } from '../firebase-recoil/data';
+import { Address } from './editor/derivations';
 
 const displayNames = {
-  [ACROSS]: 'Across',
-  [DOWN]: 'Down',
+  [Direction.across]: 'Across',
+  [Direction.down]: 'Down',
 };
 
-const bem = bemNamesFactory('clue-list');
+export interface ClueValue {
+  value: string | null;
+  row: number | null;
+  column: number | null;
+  direction: Direction | null;
+}
 
-const ClueList = ({ onClueBlur, clueLabels, clueData, clueInput, direction, onChangeClue }) => (
-  <div className="clue-list">
+interface ClueListProps {
+  direction: Direction;
+  clueLabels: Address[];
+  clueData: string[][];
+  clueInput: ClueValue;
+  onChangeClue: (value: ClueValue) => any;
+  onClueBlur: () => any;
+}
+
+import styles from './ClueList.module.scss';
+
+const ClueList: React.FC<ClueListProps> = ({
+  onClueBlur,
+  clueLabels,
+  clueData,
+  clueInput,
+  direction,
+  onChangeClue,
+}) => (
+  <div className={styles.clueList}>
     {displayNames[direction]}
     {clueLabels.map(({ row, column, label }) => (
-      <div key={label} className={bem('clue')}>
+      <div key={label} className={styles.clue}>
         {label}.
         <input
           type="text"
-          className={bem('clue-input')}
+          className={styles.clueInput}
           value={
             (row === clueInput.row &&
               column === clueInput.column &&
               clueInput.direction === direction &&
               clueInput.value) ||
-            get(clueData, [row, column], '')
+            clueData?.[row]?.[column] ||
+            ''
           }
           onChange={(evt) => {
             onChangeClue({
@@ -42,14 +64,5 @@ const ClueList = ({ onClueBlur, clueLabels, clueData, clueInput, direction, onCh
     ))}
   </div>
 );
-
-ClueList.propTypes = {
-  direction: propTypes.oneOf([DOWN, ACROSS]).isRequired,
-  clueLabels: propTypes.arrayOf(propTypes.object).isRequired,
-  clueData: propTypes.oneOfType([propTypes.object, propTypes.array]).isRequired,
-  clueInput: propTypes.object.isRequired,
-  onChangeClue: propTypes.func.isRequired,
-  onClueBlur: propTypes.func.isRequired,
-};
 
 export default ClueList;
