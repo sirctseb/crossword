@@ -25,7 +25,16 @@ const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
 
   return (
     <div className={bem()}>
-      <ThemeEntryList entries={annotatedEntries} onDelete={onDelete} />
+      <div className={bem()}>
+        {annotatedEntries.map(({ text, used }) => (
+          <div className={bem('entry')} key={text}>
+            <div className={bem('text', { used })}>{text}</div>
+            <div className={bem('delete')} onClick={() => onDelete(text)}>
+              x
+            </div>
+          </div>
+        ))}
+      </div>
       <div className={bem()}>
         <input className={bem('input')} value={input} onChange={(evt) => setInput(evt.target.value)} />
         <div
