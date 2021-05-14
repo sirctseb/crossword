@@ -1,11 +1,11 @@
-import { useSelector } from 'react-redux';
+import { Direction } from '../firebase-recoil/data';
 
-const getSuggestions = (state) => state.suggestions;
-
-export default (acrossPattern, downPattern) => {
-  const suggestions = useSelector(getSuggestions);
+const useSuggestions = (acrossPattern: string, downPattern: string): Record<Direction, string[]> => {
+  // TODO download and cache suggestions by pattern
   return {
-    across: suggestions[acrossPattern] || [],
-    down: suggestions[downPattern] || [],
+    across: [],
+    down: [],
   };
 };
+
+export default useSuggestions;

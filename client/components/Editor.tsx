@@ -20,6 +20,7 @@ interface Cursor {
 
 import styles from './Editor.module.scss';
 import ClueList, { ClueValue } from './ClueList';
+import Suggestions from './Suggestions';
 
 const emptyBox = {};
 
@@ -43,6 +44,9 @@ const Editor: React.FC<EditorProps> = ({
     isCursorBox,
     labelMap,
     clueAddresses: { across: acrossClues, down: downClues },
+    themeSuggestions,
+    acrossPattern,
+    downPattern,
   } = derivations(crossword, cursor);
 
   const onClueBlur = () => {
@@ -142,15 +146,9 @@ const Editor: React.FC<EditorProps> = ({
           </div>
         )}
       </div>
-      {
-        showSuggestions && null
-        // <Suggestions
-        //   id={crosswordId}
-        //   themeSuggestions={themeSuggestions}
-        //   acrossPattern={acrossPattern}
-        //   downPattern={downPattern}
-        // />
-      }
+      {showSuggestions && (
+        <Suggestions theme={themeSuggestions} acrossPattern={acrossPattern} downPattern={downPattern} />
+      )}
       {
         showThemeEntries && null
         // <ThemeEntries

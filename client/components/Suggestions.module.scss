@@ -1,27 +1,23 @@
-$block-class: 'suggestions';
+.suggestions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 200px;
 
-@at-root {
-  .#{$block-class} {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 200px;
+  .list {
+    padding: 3px;
+    flex: 1;
+  }
 
-    &__list {
-      padding: 3px;
-      flex: 1;
-    }
+  .noSuggestions {
+    color: #777;
+  }
 
-    &__no-suggestions {
-      color: #777;
-    }
+  .suggestion {
+    padding: 2px;
 
-    &__suggestion {
-      padding: 2px;
-
-      &:nth-child(odd) {
-        background-color: #eee;
-      }
+    &:nth-child(odd) {
+      background-color: #eee;
     }
   }
 }

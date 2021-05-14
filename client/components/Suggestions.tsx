@@ -1,40 +1,53 @@
 import React from 'react';
-import { bemNamesFactory } from 'bem-names';
+import { Direction } from '../firebase-recoil/data';
 
-import useSuggestions from '../suggestions/useSuggestions';
-import { ACROSS, DOWN } from './constants';
+import useSuggestions from '../hooks/useSuggestions';
 
-const bem = bemNamesFactory('suggestions');
-
-const renderSuggestions = (suggestions) =>
+const renderSuggestions = (suggestions: string[]) =>
   suggestions.length > 0 ? (
     suggestions.map((suggestion) => (
-      <div className={bem('suggestion')} key={suggestion}>
+      <div className={styles.suggestion} key={suggestion}>
         {suggestion}
       </div>
     ))
   ) : (
-    <div className={bem('no-suggestions')}>no matches</div>
+    <div className={styles.noSuggestions}>no matches</div>
   );
 
-const Suggestions = ({ themeSuggestions, acrossPattern, downPattern }) => {
-  const globalSuggestions = useSuggestions(acrossPattern, downPattern);
+interface SuggestionsProps {
+  theme: Record<Direction, string[]>;
+  global: Record<Direction, string[]>;
+}
 
-  const across = [...themeSuggestions[ACROSS], ...globalSuggestions[ACROSS]];
-  const down = [...themeSuggestions[DOWN], ...globalSuggestions[DOWN]];
+import styles from './Suggestions.module.scss';
+
+const Suggestions: React.FC<SuggestionsProps> = ({ theme, global }) => {
+  const across = [...theme[Direction.across], ...global[Direction.across]];
+  const down = [...theme[Direction.down], ...global[Direction.down]];
 
   return (
-    <div className={bem()}>
-      <div className={bem('list')}>
+    <div className={styles.suggestions}>
+      <div className={styles.list}>
         Across
-        <div className={bem('entries')}>{renderSuggestions(across)}</div>
+        <div>{renderSuggestions(across)}</div>
       </div>
-      <div className={bem('list')}>
+      <div className={styles.list}>
         Down
-        <div className={bem('entries')}>{renderSuggestions(down)}</div>
+        <div>{renderSuggestions(down)}</div>
       </div>
     </div>
   );
 };
 
-export default Suggestions;
+interface SuggestionsContainerProps {
+  theme: Record<Direction, string[]>;
+  acrossPattern: string;
+  downPattern: string;
+}
+
+const SuggestionsContainer: React.FC<SuggestionsContainerProps> = ({ theme, acrossPattern, downPattern }) => {
+  const global = useSuggestions(acrossPattern, downPattern);
+  return <Suggestions theme={theme} global={global} />;
+};
+
+export default SuggestionsContainer;
