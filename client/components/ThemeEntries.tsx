@@ -21,10 +21,23 @@ const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
     used: currentAnswers.includes(entry),
   }));
 
+  const [input, setInput] = useState('');
+
   return (
     <div className={bem()}>
       <ThemeEntryList entries={annotatedEntries} onDelete={onDelete} />
-      <ThemeEntryAddition onAdd={onAdd} />
+      <div className={bem()}>
+        <input className={bem('input')} value={input} onChange={(evt) => setInput(evt.target.value)} />
+        <div
+          className={bem('add')}
+          onClick={() => {
+            onAdd(input);
+            setInput('');
+          }}
+        >
+          +
+        </div>
+      </div>
     </div>
   );
 };
