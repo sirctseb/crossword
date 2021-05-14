@@ -1,20 +1,23 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { bemNamesFactory } from 'bem-names';
+import React, { useState } from 'react';
+import cn from 'classnames';
 
-import UndoHistory from '../../undo/UndoHistory';
-import FirebaseChange from '../../undo/FirebaseChange';
+// import UndoHistory from '../../undo/UndoHistory';
+// import FirebaseChange from '../../undo/FirebaseChange';
 
-import ThemeEntryList from './ThemeEntryList';
-import ThemeEntryAddition from './ThemeEntryAddition';
+// const undoHistory = UndoHistory.getHistory('crossword');
 
-const undoHistory = UndoHistory.getHistory('crossword');
-const bem = bemNamesFactory('theme-entries');
+interface ThemeEntriesProps {
+  // fbRef: PropTypes.object.isRequired,
+  themeEntries: string[];
+  currentAnswers: string[];
+}
 
-const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
-  const onAdd = (text) => undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+import styles from './ThemeEntries.module.scss';
 
-  const onDelete = (text) => undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
+const ThemeEntries: React.FC<ThemeEntriesProps> = ({ /*fbRef, */ themeEntries, currentAnswers }) => {
+  const onAdd = (text: string) => null; //undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+
+  const onDelete = (text: string) => null; //undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
 
   const annotatedEntries = themeEntries.map((entry) => ({
     text: entry,
@@ -24,21 +27,18 @@ const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
   const [input, setInput] = useState('');
 
   return (
-    <div className={bem()}>
-      <div className={bem()}>
+    <div className={styles.themeEntries}>
+      <div className={styles.themeEntryList}>
         {annotatedEntries.map(({ text, used }) => (
-          <div className={bem('entry')} key={text}>
-            <div className={bem('text', { used })}>{text}</div>
-            <div className={bem('delete')} onClick={() => onDelete(text)}>
-              x
-            </div>
+          <div className={styles.entry} key={text}>
+            <div className={cn(styles.text, { [styles.used]: used })}>{text}</div>
+            <div onClick={() => onDelete(text)}>x</div>
           </div>
         ))}
       </div>
-      <div className={bem()}>
-        <input className={bem('input')} value={input} onChange={(evt) => setInput(evt.target.value)} />
+      <div className={styles.themeEntryAddition}>
+        <input value={input} onChange={(evt) => setInput(evt.target.value)} />
         <div
-          className={bem('add')}
           onClick={() => {
             onAdd(input);
             setInput('');
@@ -49,12 +49,6 @@ const ThemeEntries = ({ fbRef, themeEntries, currentAnswers }) => {
       </div>
     </div>
   );
-};
-
-ThemeEntries.propTypes = {
-  fbRef: PropTypes.object.isRequired,
-  themeEntries: PropTypes.arrayOf(PropTypes.string).isRequired,
-  currentAnswers: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default ThemeEntries;

@@ -1,16 +1,18 @@
-$block-class: 'theme-entry-list';
-
-@at-root {
-  .#{$block-class} {
-    &__entry {
+.themeEntries {
+  .themeEntryList {
+    .entry {
       display: flex;
       flex-direction: row;
     }
 
-    &__text {
-      &--used {
+    .text {
+      &.used {
         text-decoration: line-through;
       }
     }
+  }
+  .themeEntryAddition {
+    display: flex;
+    flex-direction: row;
   }
 }
