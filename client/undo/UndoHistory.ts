@@ -1,14 +1,19 @@
+import FirebaseChange from './FirebaseChange';
+
 export default class UndoHistory {
-  constructor(name) {
-    this.name = name;
+  index: number;
+  history: FirebaseChange[];
+
+  static histories: Record<string, UndoHistory> = {};
+
+  constructor(private readonly name: string) {
     this.index = 0;
     this.history = [];
 
-    UndoHistory.histories = UndoHistory.histories || {};
-    UndoHistory.histories[name] = this;
+    UndoHistory.histories[this.name] = this;
   }
 
-  static getHistory(name) {
+  static getHistory(name: string) {
     if (UndoHistory.histories === undefined) {
       UndoHistory.histories = {};
     }
@@ -18,7 +23,7 @@ export default class UndoHistory {
     return UndoHistory.histories[name];
   }
 
-  add(firebaseChange, alreadyPerformed = false) {
+  add(firebaseChange: FirebaseChange, alreadyPerformed = false) {
     this.history.splice(this.index, this.history.length, firebaseChange);
 
     this.index += 1;
