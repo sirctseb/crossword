@@ -40,7 +40,7 @@ const CrosswordContainer: React.FC<CrosswordContainerProps> = ({ crosswordId }) 
     return null;
   }
 
-  return <Editor crossword={crossword} />;
+  return <Editor crossword={crossword} id={crosswordId} />;
 };
 
 export default CrosswordPage;

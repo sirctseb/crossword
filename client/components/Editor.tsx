@@ -7,6 +7,7 @@ import Box from '../components/Box';
 
 interface EditorProps {
   crossword: Crossword;
+  id: string;
   showClues?: boolean;
   showSuggestions?: boolean;
   showThemeEntries?: boolean;
@@ -22,6 +23,7 @@ import styles from './Editor.module.scss';
 import ClueList, { ClueValue } from './ClueList';
 import Suggestions from './Suggestions';
 import ThemeEntries from './ThemeEntries';
+import useFirebase from '../hooks/useFirebase';
 
 const emptyBox = {};
 
@@ -36,7 +38,9 @@ const Editor: React.FC<EditorProps> = ({
   showClues = true,
   showSuggestions = true,
   showThemeEntries = true,
+  id,
 }) => {
+  const { set } = useFirebase();
   const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
   const [clueInput, setClueInput] = useState<ClueValue>({ row: 0, column: 0, direction: Direction.across, value: '' });
 
@@ -50,6 +54,8 @@ const Editor: React.FC<EditorProps> = ({
     downPattern,
     currentAnswers,
   } = derivations(crossword, cursor);
+
+  const path = `/crosswords/${id}`;
 
   const onClueBlur = () => {
     const { direction, row, column, value } = clueInput;
@@ -116,10 +122,7 @@ const Editor: React.FC<EditorProps> = ({
       <input
         type="checkbox"
         checked={crossword.symmetric}
-        onChange={
-          (evt) => null
-          // set(`${path}/symmetric`, evt.target.checked)
-        }
+        onChange={(evt) => set(`${path}/symmetric`, evt.target.checked)}
       />
       <div className={styles.cluesAndGrid}>
         {showClues && (
