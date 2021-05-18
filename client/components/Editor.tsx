@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import cn from 'classnames';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
@@ -31,7 +31,6 @@ const emptyBox = {};
 const makeUndoableChange = (path: string, oldValue: any, newValue: any): void => {};
 const handleBlock = (row: number, column: number, blocked: boolean): void => {};
 const handleBoxFocus = (coords: { row: number; column: number }): void => {};
-const handleAfterSetContent = (content: string | null): void => {};
 
 const Editor: React.FC<EditorProps> = ({
   crossword,
@@ -53,9 +52,26 @@ const Editor: React.FC<EditorProps> = ({
     acrossPattern,
     downPattern,
     currentAnswers,
+    cursorAfterAdvancement,
   } = derivations(crossword, cursor);
 
   const path = `/crosswords/${id}`;
+
+  // TODO revisit this optimization-by-nullifying
+  // so yeah, naturally this would change every time the cursor moves.
+  // why pass this to every box though? if a box doesn't have focus,
+  // it'll obviously never be called.
+  // FURTHERMORE, if we weren't precomputing the next cursor location
+  // and grabbing it from the selector, this function wouldn't change anyway
+  const handleAfterSetContent = useCallback(
+    (newContent) => {
+      if (newContent !== null) {
+        const { row, column } = cursorAfterAdvancement;
+        document.querySelector<HTMLDivElement>(`.box--at-${row}-${column}`)?.focus();
+      }
+    },
+    [cursorAfterAdvancement.row, cursorAfterAdvancement.column]
+  );
 
   const onClueBlur = () => {
     const { direction, row, column, value } = clueInput;
