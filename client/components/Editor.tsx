@@ -2,7 +2,11 @@ import React, { useCallback, useState } from 'react';
 import cn from 'classnames';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
-
+import ClueList, { ClueValue } from './ClueList';
+import Suggestions from './Suggestions';
+import ThemeEntries from './ThemeEntries';
+import useFirebase from '../hooks/useFirebase';
+import UndoHistory from '../undo/UndoHistory';
 import Box from '../components/Box';
 
 interface EditorProps {
@@ -20,10 +24,11 @@ interface Cursor {
 }
 
 import styles from './Editor.module.scss';
-import ClueList, { ClueValue } from './ClueList';
-import Suggestions from './Suggestions';
-import ThemeEntries from './ThemeEntries';
-import useFirebase from '../hooks/useFirebase';
+import FirebaseChange from '../undo/FirebaseChange';
+
+// TODO if you close a crossword and open a new one, and then undo,
+// you would change the other one?
+const undoHistory = UndoHistory.getHistory('crossword');
 
 const emptyBox = {};
 
@@ -39,7 +44,7 @@ const Editor: React.FC<EditorProps> = ({
   showThemeEntries = true,
   id,
 }) => {
-  const { set } = useFirebase();
+  const { set, root } = useFirebase();
   const [cursor, setCursor] = useState<Cursor>({ row: 0, column: 0, direction: Direction.across });
   const [clueInput, setClueInput] = useState<ClueValue>({ row: 0, column: 0, direction: Direction.across, value: '' });
 
@@ -76,13 +81,17 @@ const Editor: React.FC<EditorProps> = ({
   const onClueBlur = () => {
     const { direction, row, column, value } = clueInput;
 
-    // undoHistory.add(
-    //   FirebaseChange.FromValues(
-    //     fbRef.child(`${path}/clues/${direction}/${row}/${column}`),
-    //     value,
-    //     get(crossword, `clues.${direction}.${row}.${column}`)
-    //   )
-    // );
+    if (direction === null || row === null || column === null) {
+      return;
+    }
+
+    undoHistory.add(
+      FirebaseChange.FromValues(
+        root.child(`${path}/clues/${direction}/${row}/${column}`),
+        value,
+        crossword.clues?.[direction]?.[row]?.[column] || null
+      )
+    );
 
     setClueInput({
       value: null,
@@ -128,11 +137,10 @@ const Editor: React.FC<EditorProps> = ({
       <input
         type="number"
         value={crossword.rows}
-        onChange={
-          (evt) => null
-          // undoHistory.add(
-          //   FirebaseChange.FromValues(fbRef.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
-          // )
+        onChange={(evt) =>
+          undoHistory.add(
+            FirebaseChange.FromValues(root.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
+          )
         }
       />
       <input
