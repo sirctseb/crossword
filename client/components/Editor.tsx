@@ -180,7 +180,7 @@ const Editor: React.FC<EditorProps> = ({
       )}
       {showThemeEntries && (
         <ThemeEntries
-          // fbRef={fbRef.child(path).child('themeEntries')}
+          fbRef={root.child(path).child('themeEntries')}
           themeEntries={Object.keys(crossword.themeEntries || {})}
           currentAnswers={currentAnswers}
         />
