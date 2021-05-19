@@ -120,7 +120,6 @@ const Editor: React.FC<EditorProps> = ({
           row={row}
           column={column}
           box={box}
-          makeUndoableChange={makeUndoableChange}
           clueLabel={label}
           onBlock={handleBlock}
           onBoxFocus={handleBoxFocus}

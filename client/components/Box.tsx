@@ -20,8 +20,6 @@ interface BoxProps {
   box: Box;
   cursor: boolean;
   cursorAnswer: boolean;
-  // TODO this should be packaged and imported
-  makeUndoableChange: (path: string, oldValue: any, newValue: any) => any;
   clueLabel: number;
   onBlock: (row: number, column: number, blocked: boolean) => any;
   onBoxFocus: ({ row, column }: { row: number; column: number }) => any;
@@ -30,6 +28,7 @@ interface BoxProps {
 }
 
 import styles from './Box.module.scss';
+import useHistory from '../undo/useHistory';
 
 const Box: React.FC<BoxProps> = ({
   row,
@@ -38,7 +37,6 @@ const Box: React.FC<BoxProps> = ({
   box: { blocked, circled, shaded, content },
   cursor,
   cursorAnswer: active,
-  makeUndoableChange,
   clueLabel,
   onBlock,
   onBoxFocus,
@@ -46,6 +44,7 @@ const Box: React.FC<BoxProps> = ({
   remoteCursors,
 }) => {
   const [rebus, setRebus] = useState(false);
+  const { addValues } = useHistory('crossword');
 
   const handleFocus = () => {
     onBoxFocus({ row, column });
@@ -63,7 +62,7 @@ const Box: React.FC<BoxProps> = ({
   };
 
   const setContent = (newContent: string | null) => {
-    makeUndoableChange(`boxes/${row}/${column}/content`, newContent, content);
+    addValues(`boxes/${row}/${column}/content`, newContent, content);
     if (onAfterSetContent) {
       onAfterSetContent(newContent);
     }
@@ -79,7 +78,7 @@ const Box: React.FC<BoxProps> = ({
   };
 
   const handleToggleAttribute = (attribute: keyof Box) => {
-    makeUndoableChange(`boxes/${row}/${column}/${attribute}`, !box[attribute], box[attribute]);
+    addValues(`boxes/${row}/${column}/${attribute}`, !box[attribute], box[attribute]);
   };
 
   return (
