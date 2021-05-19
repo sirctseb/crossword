@@ -23,7 +23,7 @@ export default class UndoHistory {
     return UndoHistory.histories[name];
   }
 
-  add(firebaseChange: FirebaseChange, alreadyPerformed = false) {
+  add(firebaseChange: FirebaseChange, alreadyPerformed = false): void {
     this.history.splice(this.index, this.history.length, firebaseChange);
 
     this.index += 1;
@@ -33,30 +33,30 @@ export default class UndoHistory {
     }
   }
 
-  undo() {
+  undo(): void {
     if (this.canUndo()) {
       this.index -= 1;
       this.history[this.index].undo();
     }
   }
 
-  redo() {
+  redo(): void {
     if (this.canRedo()) {
       this.history[this.index].redo();
       this.index += 1;
     }
   }
 
-  reset() {
+  reset(): void {
     this.history = [];
     this.index = 0;
   }
 
-  canUndo() {
+  canUndo(): boolean {
     return this.index > 0;
   }
 
-  canRedo() {
+  canRedo(): boolean {
     return this.index < this.history.length;
   }
 }

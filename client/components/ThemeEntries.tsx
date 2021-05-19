@@ -1,23 +1,21 @@
 import React, { useState } from 'react';
+import firebase from 'firebase';
 import cn from 'classnames';
 
-// import UndoHistory from '../../undo/UndoHistory';
-// import FirebaseChange from '../../undo/FirebaseChange';
-
-// const undoHistory = UndoHistory.getHistory('crossword');
-
 interface ThemeEntriesProps {
-  // fbRef: PropTypes.object.isRequired,
+  fbRef: firebase.database.Reference;
   themeEntries: string[];
   currentAnswers: string[];
 }
 
 import styles from './ThemeEntries.module.scss';
+import useHistory from '../undo/useHistory';
 
-const ThemeEntries: React.FC<ThemeEntriesProps> = ({ /*fbRef, */ themeEntries, currentAnswers }) => {
-  const onAdd = (text: string) => null; //undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), true, null));
+const ThemeEntries: React.FC<ThemeEntriesProps> = ({ fbRef, themeEntries, currentAnswers }) => {
+  const { addValues } = useHistory('crossword');
+  const onAdd = (text: string) => addValues(fbRef.child(text), true, null);
 
-  const onDelete = (text: string) => null; //undoHistory.add(FirebaseChange.FromValues(fbRef.child(text), null, true));
+  const onDelete = (text: string) => addValues(fbRef.child(text), null, true);
 
   const annotatedEntries = themeEntries.map((entry) => ({
     text: entry,

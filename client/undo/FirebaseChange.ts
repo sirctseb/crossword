@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 
-type FirebaseAssignment = Object | boolean | string | number | null;
+export type FirebaseAssignment = Object | boolean | string | number | null;
 
 export class FirebaseChangeError extends Error {
   constructor(message: string) {
