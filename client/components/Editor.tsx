@@ -3,9 +3,11 @@ import cn from 'classnames';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
 import ClueList, { ClueValue } from './ClueList';
+import { GlobalHotKeys } from 'react-hotkeys';
 import Suggestions from './Suggestions';
 import ThemeEntries from './ThemeEntries';
 import useFirebase from '../hooks/useFirebase';
+import useGlobalHotkKeyProps from '../hooks/useEditorHotKeyProps';
 import UndoHistory from '../undo/UndoHistory';
 import Box from '../components/Box';
 
@@ -25,6 +27,7 @@ export interface Cursor {
 
 import styles from './Editor.module.scss';
 import FirebaseChange from '../undo/FirebaseChange';
+import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
 
 // TODO if you close a crossword and open a new one, and then undo,
 // you would change the other one?
@@ -58,6 +61,8 @@ const Editor: React.FC<EditorProps> = ({
     downPattern,
     currentAnswers,
     cursorAfterAdvancement,
+    size,
+    isBlockedBox,
   } = derivations(crossword, cursor);
 
   const path = `/crosswords/${id}`;
@@ -132,60 +137,65 @@ const Editor: React.FC<EditorProps> = ({
       </div>
     );
   }
+
+  const globalHotKeyProps = useEditorHotKeyProps(cursor, size, isBlockedBox, setCursor);
+
   return (
-    <div className={cn(styles.editor, styles[`size${crossword.rows}`])}>
-      <input
-        type="number"
-        value={crossword.rows}
-        onChange={(evt) =>
-          undoHistory.add(
-            FirebaseChange.FromValues(root.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
-          )
-        }
-      />
-      <input
-        type="checkbox"
-        checked={crossword.symmetric}
-        onChange={(evt) => set(`${path}/symmetric`, evt.target.checked)}
-      />
-      <div className={styles.cluesAndGrid}>
-        {showClues && (
-          <div className={styles.cluesWrapper}>
-            <ClueList
-              direction={Direction.across}
-              clueLabels={acrossClues}
-              clueData={crossword.clues?.across || []}
-              clueInput={clueInput}
-              onChangeClue={setClueInput}
-              onClueBlur={onClueBlur}
-            />
-          </div>
+    <GlobalHotKeys {...globalHotKeyProps}>
+      <div className={cn(styles.editor, styles[`size${crossword.rows}`])}>
+        <input
+          type="number"
+          value={crossword.rows}
+          onChange={(evt) =>
+            undoHistory.add(
+              FirebaseChange.FromValues(root.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
+            )
+          }
+        />
+        <input
+          type="checkbox"
+          checked={crossword.symmetric}
+          onChange={(evt) => set(`${path}/symmetric`, evt.target.checked)}
+        />
+        <div className={styles.cluesAndGrid}>
+          {showClues && (
+            <div className={styles.cluesWrapper}>
+              <ClueList
+                direction={Direction.across}
+                clueLabels={acrossClues}
+                clueData={crossword.clues?.across || []}
+                clueInput={clueInput}
+                onChangeClue={setClueInput}
+                onClueBlur={onClueBlur}
+              />
+            </div>
+          )}
+          <div className={styles.grid}>{rows}</div>
+          {showClues && (
+            <div className={styles.cluesWrapper}>
+              <ClueList
+                direction={Direction.down}
+                clueLabels={downClues}
+                clueData={crossword.clues?.down || []}
+                clueInput={clueInput}
+                onChangeClue={setClueInput}
+                onClueBlur={onClueBlur}
+              />
+            </div>
+          )}
+        </div>
+        {showSuggestions && (
+          <Suggestions theme={themeSuggestions} acrossPattern={acrossPattern} downPattern={downPattern} />
         )}
-        <div className={styles.grid}>{rows}</div>
-        {showClues && (
-          <div className={styles.cluesWrapper}>
-            <ClueList
-              direction={Direction.down}
-              clueLabels={downClues}
-              clueData={crossword.clues?.down || []}
-              clueInput={clueInput}
-              onChangeClue={setClueInput}
-              onClueBlur={onClueBlur}
-            />
-          </div>
+        {showThemeEntries && (
+          <ThemeEntries
+            fbRef={root.child(path).child('themeEntries')}
+            themeEntries={Object.keys(crossword.themeEntries || {})}
+            currentAnswers={currentAnswers}
+          />
         )}
       </div>
-      {showSuggestions && (
-        <Suggestions theme={themeSuggestions} acrossPattern={acrossPattern} downPattern={downPattern} />
-      )}
-      {showThemeEntries && (
-        <ThemeEntries
-          fbRef={root.child(path).child('themeEntries')}
-          themeEntries={Object.keys(crossword.themeEntries || {})}
-          currentAnswers={currentAnswers}
-        />
-      )}
-    </div>
+    </GlobalHotKeys>
   );
 };
 

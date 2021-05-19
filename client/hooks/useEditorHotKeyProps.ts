@@ -15,7 +15,7 @@ const keyMap = {
   toggleCursorDirection: ';',
 };
 
-export default (
+const useEditorHotKeyProps = (
   { row, column, direction }: Cursor,
   size: number,
   isBlockedBox: (row: number, column: number) => boolean,
@@ -76,3 +76,5 @@ export default (
 
   return { allowChanges: true, keyMap, handlers };
 };
+
+export default useEditorHotKeyProps;
