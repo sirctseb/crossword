@@ -17,7 +17,7 @@ interface EditorProps {
   showThemeEntries?: boolean;
 }
 
-interface Cursor {
+export interface Cursor {
   row: number;
   column: number;
   direction: Direction;

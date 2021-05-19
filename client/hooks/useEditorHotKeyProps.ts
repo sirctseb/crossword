@@ -1,5 +1,7 @@
 import UndoHistory from '../undo/UndoHistory';
-import { ACROSS, DOWN } from './constants';
+import { Direction } from '../firebase-recoil/data';
+import { GlobalHotKeysProps } from 'react-hotkeys';
+import { Cursor } from '../components/Editor';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 
@@ -13,10 +15,15 @@ const keyMap = {
   toggleCursorDirection: ';',
 };
 
-export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
-  const makeMoveCursor = (vector) => () => {
+export default (
+  { row, column, direction }: Cursor,
+  size: number,
+  isBlockedBox: (row: number, column: number) => boolean,
+  setCursor: (cursor: Cursor) => void
+): GlobalHotKeysProps => {
+  const makeMoveCursor = (vector: [number, number]) => () => {
     // TODO there should be a selector for this
-    if (!document.activeElement.classList.contains('box')) return;
+    if (!document.activeElement?.classList.contains('box')) return;
 
     let rowIter = row;
     let columnIter = column;
@@ -26,7 +33,8 @@ export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
     while (rowIter >= 0 && columnIter >= 0 && rowIter < size && columnIter < size) {
       if (!isBlockedBox(rowIter, columnIter)) {
         // TODO might have to revisit this dom-first focus definition with more than one Editor
-        document.querySelector(`.box--at-${rowIter}-${columnIter}`).focus();
+        // produe a focus(row, column) function in the editor where we can scope it
+        document.querySelector<HTMLDivElement>(`.box--at-${rowIter}-${columnIter}`)?.focus();
         return;
       }
 
@@ -43,21 +51,21 @@ export default ({ row, column, direction }, size, isBlockedBox, setCursor) => {
     setCursor({
       row,
       column,
-      direction: direction === ACROSS ? DOWN : ACROSS,
+      direction: direction === Direction.across ? Direction.down : Direction.across,
     });
 
   const handlers = {
-    undo: (evt) => {
-      if (document.activeElement.tagName !== 'INPUT') {
+    undo: (evt: KeyboardEvent | undefined) => {
+      if (document.activeElement?.tagName !== 'INPUT') {
         undoHistory.undo();
       }
-      evt.preventDefault();
+      evt?.preventDefault();
     },
-    redo: (evt) => {
-      if (document.activeElement.tagName !== 'INPUT') {
+    redo: (evt: KeyboardEvent | undefined) => {
+      if (document.activeElement?.tagName !== 'INPUT') {
         undoHistory.redo();
       }
-      evt.preventDefault();
+      evt?.preventDefault();
     },
     up,
     down,
