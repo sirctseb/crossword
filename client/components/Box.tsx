@@ -1,4 +1,5 @@
 import React, { useState, memo } from 'react';
+import firebase from 'firebase';
 import cn from 'classnames';
 
 import RemoteCursors from './RemoteCursors';
@@ -15,6 +16,7 @@ interface Box {
 }
 
 interface BoxProps {
+  parentRef: firebase.database.Reference;
   row: number;
   column: number;
   box: Box;
@@ -30,7 +32,11 @@ interface BoxProps {
 import styles from './Box.module.scss';
 import useHistory from '../undo/useHistory';
 
+// A refactor that would better abstract the box presentation would be to really only
+// take event callbacks here and separate out a component that produces handlers
+// from the firebase context
 const Box: React.FC<BoxProps> = ({
+  parentRef,
   row,
   column,
   box,
@@ -62,7 +68,7 @@ const Box: React.FC<BoxProps> = ({
   };
 
   const setContent = (newContent: string | null) => {
-    addValues(`boxes/${row}/${column}/content`, newContent, content);
+    addValues(parentRef.child(`boxes/${row}/${column}/content`), newContent, content);
     if (onAfterSetContent) {
       onAfterSetContent(newContent);
     }
@@ -78,7 +84,7 @@ const Box: React.FC<BoxProps> = ({
   };
 
   const handleToggleAttribute = (attribute: keyof Box) => {
-    addValues(`boxes/${row}/${column}/${attribute}`, !box[attribute], box[attribute]);
+    addValues(parentRef.child(`boxes/${row}/${column}/${attribute}`), !box[attribute], box[attribute]);
   };
 
   return (

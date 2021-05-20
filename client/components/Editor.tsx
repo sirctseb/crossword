@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
@@ -36,7 +36,6 @@ const undoHistory = UndoHistory.getHistory('crossword');
 const emptyBox = {};
 
 // stubbed
-const makeUndoableChange = (path: string, oldValue: any, newValue: any): void => {};
 const handleBlock = (row: number, column: number, blocked: boolean): void => {};
 const handleBoxFocus = (coords: { row: number; column: number }): void => {};
 
@@ -66,6 +65,7 @@ const Editor: React.FC<EditorProps> = ({
   } = derivations(crossword, cursor);
 
   const path = `/crosswords/${id}`;
+  const fbRef = useMemo(() => root.child(path), [path, root]);
 
   // TODO revisit this optimization-by-nullifying
   // so yeah, naturally this would change every time the cursor moves.
@@ -115,6 +115,7 @@ const Editor: React.FC<EditorProps> = ({
 
       boxes.push(
         <Box
+          parentRef={fbRef}
           key={`box-${row}-${column}`}
           cursorAnswer={isCursorAnswer(row, column)}
           row={row}
@@ -147,7 +148,7 @@ const Editor: React.FC<EditorProps> = ({
           value={crossword.rows}
           onChange={(evt) =>
             undoHistory.add(
-              FirebaseChange.FromValues(root.child(`${path}/rows`), parseInt(evt.target.value, 10), crossword.rows)
+              FirebaseChange.FromValues(fbRef.child('rows'), parseInt(evt.target.value, 10), crossword.rows)
             )
           }
         />
@@ -188,7 +189,7 @@ const Editor: React.FC<EditorProps> = ({
         )}
         {showThemeEntries && (
           <ThemeEntries
-            fbRef={root.child(path).child('themeEntries')}
+            fbRef={fbRef.child('themeEntries')}
             themeEntries={Object.keys(crossword.themeEntries || {})}
             currentAnswers={currentAnswers}
           />
