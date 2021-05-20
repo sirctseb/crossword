@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
+import firebase from 'firebase';
 import { GlobalHotKeys } from 'react-hotkeys';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
@@ -33,8 +34,28 @@ const undoHistory = UndoHistory.getHistory('crossword');
 
 const emptyBox = {};
 
-// stubbed
-const handleBlock = (row: number, column: number, blocked: boolean): void => {};
+const blockedChange = (
+  row: number,
+  column: number,
+  { rows, symmetric }: { rows: number; symmetric: boolean },
+  blocked: boolean,
+  crosswordRef: firebase.database.Reference
+) => {
+  const update = {
+    [`boxes/${row}/${column}/blocked`]: blocked,
+  };
+
+  const undoUpdate = {
+    [`boxes/${row}/${column}/blocked`]: !blocked,
+  };
+
+  if (symmetric) {
+    update[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = blocked;
+    undoUpdate[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = !blocked;
+  }
+
+  return new FirebaseChange(crosswordRef, update, undoUpdate);
+};
 
 const Editor: React.FC<EditorProps> = ({
   crossword,
@@ -85,6 +106,13 @@ const Editor: React.FC<EditorProps> = ({
       // publishCursor(newCursor);
     },
     [id, /*cursorRef, */ cursor.direction]
+  );
+  const handleBlock = useCallback(
+    (row, column, blocked) => {
+      undoHistory.add(blockedChange(row, column, crossword, blocked, fbRef));
+      // TODO should take rows and symmetric as params so we don't leak impl details here
+    },
+    [path, crossword.rows, crossword.symmetric]
   );
 
   const onClueBlur = () => {
