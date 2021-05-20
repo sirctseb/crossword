@@ -1,14 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useFirebase } from 'react-redux-firebase';
+import firebase from 'firebase';
+import useFirebase from '../hooks/useFirebase';
 
-export default (crosswordId) => {
-  const [cursorRef, setCursorRef] = useState(null);
-  const firebase = useFirebase();
+const usePublishCursor = (crosswordId: string) => {
+  const [cursorRef, setCursorRef] = useState<firebase.database.Reference | null>(null);
+  const { root } = useFirebase();
 
-  const handleBoxFocus = useCallback((cursor) => cursorRef.update(cursor), [crosswordId, cursorRef]);
+  const handleBoxFocus = useCallback(
+    (cursor) => {
+      cursorRef?.update(cursor);
+    },
+    [crosswordId, cursorRef]
+  );
 
   useEffect(() => {
-    const newCursorRef = firebase.ref(`cursors/${crosswordId}`).push({ userId: firebase.auth().currentUser.uid });
+    // TODO can currentUser actually be null? i think not with anonymous auth but we should confirm
+    const newCursorRef = root.child(`cursors/${crosswordId}`).push({ userId: firebase.auth().currentUser?.uid });
 
     newCursorRef.onDisconnect().set(null);
 
@@ -24,3 +31,5 @@ export default (crosswordId) => {
 
   return [cursorRef, handleBoxFocus];
 };
+
+export default usePublishCursor;
