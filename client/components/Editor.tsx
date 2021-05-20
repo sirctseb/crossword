@@ -1,15 +1,17 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
+import { GlobalHotKeys } from 'react-hotkeys';
 import derivations from './editor/derivations';
 import { Crossword, Direction } from '../firebase-recoil/data';
 import ClueList, { ClueValue } from './ClueList';
-import { GlobalHotKeys } from 'react-hotkeys';
 import Suggestions from './Suggestions';
 import ThemeEntries from './ThemeEntries';
 import useFirebase from '../hooks/useFirebase';
-import useGlobalHotkKeyProps from '../hooks/useEditorHotKeyProps';
 import UndoHistory from '../undo/UndoHistory';
 import Box from '../components/Box';
+import styles from './Editor.module.scss';
+import FirebaseChange from '../undo/FirebaseChange';
+import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
 
 interface EditorProps {
   crossword: Crossword;
@@ -25,10 +27,6 @@ export interface Cursor {
   direction: Direction;
 }
 
-import styles from './Editor.module.scss';
-import FirebaseChange from '../undo/FirebaseChange';
-import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
-
 // TODO if you close a crossword and open a new one, and then undo,
 // you would change the other one?
 const undoHistory = UndoHistory.getHistory('crossword');
@@ -37,7 +35,6 @@ const emptyBox = {};
 
 // stubbed
 const handleBlock = (row: number, column: number, blocked: boolean): void => {};
-const handleBoxFocus = (coords: { row: number; column: number }): void => {};
 
 const Editor: React.FC<EditorProps> = ({
   crossword,
@@ -81,6 +78,13 @@ const Editor: React.FC<EditorProps> = ({
       }
     },
     [cursorAfterAdvancement.row, cursorAfterAdvancement.column]
+  );
+  const handleBoxFocus = useCallback(
+    (newCursor) => {
+      setCursor({ direction: cursor.direction, ...newCursor });
+      // publishCursor(newCursor);
+    },
+    [id, /*cursorRef, */ cursor.direction]
   );
 
   const onClueBlur = () => {

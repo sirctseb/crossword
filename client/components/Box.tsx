@@ -97,7 +97,8 @@ const Box: React.FC<BoxProps> = ({
           [styles.shaded]: shaded,
           [styles.active]: active,
         },
-        [`at-${row}-${column}`]
+        // These are static because we use it to select boxes in code
+        ['box', `box--at-${row}-${column}`]
       )}
       tabIndex={!blocked ? 0 : undefined}
       onKeyPress={(evt) => {

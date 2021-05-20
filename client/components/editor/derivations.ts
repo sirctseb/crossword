@@ -20,7 +20,7 @@ interface Cursor extends Coordinate {
 
 const calculateAcrossPattern = ({ row, column }: Coordinate, crossword: Crossword): string => {
   const across = [];
-  for (let i = column; i >= 0 && !crossword.boxes?.[row]?.[i].blocked; i -= 1) {
+  for (let i = column; i >= 0 && !crossword.boxes?.[row]?.[i]?.blocked; i -= 1) {
     across.push(crossword.boxes?.[row]?.[i]?.content || '.');
   }
   across.reverse();
@@ -32,11 +32,11 @@ const calculateAcrossPattern = ({ row, column }: Coordinate, crossword: Crosswor
 
 const calculateDownPattern = ({ row, column }: Coordinate, crossword: Crossword): string => {
   const down = [];
-  for (let i = row; i >= 0 && !crossword.boxes?.[i]?.[column].blocked; i -= 1) {
+  for (let i = row; i >= 0 && !crossword.boxes?.[i]?.[column]?.blocked; i -= 1) {
     down.push(crossword.boxes?.[i]?.[column]?.content || '.');
   }
   down.reverse();
-  for (let i = row + 1; i < crossword.rows && !crossword.boxes?.[i]?.[column].blocked; i += 1) {
+  for (let i = row + 1; i < crossword.rows && !crossword.boxes?.[i]?.[column]?.blocked; i += 1) {
     down.push(crossword.boxes?.[i]?.[column]?.content || '.');
   }
   return `^${down.join('')}$`;
