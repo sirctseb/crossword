@@ -8,6 +8,8 @@ import FirebaseAuth from '../firebase/FirebaseAuth';
 
 import firebaseAuthConfig from '../firebase/authConfig';
 
+import styles from './Header.module.scss';
+
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
   const auth = useRecoilValue(firebaseAuth);
@@ -42,35 +44,33 @@ const Header = () => {
   };
 
   return (
-    <header className="header">
-      <h1 className="header__heading">Crossword</h1>
-      <nav className="header__nav">
+    <header className={styles.header}>
+      <h1>Crossword</h1>
+      <nav className={styles.nav}>
         {auth.isEmpty && !showLogin && (
-          <a className="header__nav-link" onClick={handleShowLogin}>
+          <a className={styles.navLink} onClick={handleShowLogin}>
             login
           </a>
         )}
         {!auth.isEmpty && (
-          <a className="header__nav-link" onClick={handleLogout}>
+          <a className={styles.navLink} onClick={handleLogout}>
             logout
           </a>
         )}
         {!auth.isEmpty && (
-          // <a className="header__nav-link" onClick={handleNew}>
-          <a className="header__nav-link">new</a>
+          // <a className={styles.navLink} onClick={handleNew}>
+          <a className={styles.navLink}>new</a>
         )}
         {!auth.isEmpty && (
           <Link href={'/user'}>
-            <a className="header__nav-link">user</a>
+            <a className={styles.navLink}>user</a>
           </Link>
         )}
       </nav>
       {showLogin && (
-        <div className="header__login-controls">
+        <div>
           <FirebaseAuth uiConfig={firebaseAuthConfig} firebaseAuth={firebase.auth()} />
-          <a className="header__hide-login-button" onClick={handleHideLogin}>
-            hide
-          </a>
+          <a onClick={handleHideLogin}>hide</a>
         </div>
       )}
     </header>
