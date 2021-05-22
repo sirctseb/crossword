@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Direction } from '../firebase-recoil/data';
-import { Address } from './editor/derivations';
+import { Direction, Matrix } from '../firebase-recoil/data';
+import { Address } from '../types';
 
 const displayNames = {
   [Direction.across]: 'Across',
@@ -18,7 +18,7 @@ export interface ClueValue {
 interface ClueListProps {
   direction: Direction;
   clueLabels: Address[];
-  clueData: string[][];
+  clueData: Matrix<string>;
   clueInput: ClueValue;
   onChangeClue: (value: ClueValue) => any;
   onClueBlur: () => any;

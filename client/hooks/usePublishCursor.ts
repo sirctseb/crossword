@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import firebase from 'firebase';
 import useFirebase from '../hooks/useFirebase';
+import { Coordinate } from '../types';
 
-const usePublishCursor = (crosswordId: string) => {
+type UsePublishCursorResult = [firebase.database.Reference | null, (coordinates: Coordinate) => any];
+
+const usePublishCursor = (crosswordId: string): UsePublishCursorResult => {
   const [cursorRef, setCursorRef] = useState<firebase.database.Reference | null>(null);
   const { root } = useFirebase();
 
   const handleBoxFocus = useCallback(
-    (cursor) => {
+    (cursor: Coordinate) => {
       cursorRef?.update(cursor);
     },
     [crosswordId, cursorRef]

@@ -13,6 +13,8 @@ import Box from '../components/Box';
 import styles from './Editor.module.scss';
 import FirebaseChange from '../undo/FirebaseChange';
 import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
+import usePublishCursor from '../hooks/usePublishCursor';
+import { Coordinate } from '../types';
 
 interface EditorProps {
   crossword: Crossword;
@@ -100,12 +102,13 @@ const Editor: React.FC<EditorProps> = ({
     },
     [cursorAfterAdvancement.row, cursorAfterAdvancement.column]
   );
+  const [cursorRef, publishCursor] = usePublishCursor(id);
   const handleBoxFocus = useCallback(
-    (newCursor) => {
-      setCursor({ direction: cursor.direction, ...newCursor });
-      // publishCursor(newCursor);
+    (newCursor: Coordinate) => {
+      setCursor({ ...newCursor, direction: cursor.direction });
+      publishCursor(newCursor);
     },
-    [id, /*cursorRef, */ cursor.direction]
+    [id, cursorRef, cursor.direction]
   );
   const handleBlock = useCallback(
     (row, column, blocked) => {

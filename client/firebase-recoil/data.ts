@@ -5,7 +5,7 @@ export enum Direction {
   down = 'down',
 }
 
-type Matrix<P> = P[][];
+export type Matrix<P> = ((P | undefined)[] | undefined)[];
 
 export interface Box {
   blocked?: boolean;

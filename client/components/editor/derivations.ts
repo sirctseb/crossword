@@ -1,22 +1,10 @@
 import { Direction, Crossword, Box } from '../../firebase-recoil/data';
+import { Coordinate, Address, Cursor } from '../../types';
 
 const range = (count: number) => [...Array(count).keys()];
 const flatten = (arrays: any[][]): any[] => {
   return arrays.reduce((total, current) => [...total, ...current], []);
 };
-
-interface Coordinate {
-  row: number;
-  column: number;
-}
-
-export interface Address extends Coordinate {
-  label: number;
-}
-
-interface Cursor extends Coordinate {
-  direction: Direction;
-}
 
 const calculateAcrossPattern = ({ row, column }: Coordinate, crossword: Crossword): string => {
   const across = [];
