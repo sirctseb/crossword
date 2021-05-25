@@ -27,7 +27,7 @@ type OnlyOtherCursorsParams = SerializableParam & {
 const OnlyOtherCursors = selectorFamily<List<Cursor>, OnlyOtherCursorsParams>({
   key: 'OtherCursors',
   get: ({ crosswordId, cursorId }) => ({ get }) => {
-    const data = get(Cursors({ crosswordId }));
+    const data = { ...get(Cursors({ crosswordId })) };
 
     if (!data) {
       return {};
