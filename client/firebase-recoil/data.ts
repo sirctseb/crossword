@@ -8,6 +8,9 @@ export enum Direction {
 export type Matrix<P> = ((P | undefined)[] | undefined)[];
 // A "firebase array" declared as P[] in bolt, which is just a map to P
 export type List<P> = Record<string, P>;
+export type Entity<P> = P & {
+  id: string;
+};
 
 export interface Box {
   blocked?: boolean;

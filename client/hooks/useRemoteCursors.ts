@@ -1,23 +1,21 @@
 import firebase from 'firebase';
-import { selector, selectorFamily, SerializableParam, useRecoilValue } from 'recoil';
-import { Cursor, Cursors, List, Matrix } from '../firebase-recoil/data';
+import { selectorFamily, SerializableParam, useRecoilValue } from 'recoil';
+import { Cursor, Cursors, Entity, List } from '../firebase-recoil/data';
 
-type CursorMap = Record<number, Record<number, Cursor[] | undefined> | undefined>;
+type CursorMap = Record<number, Record<number, Entity<Cursor>[] | undefined> | undefined>;
 
-const reduceCursors = (cursors: Cursor[]) =>
-  cursors.reduce<CursorMap>((result: CursorMap, cursor: Cursor) => {
-    const { row, column } = cursor;
-    if (row === undefined || column === undefined) {
-      return result;
+const reduceCursors = (cursors: List<Cursor>): CursorMap => {
+  const result: CursorMap = {};
+  Object.entries(cursors).forEach(([id, cursor]) => {
+    if (cursor.row !== undefined && cursor.column !== undefined) {
+      const vector = (result[cursor.row] ||= {});
+      // TODO this part with adding the id to the object data is probably something
+      // we want to support in firebase-recoil
+      vector[cursor.column] = [...(vector[cursor.column] || []), { ...cursor, id }];
     }
-    return {
-      ...result,
-      [row]: {
-        ...result[row],
-        [column]: [...(result[row]?.[column] || []), cursor],
-      },
-    };
-  }, {});
+  });
+  return result;
+};
 
 type OnlyOtherCursorsParams = SerializableParam & {
   cursorId: string | null;
@@ -47,7 +45,7 @@ const useRemoteCursors = (crosswordId: string, cursorRef: firebase.database.Refe
     return [];
   }
 
-  return reduceCursors(Object.values(remoteCursors));
+  return reduceCursors(remoteCursors);
 };
 
 export default useRemoteCursors;
