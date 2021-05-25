@@ -142,6 +142,10 @@ path /permissions is Map<CrosswordId, Permissions> {}
 
 /*
  * Cursors
+ * Note: displayName, photoUrl, and color are populated by a cloud function.
+ * They're marked as nullable here so that the client write of the other data is not blocked.
+ * TODO: confirm that we there's no way to write a cloud function that lets
+ * us mark them as non-nullable here
  */
 type Cursor {
     userId: CurrentUser
@@ -151,6 +155,7 @@ type Cursor {
 
     displayName: String | Null
     photoUrl: String | Null
+    color: String | Null
 
     write() {
         auth.uid == this.userId || auth.uid == prior(this.userId)

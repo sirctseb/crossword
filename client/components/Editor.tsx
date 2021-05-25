@@ -15,6 +15,7 @@ import FirebaseChange from '../undo/FirebaseChange';
 import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
 import usePublishCursor from '../hooks/usePublishCursor';
 import { Coordinate } from '../types';
+import useRemoteCursors from '../hooks/useRemoteCursors';
 
 interface EditorProps {
   crossword: Crossword;
@@ -141,6 +142,8 @@ const Editor: React.FC<EditorProps> = ({
     });
   };
 
+  const remoteCursors = useRemoteCursors(id, cursorRef);
+
   const rows = [];
   for (let row = 0; row < crossword.rows; row += 1) {
     const boxes = [];
@@ -161,8 +164,7 @@ const Editor: React.FC<EditorProps> = ({
           onBoxFocus={handleBoxFocus}
           cursor={isCursorBox(row, column)}
           onAfterSetContent={isCursorAnswer(row, column) ? handleAfterSetContent : null}
-          // remoteCursors={remoteCursors?[row]?[column] || [])}
-          remoteCursors={[]}
+          remoteCursors={remoteCursors?.[row]?.[column]}
         />
       );
     }

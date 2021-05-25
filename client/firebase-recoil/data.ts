@@ -6,6 +6,8 @@ export enum Direction {
 }
 
 export type Matrix<P> = ((P | undefined)[] | undefined)[];
+// A "firebase array" declared as P[] in bolt, which is just a map to P
+export type List<P> = Record<string, P>;
 
 export interface Box {
   blocked?: boolean;
@@ -33,3 +35,18 @@ interface CrosswordsParams extends PathParameters {
 }
 
 export const Crosswords = makeAtomFamily<Crossword, CrosswordsParams>('/crosswords/{crosswordId}');
+
+export interface Cursor {
+  userId: string;
+  row?: number;
+  column?: number;
+  displayName?: string;
+  photoUrl?: string;
+  color?: string;
+}
+
+interface CursorsParams extends PathParameters {
+  crosswordId: string;
+}
+
+export const Cursors = makeAtomFamily<List<Cursor>, CursorsParams>('/cursors/{crosswordId}');

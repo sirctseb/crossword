@@ -1,9 +1,9 @@
 import React from 'react';
 
 interface Cursor {
-  displayName: string;
-  photoUrl: string;
-  color: string;
+  displayName?: string;
+  photoUrl?: string;
+  color?: string;
 }
 
 interface RemoteCursorsProps {
@@ -18,8 +18,8 @@ const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors = null }) =>
       {cursors.map(({ color, displayName, photoUrl }) => (
         <div className={styles.cursor} style={{ backgroundColor: `#${color}` }}>
           <div className={styles.details}>
-            <div>{displayName}</div>
-            <img src={photoUrl} />
+            <div>{displayName || 'Unknown puzzler'}</div>
+            {photoUrl && <img src={photoUrl} />}
           </div>
         </div>
       ))}
