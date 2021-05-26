@@ -210,8 +210,8 @@ describe('selectors', () => {
       const subject = makeCrossword(['b!-', '---', '---']);
 
       expect(subject.rows).toBe(3);
-      expect(subject.boxes?.[0][0].blocked).toBe(true);
-      expect(subject.boxes?.[0][1].content).toBe('!');
+      expect(subject.boxes?.[0]?.[0]?.blocked).toBe(true);
+      expect(subject.boxes?.[0]?.[1]?.content).toBe('!');
     });
   });
 
