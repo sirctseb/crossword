@@ -2,20 +2,21 @@ import React, { useCallback, useMemo, useState } from 'react';
 import cn from 'classnames';
 import firebase from 'firebase';
 import { GlobalHotKeys } from 'react-hotkeys';
-import derivations from './editor/derivations';
-import { Crossword, Direction } from '../firebase-recoil/data';
+import derivations from './derivations';
+import { Crossword, Direction } from '../../firebase-recoil/data';
 import ClueList, { ClueValue } from './ClueList';
 import Suggestions from './Suggestions';
 import ThemeEntries from './ThemeEntries';
-import useFirebase from '../hooks/useFirebase';
-import UndoHistory from '../undo/UndoHistory';
-import Box from '../components/Box';
+import useFirebase from '../../firebase/useFirebase';
+import UndoHistory from '../../undo/UndoHistory';
+import Box from './Box';
+import FirebaseChange from '../../undo/FirebaseChange';
+import useEditorHotKeyProps from './useEditorHotKeyProps';
+import usePublishCursor from './cursors/usePublishCursor';
+import { Coordinate } from '../../types';
+import useRemoteCursors from './cursors/useRemoteCursors';
+
 import styles from './Editor.module.scss';
-import FirebaseChange from '../undo/FirebaseChange';
-import useEditorHotKeyProps from '../hooks/useEditorHotKeyProps';
-import usePublishCursor from '../hooks/usePublishCursor';
-import { Coordinate } from '../types';
-import useRemoteCursors from '../hooks/useRemoteCursors';
 
 interface EditorProps {
   crossword: Crossword;

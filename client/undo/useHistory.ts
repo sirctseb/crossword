@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import firebase from 'firebase';
 import FirebaseChange, { FirebaseAssignment } from './FirebaseChange';
 import UndoHistory from './UndoHistory';
-import useFirebase from '../hooks/useFirebase';
+import useFirebase from '../firebase/useFirebase';
 
 interface UseHistoryResult {
   history: UndoHistory;

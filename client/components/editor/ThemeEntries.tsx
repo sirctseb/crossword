@@ -9,7 +9,7 @@ interface ThemeEntriesProps {
 }
 
 import styles from './ThemeEntries.module.scss';
-import useHistory from '../undo/useHistory';
+import useHistory from '../../undo/useHistory';
 
 const ThemeEntries: React.FC<ThemeEntriesProps> = ({ fbRef, themeEntries, currentAnswers }) => {
   const { addValues } = useHistory('crossword');

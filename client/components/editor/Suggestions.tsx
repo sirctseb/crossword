@@ -1,7 +1,7 @@
 import React from 'react';
-import { Direction } from '../firebase-recoil/data';
+import { Direction } from '../../firebase-recoil/data';
 
-import useSuggestions from '../hooks/useSuggestions';
+import useSuggestions from '../../hooks/useSuggestions';
 
 const renderSuggestions = (suggestions: string[]) =>
   suggestions.length > 0 ? (

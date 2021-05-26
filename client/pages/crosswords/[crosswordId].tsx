@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { useRecoilValue } from 'recoil';
-import Editor from '../../components/Editor';
+import Editor from '../../components/editor/Editor';
 
 import { Crosswords } from '../../firebase-recoil/data';
 

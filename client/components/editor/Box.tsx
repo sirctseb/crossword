@@ -2,9 +2,10 @@ import React, { useState, memo } from 'react';
 import firebase from 'firebase';
 import cn from 'classnames';
 
-import RemoteCursors from './RemoteCursors';
+import RemoteCursors from './cursors/RemoteCursors';
 import BoxControls from './BoxControls';
 import RebusInput from './RebusInput';
+import useHistory from '../../undo/useHistory';
 
 const targetFocused = ({ currentTarget }: React.KeyboardEvent) => document.activeElement === currentTarget;
 
@@ -30,7 +31,6 @@ interface BoxProps {
 }
 
 import styles from './Box.module.scss';
-import useHistory from '../undo/useHistory';
 
 // A refactor that would better abstract the box presentation would be to really only
 // take event callbacks here and separate out a component that produces handlers

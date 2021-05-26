@@ -1,7 +1,7 @@
-import UndoHistory from '../undo/UndoHistory';
-import { Direction } from '../firebase-recoil/data';
+import UndoHistory from '../../undo/UndoHistory';
+import { Direction } from '../../firebase-recoil/data';
 import { GlobalHotKeysProps } from 'react-hotkeys';
-import { Cursor } from '../components/Editor';
+import { Cursor } from './Editor';
 
 const undoHistory = UndoHistory.getHistory('crossword');
 

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Direction, Matrix } from '../firebase-recoil/data';
-import { Address } from '../types';
+import { Direction, Matrix } from '../../firebase-recoil/data';
+import { Address } from '../../types';
 
 const displayNames = {
   [Direction.across]: 'Across',

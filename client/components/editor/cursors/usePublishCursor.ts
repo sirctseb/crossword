@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import firebase from 'firebase';
-import useFirebase from '../hooks/useFirebase';
-import { Coordinate } from '../types';
+import useFirebase from '../../../firebase/useFirebase';
+import { Coordinate } from '../../../types';
 
 type UsePublishCursorResult = [firebase.database.Reference | null, (coordinates: Coordinate) => any];
 

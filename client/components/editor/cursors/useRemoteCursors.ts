@@ -1,6 +1,6 @@
 import firebase from 'firebase';
 import { selectorFamily, SerializableParam, useRecoilValue } from 'recoil';
-import { Cursor, Cursors, Entity, List } from '../firebase-recoil/data';
+import { Cursor, Cursors, Entity, List } from '../../../firebase-recoil/data';
 
 type CursorMap = Record<number, Record<number, Entity<Cursor>[] | undefined> | undefined>;
 
