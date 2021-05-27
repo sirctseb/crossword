@@ -21,13 +21,17 @@ export const firebaseAuth = atom<AuthState>({
   default: { isLoaded: false, isEmpty: true },
   effects_UNSTABLE: [
     ({ setSelf }) => {
-      firebase.auth().onAuthStateChanged((user) => {
+      const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
         if (!user) {
-          return { isLoaded: true, isEmpty: true };
+          return setSelf({ isLoaded: true, isEmpty: true });
         }
         const { displayName, email, phoneNumber, photoURL, providerId, uid } = user;
         setSelf({ displayName, email, phoneNumber, photoURL, providerId, uid, isLoaded: true, isEmpty: false });
       });
+
+      return () => {
+        unsubscribe();
+      };
     },
   ],
 });
