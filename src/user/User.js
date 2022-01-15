@@ -25,5 +25,7 @@ const User = () => {
     )
   );
 };
+const newData;
+newData.hasChildren(['myField']) && (newData.isNumber() || (newData.hasChildren() && newData.hasChildren(['myStuff'])));
 
 export default User;

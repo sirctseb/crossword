@@ -16,6 +16,7 @@ export interface LoadedAuth extends firebase.UserInfo {
 
 export type AuthState = UnloadedAuth | LoadedEmptyAuth | LoadedAuth;
 
+// TODO I would think this is in firebase-recoil
 export const firebaseAuth = atom<AuthState>({
   key: 'firebase-auth',
   default: { isLoaded: false, isEmpty: true },

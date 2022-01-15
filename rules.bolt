@@ -1,13 +1,11 @@
-isCurrentUser(userId) {
-    return auth != null && auth.uid == userId;
+type Matrix<Type> extends Map<Index, Map<Index, Type>> {}
+type Presence<Type> extends Map<Type, Boolean> {}
+type CurrentUser extends UserId {
+  validate() { return isCurrentUser(this) }
 }
 
-type Matrix<Type> extends Map<Index, Map<Index, Type>>;
-type Presence<Type> extends Map<Type, Boolean>;
-type CurrentUser extends UserId {
-    validate() {
-        isCurrentUser(this);
-    }
+isCurrentUser(userId) {
+    return auth != null && auth.uid == userId;
 }
 
 /*
@@ -190,3 +188,13 @@ type CommunalCrossword {
 }
 
 path /communalCrossword is CommunalCrossword {}
+
+type NativeExtenderWithProperties extends Number | Object {
+  field: String;
+}
+
+path /experiment is Number {
+  write() {
+    return true
+  }
+}

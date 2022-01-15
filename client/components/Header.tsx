@@ -9,6 +9,7 @@ import FirebaseAuth from '../firebase/FirebaseAuth';
 import firebaseAuthConfig from '../firebase/authConfig';
 
 import styles from './Header.module.scss';
+import { useEffect } from 'react';
 
 const Header = () => {
   const [showLogin, setShowLogin] = useState(false);
@@ -43,8 +44,27 @@ const Header = () => {
     }
   };
 
+  const [array, setArray] = useState(null);
+  const x: Record<string, number> = { hi: 0 };
+  const y: Array<number> = [];
+
+  useEffect(() => {
+    firebase
+      .database()
+      .ref('ffa/arraything')
+      .once('value')
+      .then((snapshot) => {
+        const val = snapshot.val();
+        setArray(val);
+        console.log(val);
+        console.log(typeof val);
+        console.log(Array.isArray(val));
+      });
+  }, []);
+
   return (
     <header className={styles.header}>
+      {array}
       <h1>Crossword</h1>
       <nav className={styles.nav}>
         {auth.isEmpty && !showLogin && (
