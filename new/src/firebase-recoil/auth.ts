@@ -16,7 +16,12 @@ function fbAuthSubscriptionEffect(auth: Auth): AtomEffect<AuthState> {
       setSelf({
         isEmpty: !user,
         isLoaded: true,
-        user,
+        // if you pass the user object directly here, recoil, in development mode,
+        // freezes the object passed in, which breaks things like subsequent calls
+        // to auth.signOut()
+        // https://github.com/firebase/firebase-js-sdk/issues/5722
+        // https://github.com/facebookexperimental/Recoil/issues/1412
+        user: user && (user.toJSON() as User),
       });
     });
   };
