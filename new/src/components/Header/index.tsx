@@ -12,7 +12,7 @@ interface HeaderProps {
   loggedIn: boolean;
 }
 
-const HeaderPresentation: React.FC<HeaderProps> = ({
+export const HeaderPresentation: React.FC<HeaderProps> = ({
   onLogout,
   onCreateNew,
   loggedIn,
