@@ -1,5 +1,3 @@
-import { key } from "@sirctseb/typed-config";
-
 export class FirebaseSettings {
   public apiKey: string = "AIzaSyCKj_BRXYrNVGLbTlYtq517O7hxpPnZBZ8";
   public authDomain: string = "crossword-dev.firebaseapp.com";
