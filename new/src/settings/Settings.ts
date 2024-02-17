@@ -1,11 +1,7 @@
-import { nested, loadConfigurationSync } from "@sirctseb/typed-config";
-import Config from "config";
-
 import { FirebaseSettings } from "./FirebaseSettings";
 
 export class Settings {
-  @nested(FirebaseSettings)
-  public firebase!: FirebaseSettings;
+  public firebase: FirebaseSettings = new FirebaseSettings();
 
   private constructor() {}
 
@@ -17,7 +13,9 @@ export class Settings {
     }
 
     const settings = new Settings();
-    loadConfigurationSync(settings, Config);
+
     return (this.singletonInstance = settings);
   }
 }
+
+export const settings = Settings.populateSettings();
