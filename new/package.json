@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "storybook": "storybook dev -p 6006",
+    "generate": "bolt-typegen -r rules.bolt -o ./src/firebase/types.ts && prettier --write ./src/firebase/types.ts",
     "build-storybook": "storybook build"
   },
   "dependencies": {
@@ -20,6 +21,7 @@
     "sass": "^1.71.0"
   },
   "devDependencies": {
+    "@sirctseb/bolt-typegen": "^2.0.0",
     "@storybook/addon-essentials": "^7.6.16",
     "@storybook/addon-interactions": "^7.6.16",
     "@storybook/addon-links": "^7.6.16",
