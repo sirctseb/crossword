@@ -1,8 +1,10 @@
 import React, { useCallback, useState } from "react";
-import { FirebaseAuth } from "./FirebaseAuth";
+import { FirebaseAuth } from "../FirebaseAuth";
 import { useRecoilValue } from "recoil";
-import { makeAuthAtom } from "../firebase-recoil/auth";
-import { getFirebaseApp, getFirebaseAuth } from "../firebase";
+import { makeAuthAtom } from "../../firebase-recoil/auth";
+import { getFirebaseApp, getFirebaseAuth } from "../../firebase";
+
+import "./header.scss";
 
 interface HeaderProps {
   onLogout: () => void;
