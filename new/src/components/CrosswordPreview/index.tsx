@@ -30,34 +30,25 @@ const coerceMatrixToArray = <T,>(
   return outer.map((inner) => coerceToArray(inner, defaultValue, columns));
 };
 
-const Debug: React.FC = (props) => {
-  return <pre>{JSON.stringify(props, undefined, "\t")}</pre>;
-};
-
-const drawBoxes = ({ rows, boxes: originalBoxes }: Crossword) => {
+const Boxes: React.FC<{ rows: number; boxes?: Crossword["boxes"] }> = ({
+  rows,
+  boxes: originalBoxes,
+}) => {
   const boxes = coerceMatrixToArray(originalBoxes ?? [], {}, rows, rows);
-  const rowElements = [];
-  for (let row = 0; row < rows; row += 1) {
-    const boxElements = [];
-    for (let column = 0; column < rows; column += 1) {
-      boxElements.push(
+  return boxes.map((boxesRow, row) => (
+    <div key={`row-${row}`} className={bem("row")}>
+      {boxesRow.map((box, column) => (
         <div
           key={`box-${row}-${column}`}
           className={bem("box", {
-            blocked: boxes[row][column].blocked,
+            blocked: box.blocked,
           })}
         >
-          {boxes[row][column].content}
+          {box.content}
         </div>
-      );
-    }
-    rowElements.push(
-      <div key={`row-${row}`} className={bem("row")}>
-        {boxElements}
-      </div>
-    );
-  }
-  return rowElements;
+      ))}
+    </div>
+  ));
 };
 
 export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
@@ -67,10 +58,10 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
   <div className={bem()}>
     {crossword && (
       <div className={bem("grid", [`size-${crossword.rows}`])}>
-        {drawBoxes(crossword)}
+        <Boxes {...crossword} />
       </div>
     )}
-    {/* hmm how does this id get here? */}
+    {/* TODO how does this id get here? */}
     <a href={`/${metadata.id}`}>{metadata.title || "Untitled"}</a>
   </div>
 );
