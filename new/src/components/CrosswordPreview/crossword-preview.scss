@@ -1,0 +1,51 @@
+$block-class: 'crossword-preview';
+
+$base-preview-box-size: 8px;
+// the base size of a box times the base number of boxes
+// plus one for the extra margin
+$preview-size: $base-preview-box-size * 15 + 1;
+$preview-margin: 20px;
+$preview-space: $preview-size + $preview-margin * 2;
+
+@at-root {
+    .#{$block-class} {
+        margin-left: $preview-margin;
+        margin-right: $preview-margin;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        &__grid {
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid black;
+            border-top: 1px solid black;
+            font-size: $base-preview-box-size;
+
+            @for $size from 1 to 30 {
+                &--size-#{$size} {
+                    font-size: ($base-preview-box-size * 15) / $size;
+                }
+            }
+        }
+
+        &__row {
+            display: flex;
+            flex-direction: row;
+        }
+
+        &__box {
+            box-sizing: border-box;
+            width: 1em;
+            height: 1em;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+            text-transform: uppercase;
+            text-align: center;
+
+            &--blocked {
+                background-color: black;
+            }
+        }
+    }
+}
