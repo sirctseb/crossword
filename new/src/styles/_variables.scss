@@ -1,0 +1,6 @@
+$base-preview-box-size: 8px;
+// the base size of a box times the base number of boxes
+// plus one for the extra margin
+$preview-size: $base-preview-box-size * 15 + 1;
+$preview-margin: 20px;
+$preview-space: $preview-size + $preview-margin * 2;

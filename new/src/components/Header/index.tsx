@@ -98,7 +98,7 @@ export const Header = () => {
 
   const handleLogout = useCallback(() => {
     auth.signOut();
-  }, []);
+  }, [auth]);
 
   return (
     <HeaderPresentation
