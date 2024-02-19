@@ -1,8 +1,8 @@
 "use client";
 
 import { useRecoilValue } from "recoil";
-import { ConnectedPreviewList } from "../../components/User/PreviewList";
 import { authAtom } from "../../firebase-recoil/atoms";
+import { ConnectedUser } from "../../components/User/User";
 
 export default function UserDashboard() {
   const { user } = useRecoilValue(authAtom);
@@ -12,7 +12,5 @@ export default function UserDashboard() {
     return "Not logged in";
   }
 
-  return (
-    <ConnectedPreviewList userId={user.uid}>My Crosswords</ConnectedPreviewList>
-  );
+  return <ConnectedUser />;
 }
