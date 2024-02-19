@@ -1,4 +1,10 @@
-import { atom, AtomEffect, atomFamily, RecoilState } from "recoil";
+import {
+  atom,
+  AtomEffect,
+  atomFamily,
+  RecoilState,
+  type SerializableParam,
+} from "recoil";
 import { Database, DataSnapshot, ref, onValue, get } from "firebase/database";
 import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
 import type { FirebaseArray } from "../firebase/types";
@@ -36,13 +42,86 @@ export function makeAtom<T extends FirebaseValue>(
   });
 }
 
+type PP<K extends string> = {
+  [Property in K]: string;
+};
+
+function test<T extends string>(pathSpec: string, args: PP<T>): string {
+  return "hi";
+}
+
+const x = test<"key1" | "key2">("ok", { key1: "hi", key2: "hi" });
+
+type IsParameter<Part> = Part extends `{${infer ParamName}}`
+  ? ParamName
+  : never;
+type FilteredParts<Path> = Path extends `${infer PartA}/${infer PartB}`
+  ? IsParameter<PartA> | FilteredParts<PartB>
+  : IsParameter<Path>;
+type ParamValue<Key> = Key extends `...${infer Anything}` ? string[] : string;
+type RemovePrefixDots<Key> = Key extends `...${infer Name}` ? Name : Key;
+type Params<Path> = {
+  [Key in FilteredParts<Path> as RemovePrefixDots<Key>]: ParamValue<Key>;
+};
+type CallbackFn<Path> = (req: { params: Params<Path> }) => void;
+
+function get2<Path extends string = string>(
+  path: Path,
+  callback: CallbackFn<Path>
+) {
+  // TODO: implement
+}
+
+function make2<Path extends string = string>(path: Path): CallbackFn<Path> {
+  return (req) => {};
+}
+
+const makeCallback = make2("/hi/{there}/cool")({ params: { there: "hi" } });
+
+get2("hi/{there}/cool", ({ params: { there } }) => {});
+
+const db: Database = {};
+
+const af = makeAtomFamily("/hi/{there}/cool", db);
+af({ there: "ok" });
+af({ shouldFail: "ok" });
+
+//https://github.com/microsoft/TypeScript/pull/26349
+const af2 = makeAtomFamily<number>("/hi/{there}/cool", db);
+af2({ there: "ok" });
+af2({ shouldFail: "ok" });
+
+function omg<T extends string, N extends number>(t: T, n: N): { x: T; y: N } {
+  return { x: t, y: n };
+}
+
+omg("cool", 3);
+// omg<string>("ok", 2);
+
+export function makeAtomFamilyMaker<T extends FirebaseValue>(
+  database: Database
+): <Path extends string>(
+  pathSpec: Path,
+  database: Database
+) => (pathSpec: Path) => RecoilState<T> {
+  return (pathSpec) => makeAtomFamily(pathSpec, database);
+}
+
+type KnownPathSpecAtomMaker<T extends FirebaseValue> = <T>() => RecoilState<T>;
+
+export function otherWay<Path extends string>(
+  pathSpec: Path,
+  database: Database
+): KnownPathSpecAtomMaker<T> {}
+
 export function makeAtomFamily<
   T extends FirebaseValue,
-  P extends PathParameters
->(pathSpec: string, database: Database): (param: P) => RecoilState<T> {
+  Path extends string
+  // P extends Params<Path> & SerializableParam = Params<Path>
+>(pathSpec: Path, database: Database): (param: Params<Path>) => RecoilState<T> {
   // TODO if we have some unique id for the app, we can include in the key
   // and support multiple firebase connections
-  return atomFamily<T, P>({
+  return atomFamily<T, Params<Path>>({
     key: `firebase-recoil:${pathSpec}`,
     effects: (params) => [
       // TODO what would happen if we threw an exception here?
