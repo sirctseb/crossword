@@ -6,9 +6,11 @@ import {
   CrosswordMetadata,
   FirebaseArray,
 } from "../../firebase/types";
-import { coerceToArray } from "../../firebase-recoil";
+import { coerceToArray, makeAtomFamily } from "../../firebase-recoil";
 
 import "./crossword-preview.scss";
+import { getDatabase } from "firebase/database";
+import { useRecoilValue } from "recoil";
 
 const bem = block("crossword-preview");
 
@@ -65,3 +67,24 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
     <a href={`/${metadata.id}`}>{metadata.title || "Untitled"}</a>
   </div>
 );
+
+export interface ConnectedCrosswordPreviewProps {
+  id: string;
+  metadata: CrosswordMetadata;
+}
+
+const crosswordAtomFamily = makeAtomFamily<Crossword, { crosswordId: string }>(
+  "/crosswords/{crosswordId}",
+  getDatabase()
+);
+
+export const ConnectedCrosswordPreview: React.FC<
+  ConnectedCrosswordPreviewProps
+> = ({ id, metadata }) => {
+  // TODO how does this work if the value isn't already loaded? there's no
+  // typing here about promises, looks like we always get it on first render
+  // but that can't be true
+  const crossword = useRecoilValue(crosswordAtomFamily({ crosswordId: id }));
+
+  return <CrosswordPreview metadata={metadata} crossword={crossword} />;
+};
