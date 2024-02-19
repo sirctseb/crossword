@@ -9,8 +9,8 @@ import {
 import { coerceToArray, makeAtomFamily } from "../../firebase-recoil";
 
 import "./crossword-preview.scss";
-import { getDatabase } from "firebase/database";
 import { useRecoilValue } from "recoil";
+import { getFirebaseDatabase } from "../../firebase";
 
 const bem = block("crossword-preview");
 
@@ -75,7 +75,7 @@ export interface ConnectedCrosswordPreviewProps {
 
 const crosswordAtomFamily = makeAtomFamily<Crossword, { crosswordId: string }>(
   "/crosswords/{crosswordId}",
-  getDatabase()
+  getFirebaseDatabase()
 );
 
 export const ConnectedCrosswordPreview: React.FC<

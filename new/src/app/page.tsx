@@ -3,12 +3,8 @@
 import Image from "next/image";
 import { useRecoilValue } from "recoil";
 
-import { getFirebaseApp } from "../firebase";
-import { makeAuthAtom } from "../firebase-recoil/auth";
 import { Header } from "../components/Header";
-
-const app = getFirebaseApp();
-const authAtom = makeAuthAtom(app);
+import { authAtom } from "../firebase-recoil/atoms";
 
 export default function Home() {
   const authState = useRecoilValue(authAtom);

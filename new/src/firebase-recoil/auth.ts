@@ -34,7 +34,7 @@ export function makeAuthAtom(app: FirebaseApp): RecoilState<AuthState> {
     effects: [fbAuthSubscriptionEffect(auth)],
     // TODO is there a synchronous way to get initial value for empty / loaded?
     default: {
-      isEmpty: false,
+      isEmpty: true,
       isLoaded: false,
       user: auth.currentUser,
     },

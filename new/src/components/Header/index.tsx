@@ -1,10 +1,12 @@
+"use client";
+
 import React, { useCallback, useState } from "react";
 import { FirebaseAuth } from "../FirebaseAuth";
 import { useRecoilValue } from "recoil";
-import { makeAuthAtom } from "../../firebase-recoil/auth";
-import { getFirebaseApp, getFirebaseAuth } from "../../firebase";
+import { getFirebaseAuth } from "../../firebase";
 
 import "./header.scss";
+import { authAtom } from "../../firebase-recoil/atoms";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -21,15 +23,15 @@ export const HeaderPresentation: React.FC<HeaderProps> = ({
 
   const handleShowLogin = useCallback(() => {
     setShowLogin(true);
-  }, []);
+  }, [setShowLogin]);
 
   const handleHideLogin = useCallback(() => {
     setShowLogin(false);
-  }, []);
+  }, [setShowLogin]);
 
   const handleLogout = useCallback(() => {
     onLogout();
-  }, []);
+  }, [onLogout]);
 
   const handleNew = useCallback(() => {
     onCreateNew();
@@ -51,7 +53,7 @@ export const HeaderPresentation: React.FC<HeaderProps> = ({
     //     [`permissions/${cwRef.key}`]: { owner: uid },
     //   })
     //   .then(() => this.props.router.push(`/${cwRef.key}`));
-  }, []);
+  }, [onCreateNew]);
 
   return (
     <header className="header">
@@ -87,9 +89,6 @@ export const HeaderPresentation: React.FC<HeaderProps> = ({
     </header>
   );
 };
-
-const app = getFirebaseApp();
-const authAtom = makeAuthAtom(app);
 
 export const Header = () => {
   const auth = getFirebaseAuth();

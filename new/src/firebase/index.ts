@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { settings } from "../settings/Settings";
+import { getDatabase, type Database } from "firebase/database";
 
 const globalFirebase = initializeApp(settings.firebase);
 
@@ -17,6 +18,10 @@ export function getFirebaseApp(): FirebaseApp {
 
 export function getFirebaseAuth(): Auth {
   return getAuth(globalFirebase);
+}
+
+export function getFirebaseDatabase(): Database {
+  return getDatabase(globalFirebase);
 }
 
 export const firebaseAuthConfig = {
