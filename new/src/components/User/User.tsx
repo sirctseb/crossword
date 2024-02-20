@@ -1,12 +1,10 @@
 import React from "react";
-import { block } from "../../styles/index";
-// import Wait from "../Wait";
+import { useRecoilValue } from "recoil";
 
-// import { getUserId } from "./selectors";
+import { block } from "../../styles/index";
 import { ConnectedPreviewList } from "./PreviewList";
 // import WordList from "./WordList";
 import { UserSection } from "./UserSection";
-import { useRecoilValue } from "recoil";
 import { authAtom } from "../../firebase-recoil/atoms";
 
 const bem = block("user");
@@ -30,7 +28,8 @@ export const User: React.FC<UserProps> = ({ userId }) => {
 
 export const ConnectedUser = () => {
   const { user } = useRecoilValue(authAtom);
-  // TODO ok lets figure out what to do about async stuff
+  // TODO skeleton view before user (and subsequently display data)
+  // is loaded
   if (!user) {
     return "Not logged in";
   }
