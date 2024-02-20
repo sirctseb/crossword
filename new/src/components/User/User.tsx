@@ -3,9 +3,9 @@ import { useRecoilValue } from "recoil";
 
 import { block } from "../../styles/index";
 import { ConnectedPreviewList } from "./PreviewList";
-// import WordList from "./WordList";
 import { UserSection } from "./UserSection";
 import { authAtom } from "../../firebase-recoil/atoms";
+import { ConnectedWordList } from "./WordList";
 
 const bem = block("user");
 
@@ -21,7 +21,9 @@ export const User: React.FC<UserProps> = ({ userId }) => {
           My Crosswords
         </ConnectedPreviewList>
       </UserSection>
-      {/* <UserSection><WordList userId={userId} /></UserSection> */}
+      <UserSection>
+        <ConnectedWordList userId={userId} />
+      </UserSection>
     </div>
   );
 };
