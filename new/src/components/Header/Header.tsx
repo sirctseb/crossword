@@ -14,7 +14,7 @@ interface HeaderProps {
   loggedIn: boolean;
 }
 
-export const HeaderPresentation: React.FC<HeaderProps> = ({
+export const Header: React.FC<HeaderProps> = ({
   onLogout,
   onCreateNew,
   loggedIn,
@@ -90,7 +90,7 @@ export const HeaderPresentation: React.FC<HeaderProps> = ({
   );
 };
 
-export const Header = () => {
+export const ConnectedHeader = () => {
   const auth = getFirebaseAuth();
   const { isEmpty } = useRecoilValue(authAtom);
   const loggedIn = !isEmpty;
@@ -100,7 +100,7 @@ export const Header = () => {
   }, [auth]);
 
   return (
-    <HeaderPresentation
+    <Header
       loggedIn={loggedIn}
       onLogout={handleLogout}
       onCreateNew={async () => await Promise.resolve()}
