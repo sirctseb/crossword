@@ -37,6 +37,7 @@ $block-class: 'crossword-preview';
             border-bottom: 1px solid black;
             text-transform: uppercase;
             text-align: center;
+            line-height: 1em;
 
             &--blocked {
                 background-color: black;
