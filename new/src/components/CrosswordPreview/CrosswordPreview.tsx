@@ -15,6 +15,7 @@ import { getFirebaseDatabase } from "../../firebase";
 const bem = block("crossword-preview");
 
 interface CrosswordPreviewProps {
+  id: string;
   crossword: Crossword;
   metadata: CrosswordMetadata;
 }
@@ -54,6 +55,7 @@ const Boxes: React.FC<{ rows: number; boxes?: Crossword["boxes"] }> = ({
 };
 
 export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
+  id,
   metadata,
   crossword,
 }) => (
@@ -63,8 +65,7 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
         <Boxes {...crossword} />
       </div>
     )}
-    {/* TODO how does this id get here? */}
-    <a href={`/${metadata.id}`}>{metadata.title || "Untitled"}</a>
+    <a href={`/${id}`}>{metadata.title || "Untitled"}</a>
   </div>
 );
 
@@ -86,5 +87,5 @@ export const ConnectedCrosswordPreview: React.FC<
   // but that can't be true
   const crossword = useRecoilValue(crosswordAtomFamily({ crosswordId: id }));
 
-  return <CrosswordPreview metadata={metadata} crossword={crossword} />;
+  return <CrosswordPreview id={id} metadata={metadata} crossword={crossword} />;
 };
