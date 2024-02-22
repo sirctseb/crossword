@@ -59,7 +59,7 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
 }) => (
   <div className={bem()}>
     {crossword && (
-      <div className={bem("grid", [`size-${crossword.rows}`])}>
+      <div className={bem("grid", { [`size-${crossword.rows}`]: true })}>
         <Boxes {...crossword} />
       </div>
     )}
