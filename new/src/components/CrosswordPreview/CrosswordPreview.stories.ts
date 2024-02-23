@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { CrosswordPreview } from ".";
 
 const meta = {
-  title: "Example/CrosswordPreview",
+  title: "CrosswordPreview",
   component: CrosswordPreview,
   parameters: {
     layout: "centered",

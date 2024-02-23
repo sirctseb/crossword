@@ -1,16 +1,18 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { UserSection } from ".";
+import { Box } from ".";
 
 const meta = {
-  title: "User/UserSection",
-  component: UserSection,
+  title: "Box",
+  component: Box,
   parameters: {
     layout: "centered",
   },
   tags: ["autodocs"],
-  argTypes: {},
-} satisfies Meta<typeof UserSection>;
+  argTypes: {
+    box: {},
+  },
+} satisfies Meta<typeof Box>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -18,6 +20,15 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Basic: Story = {
   args: {
-    children: "section content",
+    box: {
+      blocked: false,
+      circled: false,
+      content: "x",
+      shaded: false,
+    },
+    column: 0,
+    row: 0,
+    cursor: false,
+    cursorAnswer: false,
   },
 };
