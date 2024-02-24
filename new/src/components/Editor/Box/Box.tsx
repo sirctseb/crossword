@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Box as BoxModel } from "../../../firebase/types";
 
-// import BoxControls from "./BoxControls";
+import { BoxControls } from "./BoxControls";
 import { RebusInput } from "./RebusInput";
 import type { FirebaseValue } from "../../../firebase-recoil";
 
@@ -119,11 +119,11 @@ export const Box: React.FC<BoxProps> = ({
       onMouseDown={handleMouseDown}
       ref={boxRef}
     >
-      {/* <BoxControls
+      <BoxControls
         onToggleAttribute={handleToggleAttribute}
         box={box}
         onBlock={handleOnBlock}
-      /> */}
+      />
       {rebus && (
         <RebusInput
           content={content}
