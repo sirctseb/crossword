@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Box as BoxModel } from "../../../firebase/types";
 
 // import BoxControls from "./BoxControls";
-// import RebusInput from "./RebusInput";
+import { RebusInput } from "./RebusInput";
 import type { FirebaseValue } from "../../../firebase-recoil";
 
 import { block } from "../../../styles";
@@ -45,6 +45,7 @@ export const Box: React.FC<BoxProps> = ({
   cursorAnswer: active,
 }) => {
   const [rebus, setRebus] = useState(false);
+  const boxRef = useRef(null);
 
   const handleFocus = useCallback(
     () => onBoxFocus(row, column),
@@ -54,7 +55,7 @@ export const Box: React.FC<BoxProps> = ({
   const handleMouseDown = useCallback<React.MouseEventHandler<HTMLDivElement>>(
     (evt) => {
       if (cursor) {
-        setRebus(false);
+        setRebus(true);
       }
       evt.preventDefault();
     },
@@ -116,13 +117,20 @@ export const Box: React.FC<BoxProps> = ({
       }}
       onFocus={handleFocus}
       onMouseDown={handleMouseDown}
+      ref={boxRef}
     >
       {/* <BoxControls
         onToggleAttribute={handleToggleAttribute}
         box={box}
         onBlock={handleOnBlock}
       /> */}
-      {/* {rebus && <RebusInput content={content} onClose={handleRebusClose} />} */}
+      {rebus && (
+        <RebusInput
+          content={content}
+          onClose={handleRebusClose}
+          containerRef={boxRef}
+        />
+      )}
       {clueLabel !== undefined && (
         <div className={bem("clue-index")}>{clueLabel}</div>
       )}
