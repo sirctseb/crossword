@@ -17,6 +17,8 @@ function fbValueSubscriptionEffect<T extends FirebaseValue>(
   database: Database
 ): AtomEffect<T> {
   return ({ setSelf }) => {
+    setSelf(get(ref(database, path)).then((snapshot) => snapshot.val()));
+
     const handler = (snapshot: DataSnapshot) => {
       setSelf(snapshot.val());
     };
@@ -37,8 +39,9 @@ export function makeAtom<T extends FirebaseValue>(
   return atom<T>({
     key: `firebase-recoil:${path}`,
     effects: [fbValueSubscriptionEffect<T>(path, database)],
-    // TODO find out whether this or initializing in effect is better
-    default: get(ref(database, path)).then((snapshot) => snapshot.val()),
+    // TODO this is an alternative to calling setSelf synchronously in the effect
+    // should figure out what, if any, the behavior differences are
+    // default: get(ref(database, path)).then((snapshot) => snapshot.val()),
   });
 }
 
@@ -57,12 +60,17 @@ export function makeAtomFamily<
         database
       ),
     ],
-    // TODO find out whether this or initializing in effect is better
-    default: async (params) => {
-      return await get(
-        ref(database, interpolatePathSpec(pathSpec, params))
-      ).then((snapshot) => snapshot.val());
-    },
+    // TODO this is an alternative to calling setSelf synchronously in the effect
+    // should figure out what, if any, the behavior differences are
+    // default: async (params) => {
+    //   // TODO figure out how to handle this in SSR
+    //   if (typeof window !== "undefined") {
+    //     return await get(
+    //       ref(database, interpolatePathSpec(pathSpec, params))
+    //     ).then((snapshot) => snapshot.val());
+    //   }
+    //   return {};
+    // },
   });
 }
 
