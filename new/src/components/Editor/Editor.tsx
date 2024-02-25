@@ -1,4 +1,9 @@
+"use client";
+
 import React from "react";
+
+import { useRecoilValue } from "recoil";
+import { arrayCrosswordFamily } from "../../firebase-recoil/atoms";
 
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
 import { block } from "../../styles";
@@ -53,4 +58,16 @@ export const Editor: React.FC<EditorProps> = ({ crossword }) => {
       <div className={bem("grid")}>{rows}</div>
     </div>
   );
+};
+
+export interface ConnectedEditorProps {
+  crosswordId: string;
+}
+
+export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
+  crosswordId,
+}) => {
+  const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId }));
+
+  return <Editor crossword={crossword} />;
 };
