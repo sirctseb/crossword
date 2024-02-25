@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Root } from "../recoil";
 import "./globals.css";
 import { ConnectedHeader } from "../components/Header";
+import { LoginProtector } from "../components/LoginProtector";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,7 +19,7 @@ export default function RootLayout({
       <html lang="en">
         <body>
           <ConnectedHeader />
-          {children}
+          <LoginProtector>{children}</LoginProtector>
         </body>
       </html>
     </Root>
