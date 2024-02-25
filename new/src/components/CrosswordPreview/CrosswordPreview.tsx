@@ -1,7 +1,7 @@
 import React from "react";
 import { block } from "../../styles";
 
-import { Crossword, CrosswordMetadata } from "../../firebase/types";
+import { CrosswordMetadata } from "../../firebase/types";
 
 import "./crossword-preview.scss";
 import { useRecoilValue } from "recoil";
@@ -9,6 +9,7 @@ import {
   arrayCrosswordFamily,
   type ArrayCrossword,
 } from "../../firebase-recoil/atoms";
+import Link from "next/link";
 
 const bem = block("crossword-preview");
 
@@ -48,7 +49,7 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
         <Boxes {...crossword} />
       </div>
     )}
-    <a href={`/${id}`}>{metadata.title || "Untitled"}</a>
+    <Link href={`/${id}`}>{metadata.title || "Untitled"}</Link>
   </div>
 );
 

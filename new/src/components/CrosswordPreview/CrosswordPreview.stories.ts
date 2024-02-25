@@ -34,5 +34,6 @@ export const Basic: Story = {
     metadata: {
       title: "Title in metadata",
     },
+    id: "id",
   },
 };
