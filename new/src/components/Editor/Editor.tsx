@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { useRecoilValue } from "recoil";
 import { arrayCrosswordFamily } from "../../firebase-recoil/atoms";
-
+import { cursorAtom } from "../../atoms";
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
+
 import { block } from "../../styles";
 import { Box } from "./Box";
 
@@ -14,11 +15,17 @@ const bem = block("editor");
 
 export interface EditorProps {
   crossword: ArrayCrossword;
+  isCursorBox: (row: number, column: number) => boolean;
+  onBoxFocus: (row: number, column: number) => void;
 }
 
 const emptyBox = {};
 
-export const Editor: React.FC<EditorProps> = ({ crossword }) => {
+export const Editor: React.FC<EditorProps> = ({
+  crossword,
+  isCursorBox,
+  onBoxFocus,
+}) => {
   const rows = [];
 
   for (let row = 0; row < crossword.rows; row += 1) {
@@ -40,10 +47,8 @@ export const Editor: React.FC<EditorProps> = ({ crossword }) => {
           // clueLabel={label}
           // onBlock={this.onBlock}
           onBlock={() => {}}
-          // onBoxFocus={this.onBoxFocus}
-          onBoxFocus={() => {}}
-          // cursor={isCursorBox(row, column)}
-          cursor={false}
+          onBoxFocus={onBoxFocus}
+          cursor={isCursorBox(row, column)}
           // onAfterSetContent={this.handleAfterSetContent}
           onAfterSetContent={() => {}}
         />
@@ -70,6 +75,27 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
   const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId }));
+  const [cursor, setCursor] = useRecoilState(cursorAtom);
 
-  return <Editor crossword={crossword} />;
+  const isCursorBox = useCallback(
+    (row: number, column: number): boolean => {
+      return cursor.row === row && cursor.column === column;
+    },
+    [cursor]
+  );
+
+  const handleBoxFocus = useCallback(
+    (row: number, column: number) => {
+      setCursor({ row, column });
+    },
+    [setCursor]
+  );
+
+  return (
+    <Editor
+      crossword={crossword}
+      isCursorBox={isCursorBox}
+      onBoxFocus={handleBoxFocus}
+    />
+  );
 };
