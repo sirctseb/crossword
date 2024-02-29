@@ -8,6 +8,8 @@ import { arrayCrosswordFamily } from "../../firebase-recoil/atoms";
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
 import { block } from "../../styles";
 import { Box } from "./Box";
+
+import "./editor.scss";
 const bem = block("editor");
 
 export interface EditorProps {

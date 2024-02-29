@@ -1,11 +1,10 @@
+@use '../../../styles/variables' as *;
+
 $block-class: 'box';
 
 $block-color: black;
 $shade-color: #aaa;
 $active-color: #eee;
-
-$box-size: 32px;
-$clue-width: 200px;
 
 @at-root {
     .#{$block-class} {
