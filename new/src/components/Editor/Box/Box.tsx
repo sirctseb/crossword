@@ -56,8 +56,8 @@ export const Box: React.FC<BoxProps> = ({
     (evt) => {
       if (cursor) {
         setRebus(true);
+        evt.preventDefault();
       }
-      evt.preventDefault();
     },
     [cursor]
   );
