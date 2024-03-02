@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
 import { type ArrayCrossword } from "../../firebase-recoil/atoms";
-import { arrayCrosswordFamily } from "../../atoms";
+import { arrayCrosswordFamily } from "../../state/atoms";
 
 import { block } from "../../styles";
 import "./crossword-preview.scss";

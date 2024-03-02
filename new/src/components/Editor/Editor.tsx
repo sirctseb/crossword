@@ -7,7 +7,7 @@ import {
   cursorAtom,
   arrayCrosswordFamily,
   labelMapSelector,
-} from "../../atoms";
+} from "../../state/atoms";
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
 
 import { block } from "../../styles";

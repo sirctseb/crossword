@@ -1,7 +1,7 @@
 import { atom, selectorFamily } from "recoil";
-import { ArrayCrossword, crosswordAtomFamily } from "./firebase-recoil/atoms";
-import { coerceToArray } from "./firebase-recoil";
-import type { FirebaseArray } from "./firebase/types";
+import { ArrayCrossword, crosswordAtomFamily } from "../firebase-recoil/atoms";
+import { coerceToArray } from "../firebase-recoil";
+import type { FirebaseArray } from "../firebase/types";
 
 interface Cursor {
   row: number;
