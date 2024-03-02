@@ -3,7 +3,11 @@
 import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { cursorAtom, arrayCrosswordFamily } from "../../atoms";
+import {
+  cursorAtom,
+  arrayCrosswordFamily,
+  labelMapSelector,
+} from "../../atoms";
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
 
 import { block } from "../../styles";
@@ -18,6 +22,7 @@ export interface EditorProps {
   isCursorBox: (row: number, column: number) => boolean;
   isCursorAnswer: (row: number, column: number) => boolean;
   onBoxFocus: (row: number, column: number) => void;
+  labelMap: Record<number, Record<number, number>>;
 }
 
 const emptyBox = {};
@@ -27,6 +32,7 @@ export const Editor: React.FC<EditorProps> = ({
   isCursorBox,
   isCursorAnswer,
   onBoxFocus,
+  labelMap,
 }) => {
   const rows = [];
 
@@ -34,7 +40,7 @@ export const Editor: React.FC<EditorProps> = ({
     const boxes = [];
     for (let column = 0; column < crossword.rows; column += 1) {
       const box = crossword.boxes[row][column] || emptyBox;
-      // const label = labelMap[row][column];
+      const label = labelMap[row][column];
 
       boxes.push(
         <Box
@@ -45,7 +51,7 @@ export const Editor: React.FC<EditorProps> = ({
           box={box}
           // makeUndoableChange={this.makeUndoableChange}
           makeUndoableChange={() => {}}
-          // clueLabel={label}
+          clueLabel={label}
           // onBlock={this.onBlock}
           onBlock={() => {}}
           onBoxFocus={onBoxFocus}
@@ -77,6 +83,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
 }) => {
   const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId }));
   const [cursor, setCursor] = useRecoilState(cursorAtom);
+  const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
 
   const isCursorBox = useCallback(
     (row: number, column: number): boolean => {
@@ -104,6 +111,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       isCursorBox={isCursorBox}
       onBoxFocus={handleBoxFocus}
       isCursorAnswer={isCursorAnswer}
+      labelMap={labelMap}
     />
   );
 };
