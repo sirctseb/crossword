@@ -11,11 +11,13 @@ import { block } from "../../styles";
 import { Box } from "./Box";
 
 import "./editor.scss";
+import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 const bem = block("editor");
 
 export interface EditorProps {
   crossword: ArrayCrossword;
   isCursorBox: (row: number, column: number) => boolean;
+  isCursorAnswer: (row: number, column: number) => boolean;
   onBoxFocus: (row: number, column: number) => void;
 }
 
@@ -24,6 +26,7 @@ const emptyBox = {};
 export const Editor: React.FC<EditorProps> = ({
   crossword,
   isCursorBox,
+  isCursorAnswer,
   onBoxFocus,
 }) => {
   const rows = [];
@@ -37,8 +40,7 @@ export const Editor: React.FC<EditorProps> = ({
       boxes.push(
         <Box
           key={`box-${row}-${column}`}
-          // cursorAnswer={isCursorAnswer(row, column)}
-          cursorAnswer={false}
+          cursorAnswer={isCursorAnswer(row, column)}
           row={row}
           column={column}
           box={box}
@@ -84,9 +86,15 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [cursor]
   );
 
+  const isCursorAnswer = useIsCursorAnswer(crosswordId);
+
   const handleBoxFocus = useCallback(
     (row: number, column: number) => {
-      setCursor({ row, column });
+      setCursor(({ direction }) => ({
+        direction,
+        row,
+        column,
+      }));
     },
     [setCursor]
   );
@@ -96,6 +104,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       crossword={crossword}
       isCursorBox={isCursorBox}
       onBoxFocus={handleBoxFocus}
+      isCursorAnswer={isCursorAnswer}
     />
   );
 };
