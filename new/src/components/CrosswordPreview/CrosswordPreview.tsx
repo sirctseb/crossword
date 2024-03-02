@@ -3,11 +3,10 @@ import { useRecoilValue } from "recoil";
 import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
-import { type ArrayCrossword } from "../../firebase-recoil/atoms";
-import { arrayCrosswordFamily } from "../../state/atoms";
 
 import { block } from "../../styles";
 import "./crossword-preview.scss";
+import { arrayCrosswordFamily, type ArrayCrossword } from "../../state";
 
 const bem = block("crossword-preview");
 

@@ -4,11 +4,11 @@ import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 import {
-  cursorAtom,
   arrayCrosswordFamily,
   labelMapSelector,
-} from "../../state/atoms";
-import type { ArrayCrossword } from "../../firebase-recoil/atoms";
+  cursorAtom,
+  type ArrayCrossword,
+} from "../../state";
 
 import { block } from "../../styles";
 import { Box } from "./Box";
