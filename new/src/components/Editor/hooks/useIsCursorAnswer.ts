@@ -1,8 +1,7 @@
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
 
-import { arrayCrosswordFamily } from "../../../firebase-recoil/atoms";
-import { cursorAtom } from "../../../atoms";
+import { cursorAtom, arrayCrosswordFamily } from "../../../atoms";
 
 type useIsCursorAnswerResult = (row: number, column: number) => boolean;
 

@@ -3,8 +3,7 @@
 import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import { arrayCrosswordFamily } from "../../firebase-recoil/atoms";
-import { cursorAtom } from "../../atoms";
+import { cursorAtom, arrayCrosswordFamily } from "../../atoms";
 import type { ArrayCrossword } from "../../firebase-recoil/atoms";
 
 import { block } from "../../styles";
