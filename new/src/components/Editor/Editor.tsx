@@ -8,13 +8,14 @@ import {
   labelMapSelector,
   cursorAtom,
   type ArrayCrossword,
+  cursorAfterAdvancementSelector,
 } from "../../state";
 
-import { block } from "../../styles";
 import { Box } from "./Box";
+import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
 import "./editor.scss";
-import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
+import { block } from "../../styles";
 const bem = block("editor");
 
 export interface EditorProps {
@@ -23,6 +24,7 @@ export interface EditorProps {
   isCursorAnswer: (row: number, column: number) => boolean;
   onBoxFocus: (row: number, column: number) => void;
   labelMap: Record<number, Record<number, number>>;
+  onAfterSetContent: (newContent: string | null) => void;
 }
 
 const emptyBox = {};
@@ -33,6 +35,7 @@ export const Editor: React.FC<EditorProps> = ({
   isCursorAnswer,
   onBoxFocus,
   labelMap,
+  onAfterSetContent,
 }) => {
   const rows = [];
 
@@ -56,8 +59,7 @@ export const Editor: React.FC<EditorProps> = ({
           onBlock={() => {}}
           onBoxFocus={onBoxFocus}
           cursor={isCursorBox(row, column)}
-          // onAfterSetContent={this.handleAfterSetContent}
-          onAfterSetContent={() => {}}
+          onAfterSetContent={onAfterSetContent}
         />
       );
     }
@@ -84,6 +86,9 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId }));
   const [cursor, setCursor] = useRecoilState(cursorAtom);
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
+  const cursorAfterAdvancement = useRecoilValue(
+    cursorAfterAdvancementSelector({ crosswordId })
+  );
 
   const isCursorBox = useCallback(
     (row: number, column: number): boolean => {
@@ -105,6 +110,23 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [setCursor]
   );
 
+  const handleAfterSetContent = useCallback(
+    (newContent: string | null) => {
+      if (newContent !== null) {
+        const { row, column } = cursorAfterAdvancement;
+        const className = `.box--at-${row}-${column}`;
+        const toFocus = document.querySelector<HTMLDivElement>(className);
+        if (!toFocus) {
+          throw new Error(
+            `Could not find box to focus (${row}, ${column}) (${className})`
+          );
+        }
+        toFocus.focus();
+      }
+    },
+    [cursorAfterAdvancement]
+  );
+
   return (
     <Editor
       crossword={crossword}
@@ -112,6 +134,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       onBoxFocus={handleBoxFocus}
       isCursorAnswer={isCursorAnswer}
       labelMap={labelMap}
+      onAfterSetContent={handleAfterSetContent}
     />
   );
 };

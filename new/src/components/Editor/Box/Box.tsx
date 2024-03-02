@@ -27,7 +27,7 @@ export interface BoxProps {
   clueLabel?: number;
   onBlock: (row: number, column: number, blocked: boolean) => void;
   onBoxFocus: (row: number, column: number) => void;
-  onAfterSetContent: (content?: string | null) => void;
+  onAfterSetContent: (content: string | null) => void;
   cursorAnswer: boolean;
 }
 
@@ -63,7 +63,7 @@ export const Box: React.FC<BoxProps> = ({
   );
 
   const setContent = useCallback(
-    (newContent?: string | null) => {
+    (newContent: string | null) => {
       makeUndoableChange(`boxes/${row}/${column}/content`, newContent, content);
       onAfterSetContent(newContent);
     },
@@ -71,7 +71,7 @@ export const Box: React.FC<BoxProps> = ({
   );
 
   const handleRebusClose = useCallback(
-    (currentContent = content) => {
+    (currentContent = content ?? null) => {
       setContent(currentContent);
       setRebus(false);
     },
@@ -95,15 +95,13 @@ export const Box: React.FC<BoxProps> = ({
 
   return (
     <div
-      className={bem(
-        {
-          blocked,
-          circled,
-          shaded,
-          active,
-        },
-        [`at-${row}-${column}`]
-      )}
+      className={bem({
+        blocked,
+        circled,
+        shaded,
+        active,
+        [`at-${row}-${column}`]: true,
+      })}
       tabIndex={!blocked ? 0 : undefined}
       onKeyPress={(evt) => {
         if (/^[A-Za-z]$/.test(evt.key) && targetFocused(evt)) {

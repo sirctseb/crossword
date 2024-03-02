@@ -1,15 +1,10 @@
 import { selectorFamily } from "recoil";
 import { arrayCrosswordFamily } from ".";
+import { LabeledBox } from "./types";
 
-interface LabeledBox {
-  row: number;
-  column: number;
-  label: number;
-}
 /**
  * Returns a map from directions to a list of boxes with their rows, columns, and labels
  */
-
 export const clueAddressesSelector = selectorFamily<
   {
     across: LabeledBox[];
