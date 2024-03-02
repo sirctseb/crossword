@@ -1,15 +1,13 @@
 import React from "react";
-import { block } from "../../styles";
+import { useRecoilValue } from "recoil";
+import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
+import { type ArrayCrossword } from "../../firebase-recoil/atoms";
+import { arrayCrosswordFamily } from "../../atoms";
 
+import { block } from "../../styles";
 import "./crossword-preview.scss";
-import { useRecoilValue } from "recoil";
-import {
-  arrayCrosswordFamily,
-  type ArrayCrossword,
-} from "../../firebase-recoil/atoms";
-import Link from "next/link";
 
 const bem = block("crossword-preview");
 
