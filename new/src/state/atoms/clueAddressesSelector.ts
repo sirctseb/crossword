@@ -1,6 +1,6 @@
 import { selectorFamily } from "recoil";
 import { arrayCrosswordSelector } from "..";
-import { LabeledBox, type AddressCatalog } from "../types";
+import { LabeledAddress, type AddressCatalog } from "../types";
 import { deriveClueAddresses } from "../derivations";
 
 /**

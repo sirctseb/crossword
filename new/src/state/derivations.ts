@@ -1,7 +1,7 @@
 import type {
   ArrayCrossword,
   AddressCatalog,
-  LabeledBox,
+  LabeledAddress,
   Address,
   Candidate,
   Direction,
@@ -11,10 +11,11 @@ import type { Box } from "../firebase/types";
 export const deriveClueAddresses = (
   crossword: ArrayCrossword
 ): AddressCatalog => {
-  const labeledBoxes: { across: LabeledBox[]; down: LabeledBox[] } = {
-    across: [],
-    down: [],
-  };
+  const labeledAddresses: { across: LabeledAddress[]; down: LabeledAddress[] } =
+    {
+      across: [],
+      down: [],
+    };
   let clueIndex = 1;
   for (let row = 0; row < crossword.rows; row += 1) {
     for (let column = 0; column < crossword.rows; column += 1) {
@@ -24,17 +25,17 @@ export const deriveClueAddresses = (
       const topBlocked = row === 0 || crossword.boxes[row - 1][column].blocked;
       const indexBox = !blocked && (leftBlocked || topBlocked);
       if (indexBox && leftBlocked) {
-        labeledBoxes.across.push({ row, column, label: clueIndex });
+        labeledAddresses.across.push({ row, column, label: clueIndex });
       }
       if (indexBox && topBlocked) {
-        labeledBoxes.down.push({ row, column, label: clueIndex });
+        labeledAddresses.down.push({ row, column, label: clueIndex });
       }
       if (indexBox) {
         clueIndex += 1;
       }
     }
   }
-  return labeledBoxes;
+  return labeledAddresses;
 };
 const firstBoxAddress = (
   crossword: ArrayCrossword,
@@ -47,17 +48,6 @@ const firstBoxAddress = (
 
   let rowIter = row;
   let columnIter = column;
-
-  console.log("firstBoxAddress", {
-    columnChange,
-    rowChange,
-    rowIter,
-    columnIter,
-    row,
-    column,
-    direction,
-    crossword,
-  });
 
   while (
     rowIter + rowChange >= 0 &&
@@ -77,9 +67,8 @@ const clueAddressAt = (
   row: number,
   column: number,
   direction: Direction,
-  // TODO fix and align these variable names and types
-  clueAddresses: LabeledBox[]
-): LabeledBox => {
+  clueAddresses: LabeledAddress[]
+): LabeledAddress => {
   const firstAddress = firstBoxAddress(crossword, row, column, direction);
   const boxAtFirstAddress = clueAddresses.find(
     (address) =>
@@ -192,7 +181,7 @@ export const findNext = (
   row: number,
   column: number,
   direction: Direction,
-  clueAddresses: LabeledBox[],
+  clueAddresses: LabeledAddress[],
   where: (candidate: Candidate) => boolean
 ): Candidate | null => {
   if (!notBlocked(crossword, row, column)) {

@@ -19,30 +19,37 @@ export interface BoxProps {
   column: number;
   box: BoxModel;
   cursor: boolean;
+  clueLabel?: number;
+  cursorAnswer: boolean;
   makeUndoableChange: (
     path: string,
     newValue: FirebaseValue,
     oldValue: FirebaseValue
   ) => void;
-  clueLabel?: number;
   onBlock: (row: number, column: number, blocked: boolean) => void;
   onBoxFocus: (row: number, column: number) => void;
   onAfterSetContent: (content: string | null) => void;
-  cursorAnswer: boolean;
+  onModifyBox: <K extends keyof BoxModel>(
+    row: number,
+    column: number,
+    key: K,
+    value: BoxModel[K]
+  ) => void;
 }
 
 export const Box: React.FC<BoxProps> = ({
-  box: { blocked, circled, content, shaded },
-  box,
+  row,
   column,
+  box,
+  box: { blocked, circled, content, shaded },
   cursor,
+  clueLabel,
+  cursorAnswer: active,
   makeUndoableChange,
   onAfterSetContent,
   onBlock,
   onBoxFocus,
-  row,
-  clueLabel,
-  cursorAnswer: active,
+  onModifyBox,
 }) => {
   const [rebus, setRebus] = useState(false);
   const boxRef = useRef(null);

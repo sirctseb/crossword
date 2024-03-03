@@ -3,7 +3,7 @@ import {
   Address,
   Candidate,
   ArrayCrossword,
-  type LabeledBox,
+  type LabeledAddress,
   type Direction,
 } from "../types";
 import { findNext } from "../derivations";
@@ -16,7 +16,7 @@ const findNextBlank = (
   row: number,
   column: number,
   direction: Direction,
-  clueAddresses: LabeledBox[]
+  clueAddresses: LabeledAddress[]
 ): Candidate | null =>
   findNext(
     crossword,

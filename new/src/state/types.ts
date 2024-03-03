@@ -7,9 +7,7 @@ export interface Address {
 export interface Candidate extends Address {
   box: Box;
 }
-export interface LabeledBox {
-  row: number;
-  column: number;
+export interface LabeledAddress extends Address {
   label: number;
 }
 export type ArrayCrossword = Omit<Crossword, "boxes"> & { boxes: Box[][] };
@@ -17,6 +15,6 @@ export type ArrayCrossword = Omit<Crossword, "boxes"> & { boxes: Box[][] };
 export type Direction = "across" | "down";
 
 export interface AddressCatalog {
-  across: LabeledBox[];
-  down: LabeledBox[];
+  across: LabeledAddress[];
+  down: LabeledAddress[];
 }
