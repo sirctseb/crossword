@@ -35,7 +35,8 @@ function moveCursor(
   }
 }
 
-export const useEditoHotkeys = (
+// TODO add scoping to the editor being active
+export const useEditorHotkeys = (
   crosswordId: string,
   undoHistory: UndoHistory
 ) => {
