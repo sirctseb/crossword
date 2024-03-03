@@ -191,7 +191,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
           new FirebaseUpdate(
             ref(database, `crosswords/${crosswordId}/boxes/${row}/${column}`),
             { [key]: value },
-            { [key]: crossword.boxes[row][column][key] }
+            { [key]: crossword.boxes[row][column][key] ?? null }
           )
         );
       }
