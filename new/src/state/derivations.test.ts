@@ -1,6 +1,6 @@
 import { describe, it, expect } from "@jest/globals";
 
-import { test } from "./derivationFunctions";
+import { test } from "./derivations";
 import { type ArrayCrossword, coerceMatrixToArray, type Candidate } from ".";
 import type { Box } from "../firebase/types";
 

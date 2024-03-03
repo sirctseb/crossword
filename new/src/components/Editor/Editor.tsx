@@ -4,11 +4,11 @@ import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 
 import {
-  arrayCrosswordFamily,
+  arrayCrosswordSelector,
   labelMapSelector,
   cursorAtom,
   type ArrayCrossword,
-  cursorAfterAdvancementSelector,
+  advancedCursorSelector,
 } from "../../state";
 
 import { Box } from "./Box";
@@ -83,11 +83,11 @@ export interface ConnectedEditorProps {
 export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
-  const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId }));
+  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
   const [cursor, setCursor] = useRecoilState(cursorAtom);
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
   const cursorAfterAdvancement = useRecoilValue(
-    cursorAfterAdvancementSelector({ crosswordId })
+    advancedCursorSelector({ crosswordId })
   );
 
   const isCursorBox = useCallback(

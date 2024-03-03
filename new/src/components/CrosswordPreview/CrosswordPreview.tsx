@@ -6,7 +6,7 @@ import { CrosswordMetadata } from "../../firebase/types";
 
 import { block } from "../../styles";
 import "./crossword-preview.scss";
-import { arrayCrosswordFamily, type ArrayCrossword } from "../../state";
+import { arrayCrosswordSelector, type ArrayCrossword } from "../../state";
 
 const bem = block("crossword-preview");
 
@@ -61,7 +61,7 @@ export const ConnectedCrosswordPreview: React.FC<
   // TODO how does this work if the value isn't already loaded? there's no
   // typing here about promises, looks like we always get it on first render
   // but that can't be true
-  const crossword = useRecoilValue(arrayCrosswordFamily({ crosswordId: id }));
+  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId: id }));
 
   return <CrosswordPreview id={id} metadata={metadata} crossword={crossword} />;
 };

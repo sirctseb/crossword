@@ -5,9 +5,11 @@ import {
   ArrayCrossword,
   type LabeledBox,
   type Direction,
-} from "./types";
-import { arrayCrosswordFamily, clueAddressesSelector, cursorAtom } from ".";
-import { findNext } from "./derivationFunctions";
+} from "../types";
+import { findNext } from "../derivations";
+import { arrayCrosswordSelector } from "./arrayCrosswordSelector";
+import { cursorAtom } from "./cursorAtom";
+import { clueAddressesSelector } from "./clueAddressesSelector";
 
 const findNextBlank = (
   crossword: ArrayCrossword,
@@ -25,7 +27,7 @@ const findNextBlank = (
     (candidate) => !candidate.box.content
   );
 
-export const cursorAfterAdvancementSelector = selectorFamily<
+export const advancedCursorSelector = selectorFamily<
   Address,
   {
     crosswordId: string;
@@ -35,7 +37,7 @@ export const cursorAfterAdvancementSelector = selectorFamily<
   get:
     (params) =>
     ({ get }) => {
-      const crossword = get(arrayCrosswordFamily(params));
+      const crossword = get(arrayCrosswordSelector(params));
       const { row, column, direction } = get(cursorAtom);
       const clueAddresses = get(clueAddressesSelector(params));
       return (
