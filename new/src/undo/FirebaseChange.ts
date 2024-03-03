@@ -36,7 +36,7 @@ export class FirebaseSet implements FirebaseChange {
   }
 
   undo() {
-    return update(this.ref, this.oldValue);
+    return set(this.ref, this.oldValue);
   }
 
   redo() {
