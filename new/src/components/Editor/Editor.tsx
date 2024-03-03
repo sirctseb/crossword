@@ -20,7 +20,7 @@ import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 import "./editor.scss";
 import { block } from "../../styles";
 import { FirebaseUpdate } from "../../undo/FirebaseChange";
-import { ref } from "firebase/database";
+import { ref, type DatabaseReference } from "firebase/database";
 import { getFirebaseDatabase } from "../../firebase";
 const bem = block("editor");
 
@@ -31,7 +31,6 @@ export interface EditorProps {
   onBoxFocus: (row: number, column: number) => void;
   labelMap: Record<number, Record<number, number>>;
   onAfterSetContent: (newContent: string | null) => void;
-  // onModifyBox: (row: number, column: number, box: Partial<BoxModel>) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,
     column: number,
@@ -71,8 +70,6 @@ export const Editor: React.FC<EditorProps> = ({
           onModifyBox={onModifyBox}
           makeUndoableChange={() => {}}
           clueLabel={label}
-          // onBlock={this.onBlock}
-          onBlock={() => {}}
           onBoxFocus={onBoxFocus}
           cursor={isCursorBox(row, column)}
           onAfterSetContent={onAfterSetContent}
@@ -90,6 +87,32 @@ export const Editor: React.FC<EditorProps> = ({
       <div className={bem("grid")}>{rows}</div>
     </div>
   );
+};
+
+const database = getFirebaseDatabase();
+
+const blockedChange = (
+  row: number,
+  column: number,
+  { rows, symmetric }: ArrayCrossword,
+  blocked: boolean,
+  crosswordRef: DatabaseReference
+) => {
+  const update = {
+    [`boxes/${row}/${column}/blocked`]: blocked,
+  };
+
+  const undoUpdate = {
+    [`boxes/${row}/${column}/blocked`]: !blocked,
+  };
+
+  if (symmetric) {
+    update[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] = blocked;
+    undoUpdate[`boxes/${rows - row - 1}/${rows - column - 1}/blocked`] =
+      !blocked;
+  }
+
+  return new FirebaseUpdate(crosswordRef, update, undoUpdate);
 };
 
 export interface ConnectedEditorProps {
@@ -150,18 +173,30 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       key: K,
       value: BoxModel[K]
     ) => {
-      undoHistory.add(
-        new FirebaseUpdate(
-          ref(
-            getFirebaseDatabase(),
-            `crosswords/${crosswordId}/boxes/${row}/${column}`
-          ),
-          { [key]: value },
-          { [key]: crossword.boxes[row][column][key] }
-        )
-      );
+      if (key === "blocked") {
+        undoHistory.add(
+          blockedChange(
+            row,
+            column,
+            crossword,
+            // TODO typescript should at least know that this is not a string
+            // but it may not know it is not undefined. !! resolves both but
+            // i would love to get rid of this hack
+            !!value,
+            ref(database, `crosswords/${crosswordId}`)
+          )
+        );
+      } else {
+        undoHistory.add(
+          new FirebaseUpdate(
+            ref(database, `crosswords/${crosswordId}/boxes/${row}/${column}`),
+            { [key]: value },
+            { [key]: crossword.boxes[row][column][key] }
+          )
+        );
+      }
     },
-    [crossword.boxes, crosswordId]
+    [crossword, crosswordId]
   );
 
   return (

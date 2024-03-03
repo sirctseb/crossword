@@ -26,7 +26,6 @@ export interface BoxProps {
     newValue: FirebaseValue,
     oldValue: FirebaseValue
   ) => void;
-  onBlock: (row: number, column: number, blocked: boolean) => void;
   onBoxFocus: (row: number, column: number) => void;
   onAfterSetContent: (content: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
@@ -47,7 +46,6 @@ export const Box: React.FC<BoxProps> = ({
   cursorAnswer: active,
   makeUndoableChange,
   onAfterSetContent,
-  onBlock,
   onBoxFocus,
   onModifyBox,
 }) => {
@@ -85,10 +83,6 @@ export const Box: React.FC<BoxProps> = ({
     [setRebus, setContent, content]
   );
 
-  const handleOnBlock = useCallback(() => {
-    onBlock(row, column, !blocked);
-  }, [blocked, column, onBlock, row]);
-
   const handleToggleAttribute = useCallback(
     (attribute: "blocked" | "circled" | "shaded") => {
       onModifyBox(row, column, attribute, !box[attribute]);
@@ -120,11 +114,7 @@ export const Box: React.FC<BoxProps> = ({
       onMouseDown={handleMouseDown}
       ref={boxRef}
     >
-      <BoxControls
-        onToggleAttribute={handleToggleAttribute}
-        box={box}
-        onBlock={handleOnBlock}
-      />
+      <BoxControls onToggleAttribute={handleToggleAttribute} box={box} />
       {rebus && (
         <RebusInput
           content={content}

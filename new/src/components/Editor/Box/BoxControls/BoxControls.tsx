@@ -8,13 +8,11 @@ import "./box-controls.scss";
 
 export interface BoxControlsProps {
   box: Box;
-  onBlock: () => void;
-  onToggleAttribute: (attribute: "circled" | "shaded") => void;
+  onToggleAttribute: (attribute: "circled" | "shaded" | "blocked") => void;
 }
 
 export const BoxControls: React.FC<BoxControlsProps> = ({
   box: { blocked, circled, shaded },
-  onBlock,
   onToggleAttribute,
 }) => {
   const killEvent = useCallback<React.MouseEventHandler>((evt) => {
@@ -23,6 +21,14 @@ export const BoxControls: React.FC<BoxControlsProps> = ({
     evt.preventDefault();
     evt.stopPropagation();
   }, []);
+
+  const handleToggleBlocked = useCallback<React.MouseEventHandler>(
+    (evt) => {
+      onToggleAttribute("blocked");
+      evt.stopPropagation();
+    },
+    [onToggleAttribute]
+  );
 
   const handleToggleCircled = useCallback<React.MouseEventHandler>(
     (evt) => {
@@ -45,7 +51,7 @@ export const BoxControls: React.FC<BoxControlsProps> = ({
       <div
         className={bem("block", { blocked })}
         onMouseDown={killEvent}
-        onClick={onBlock}
+        onClick={handleToggleBlocked}
       />
       {!blocked && (
         <div
