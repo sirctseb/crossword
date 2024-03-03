@@ -1,6 +1,9 @@
 import { selectorFamily } from "recoil";
 import { arrayCrosswordFamily } from ".";
 import { LabeledBox } from "./types";
+import { deriveClueAddresses } from "./derivationFunctions";
+
+export const test = { deriveClueAddresses };
 
 /**
  * Returns a map from directions to a list of boxes with their rows, columns, and labels
@@ -17,31 +20,7 @@ export const clueAddressesSelector = selectorFamily<
     ({ crosswordId }) =>
     ({ get }) => {
       const crossword = get(arrayCrosswordFamily({ crosswordId }));
-      const labeledBoxes: { across: LabeledBox[]; down: LabeledBox[] } = {
-        across: [],
-        down: [],
-      };
-      let clueIndex = 1;
-      for (let row = 0; row < crossword.rows; row += 1) {
-        for (let column = 0; column < crossword.rows; column += 1) {
-          const blocked = crossword.boxes[row][column].blocked;
-          const leftBlocked =
-            column === 0 || crossword.boxes[row][column - 1].blocked;
-          const topBlocked =
-            row === 0 || crossword.boxes[row - 1][column].blocked;
-          const indexBox = !blocked && (leftBlocked || topBlocked);
-          if (indexBox && leftBlocked) {
-            labeledBoxes.across.push({ row, column, label: clueIndex });
-          }
-          if (indexBox && topBlocked) {
-            labeledBoxes.down.push({ row, column, label: clueIndex });
-          }
-          if (indexBox) {
-            clueIndex += 1;
-          }
-        }
-      }
-      return labeledBoxes;
+      return deriveClueAddresses(crossword);
     },
 });
 /**
