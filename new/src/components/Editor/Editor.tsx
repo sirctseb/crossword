@@ -199,7 +199,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [crossword, crosswordId]
   );
 
-  useEditoHotkeys(crosswordId);
+  useEditoHotkeys(crosswordId, undoHistory);
 
   return (
     <Editor

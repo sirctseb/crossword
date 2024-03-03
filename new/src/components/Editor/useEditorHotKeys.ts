@@ -7,6 +7,7 @@ import {
   type Cursor,
 } from "../../state";
 import { useRecoilState, useRecoilValue } from "recoil";
+import type UndoHistory from "../../undo/UndoHistory";
 
 function moveCursor(
   vector: [number, number],
@@ -34,7 +35,10 @@ function moveCursor(
   }
 }
 
-export const useEditoHotkeys = (crosswordId: string) => {
+export const useEditoHotkeys = (
+  crosswordId: string,
+  undoHistory: UndoHistory
+) => {
   const [cursor, setCursor] = useRecoilState(cursorAtom);
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
 
@@ -68,4 +72,22 @@ export const useEditoHotkeys = (crosswordId: string) => {
     crossword,
     cursor,
   ]);
+
+  useHotkeys(
+    "meta+z",
+    (evt) => {
+      if (document.activeElement?.tagName !== "INPUT") {
+        undoHistory.undo();
+      }
+      evt.preventDefault();
+    },
+    [undoHistory]
+  );
+
+  useHotkeys("shift+meta+z", (evt) => {
+    if (document.activeElement?.tagName !== "INPUT") {
+      undoHistory.redo();
+    }
+    evt.preventDefault();
+  });
 };
