@@ -22,6 +22,7 @@ import { block } from "../../styles";
 import { FirebaseUpdate } from "../../undo/FirebaseChange";
 import { ref, type DatabaseReference } from "firebase/database";
 import { getFirebaseDatabase } from "../../firebase";
+import { useEditoHotkeys } from "./useEditorHotKeys";
 const bem = block("editor");
 
 export interface EditorProps {
@@ -197,6 +198,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     },
     [crossword, crosswordId]
   );
+
+  useEditoHotkeys();
 
   return (
     <Editor
