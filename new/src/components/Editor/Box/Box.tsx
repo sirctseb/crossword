@@ -21,18 +21,13 @@ export interface BoxProps {
   cursor: boolean;
   clueLabel?: number;
   cursorAnswer: boolean;
-  makeUndoableChange: (
-    path: string,
-    newValue: FirebaseValue,
-    oldValue: FirebaseValue
-  ) => void;
   onBoxFocus: (row: number, column: number) => void;
   onAfterSetContent: (content: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,
     column: number,
     key: K,
-    value: BoxModel[K]
+    value: BoxModel[K] | null
   ) => void;
 }
 
@@ -44,7 +39,6 @@ export const Box: React.FC<BoxProps> = ({
   cursor,
   clueLabel,
   cursorAnswer: active,
-  makeUndoableChange,
   onAfterSetContent,
   onBoxFocus,
   onModifyBox,
@@ -69,10 +63,10 @@ export const Box: React.FC<BoxProps> = ({
 
   const setContent = useCallback(
     (newContent: string | null) => {
-      makeUndoableChange(`boxes/${row}/${column}/content`, newContent, content);
+      onModifyBox(row, column, "content", newContent);
       onAfterSetContent(newContent);
     },
-    [makeUndoableChange, row, column, content, onAfterSetContent]
+    [row, column, onModifyBox, onAfterSetContent]
   );
 
   const handleRebusClose = useCallback(

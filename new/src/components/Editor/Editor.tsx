@@ -35,7 +35,7 @@ export interface EditorProps {
     row: number,
     column: number,
     key: K,
-    value: BoxModel[K]
+    value: BoxModel[K] | null
   ) => void;
 }
 
@@ -68,7 +68,6 @@ export const Editor: React.FC<EditorProps> = ({
           column={column}
           box={box}
           onModifyBox={onModifyBox}
-          makeUndoableChange={() => {}}
           clueLabel={label}
           onBoxFocus={onBoxFocus}
           cursor={isCursorBox(row, column)}
@@ -171,7 +170,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       row: number,
       column: number,
       key: K,
-      value: BoxModel[K]
+      value: BoxModel[K] | null
     ) => {
       if (key === "blocked") {
         undoHistory.add(
