@@ -10,12 +10,18 @@ import {
   type ArrayCrossword,
   advancedCursorSelector,
 } from "../../state";
+import UndoHistory from "../../undo/UndoHistory";
+
+import { Box as BoxModel } from "../../firebase/types";
 
 import { Box } from "./Box";
 import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
 import "./editor.scss";
 import { block } from "../../styles";
+import { FirebaseUpdate } from "../../undo/FirebaseChange";
+import { ref } from "firebase/database";
+import { getFirebaseDatabase } from "../../firebase";
 const bem = block("editor");
 
 export interface EditorProps {
@@ -25,9 +31,18 @@ export interface EditorProps {
   onBoxFocus: (row: number, column: number) => void;
   labelMap: Record<number, Record<number, number>>;
   onAfterSetContent: (newContent: string | null) => void;
+  // onModifyBox: (row: number, column: number, box: Partial<BoxModel>) => void;
+  onModifyBox: <K extends keyof BoxModel>(
+    row: number,
+    column: number,
+    key: K,
+    value: BoxModel[K]
+  ) => void;
 }
 
 const emptyBox = {};
+
+const undoHistory = UndoHistory.getHistory("crossword");
 
 export const Editor: React.FC<EditorProps> = ({
   crossword,
@@ -36,6 +51,7 @@ export const Editor: React.FC<EditorProps> = ({
   onBoxFocus,
   labelMap,
   onAfterSetContent,
+  onModifyBox,
 }) => {
   const rows = [];
 
@@ -52,7 +68,7 @@ export const Editor: React.FC<EditorProps> = ({
           row={row}
           column={column}
           box={box}
-          // makeUndoableChange={this.makeUndoableChange}
+          onModifyBox={onModifyBox}
           makeUndoableChange={() => {}}
           clueLabel={label}
           // onBlock={this.onBlock}
@@ -127,6 +143,27 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [cursorAfterAdvancement]
   );
 
+  const handleModifyBox = useCallback(
+    <K extends keyof BoxModel>(
+      row: number,
+      column: number,
+      key: K,
+      value: BoxModel[K]
+    ) => {
+      undoHistory.add(
+        new FirebaseUpdate(
+          ref(
+            getFirebaseDatabase(),
+            `crosswords/${crosswordId}/boxes/${row}/${column}`
+          ),
+          { [key]: value },
+          { [key]: crossword.boxes[row][column][key] }
+        )
+      );
+    },
+    [crossword.boxes, crosswordId]
+  );
+
   return (
     <Editor
       crossword={crossword}
@@ -135,6 +172,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       isCursorAnswer={isCursorAnswer}
       labelMap={labelMap}
       onAfterSetContent={handleAfterSetContent}
+      onModifyBox={handleModifyBox}
     />
   );
 };

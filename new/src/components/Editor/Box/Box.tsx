@@ -91,13 +91,9 @@ export const Box: React.FC<BoxProps> = ({
 
   const handleToggleAttribute = useCallback(
     (attribute: "blocked" | "circled" | "shaded") => {
-      makeUndoableChange(
-        `boxes/${row}/${column}/${attribute}`,
-        !box[attribute],
-        box[attribute]
-      );
+      onModifyBox(row, column, attribute, !box[attribute]);
     },
-    [box, column, makeUndoableChange, row]
+    [column, row, box, onModifyBox]
   );
 
   return (
