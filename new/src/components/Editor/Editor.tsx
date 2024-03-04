@@ -19,7 +19,7 @@ import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
 import "./editor.scss";
 import { block } from "../../styles";
-import { FirebaseUpdate } from "../../undo/FirebaseChange";
+import { FirebaseSet, FirebaseUpdate } from "../../undo/FirebaseChange";
 import { ref, type DatabaseReference } from "firebase/database";
 import { getFirebaseDatabase } from "../../firebase";
 import { useEditorHotkeys } from "./useEditorHotKeys";
@@ -38,6 +38,8 @@ export interface EditorProps {
     key: K,
     value: BoxModel[K] | null
   ) => void;
+  onSizeChange: (size: number) => void;
+  onSymmetricChange: (symmetric: boolean) => void;
 }
 
 const emptyBox = {};
@@ -52,6 +54,8 @@ export const Editor: React.FC<EditorProps> = ({
   labelMap,
   onAfterSetContent,
   onModifyBox,
+  onSizeChange,
+  onSymmetricChange,
 }) => {
   const rows = [];
 
@@ -84,6 +88,18 @@ export const Editor: React.FC<EditorProps> = ({
   }
   return (
     <div className={bem({ [`size-${crossword.rows}`]: true })}>
+      <input
+        type="number"
+        className="editor__input"
+        value={crossword.rows}
+        onChange={(evt) => onSizeChange(evt.target.valueAsNumber)}
+      />
+      <input
+        type="checkbox"
+        className="editor__symmetric"
+        checked={crossword.symmetric}
+        onChange={(evt) => onSymmetricChange(evt.target.checked)}
+      />
       <div className={bem("grid")}>{rows}</div>
     </div>
   );
@@ -199,6 +215,32 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [crossword, crosswordId]
   );
 
+  const handleChangeSize = useCallback(
+    (size: number) => {
+      undoHistory.add(
+        new FirebaseSet(
+          ref(database, `crosswords/${crosswordId}/rows`),
+          size,
+          crossword.rows
+        )
+      );
+    },
+    [crossword.rows, crosswordId]
+  );
+
+  const handleSymmetricChange = useCallback(
+    (symmetric: boolean) => {
+      undoHistory.add(
+        new FirebaseSet(
+          ref(database, `crosswords/${crosswordId}/symmetric`),
+          symmetric,
+          crossword.symmetric
+        )
+      );
+    },
+    [crossword.symmetric, crosswordId]
+  );
+
   useEditorHotkeys(crosswordId, undoHistory);
 
   return (
@@ -210,6 +252,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       labelMap={labelMap}
       onAfterSetContent={handleAfterSetContent}
       onModifyBox={handleModifyBox}
+      onSizeChange={handleChangeSize}
+      onSymmetricChange={handleSymmetricChange}
     />
   );
 };
