@@ -1,11 +1,16 @@
 type Matrix<Type> extends Map<Index, Map<Index, Type>>;
 type Presence<Type> extends Map<Type, Boolean>;
 
+type Clues {
+    across: Matrix<String>
+    down: Matrix<String>
+}
+
 type Crossword {
     rows: Number
     symmetric: Boolean
     themeEntries: Boolean[]
-    clues: Map<Direction, Matrix<String>>
+    clues: Clues
     boxes: Matrix<Box>
     title: String | Null
 

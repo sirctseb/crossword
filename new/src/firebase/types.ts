@@ -1,11 +1,15 @@
 export type FirebaseArray<K extends string, T> = Record<K, T> | T[];
 export type Matrix<Type> = FirebaseArray<Index, FirebaseArray<Index, Type>>;
 export type Presence<Type extends string> = FirebaseArray<Type, boolean>;
+export type Clues = {
+  across?: Matrix<string>;
+  down?: Matrix<string>;
+};
 export type Crossword = {
   rows: number;
   symmetric: boolean;
   themeEntries?: FirebaseArray<string, boolean>;
-  clues?: FirebaseArray<Direction, Matrix<string>>;
+  clues?: Clues;
   boxes?: Matrix<Box>;
   title?: string;
 };
