@@ -2,6 +2,7 @@
 
 import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { ref, type DatabaseReference } from "firebase/database";
 
 import {
   arrayCrosswordSelector,
@@ -9,20 +10,27 @@ import {
   cursorAtom,
   type ArrayCrossword,
   advancedCursorSelector,
+  type LabeledAddressCatalog,
+  clueInputAtom,
+  type ClueInput,
+  clueAddressesSelector,
 } from "../../state";
 import UndoHistory from "../../undo/UndoHistory";
 
 import { Box as BoxModel } from "../../firebase/types";
 
 import { Box } from "./Box";
+import { ClueList } from "./ClueList";
+
 import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
 import "./editor.scss";
 import { block } from "../../styles";
+
 import { FirebaseSet, FirebaseUpdate } from "../../undo/FirebaseChange";
-import { ref, type DatabaseReference } from "firebase/database";
 import { getFirebaseDatabase } from "../../firebase";
 import { useEditorHotkeys } from "./useEditorHotKeys";
+
 const bem = block("editor");
 
 export interface EditorProps {
@@ -31,6 +39,8 @@ export interface EditorProps {
   isCursorAnswer: (row: number, column: number) => boolean;
   onBoxFocus: (row: number, column: number) => void;
   labelMap: Record<number, Record<number, number>>;
+  labeledAddressCatalog: LabeledAddressCatalog;
+  clueInput: ClueInput;
   onAfterSetContent: (newContent: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,
@@ -40,6 +50,8 @@ export interface EditorProps {
   ) => void;
   onSizeChange: (size: number) => void;
   onSymmetricChange: (symmetric: boolean) => void;
+  onSetClueInput: (clueInput: ClueInput) => void;
+  onClueBlur: () => void;
 }
 
 const emptyBox = {};
@@ -52,10 +64,14 @@ export const Editor: React.FC<EditorProps> = ({
   isCursorAnswer,
   onBoxFocus,
   labelMap,
+  labeledAddressCatalog,
+  clueInput,
   onAfterSetContent,
   onModifyBox,
   onSizeChange,
   onSymmetricChange,
+  onSetClueInput,
+  onClueBlur,
 }) => {
   const rows = [];
 
@@ -86,6 +102,7 @@ export const Editor: React.FC<EditorProps> = ({
       </div>
     );
   }
+
   return (
     <div className={bem({ [`size-${crossword.rows}`]: true })}>
       <input
@@ -100,7 +117,29 @@ export const Editor: React.FC<EditorProps> = ({
         checked={crossword.symmetric}
         onChange={(evt) => onSymmetricChange(evt.target.checked)}
       />
-      <div className={bem("grid")}>{rows}</div>
+      <div className={bem("clues-and-grid")}>
+        <div className={bem("clues-wrapper")}>
+          <ClueList
+            direction={"across"}
+            clueLabels={labeledAddressCatalog.across}
+            clueData={crossword.clues.across}
+            clueInput={clueInput}
+            onChangeClue={onSetClueInput}
+            onClueBlur={onClueBlur}
+          />
+        </div>
+        <div className={bem("grid")}>{rows}</div>
+        <div className={bem("clues-wrapper")}>
+          <ClueList
+            direction={"down"}
+            clueLabels={labeledAddressCatalog.down}
+            clueData={crossword.clues.down}
+            clueInput={clueInput}
+            onChangeClue={onSetClueInput}
+            onClueBlur={onClueBlur}
+          />
+        </div>
+      </div>
     </div>
   );
 };
@@ -138,9 +177,13 @@ export interface ConnectedEditorProps {
 export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
-  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
   const [cursor, setCursor] = useRecoilState(cursorAtom);
+  const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
+  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
+  const labeledAddressCatalog = useRecoilValue(
+    clueAddressesSelector({ crosswordId })
+  );
   const cursorAfterAdvancement = useRecoilValue(
     advancedCursorSelector({ crosswordId })
   );
@@ -241,6 +284,37 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [crossword.symmetric, crosswordId]
   );
 
+  const handleClueBlur = useCallback(() => {
+    undoHistory.add(
+      new FirebaseSet(
+        ref(
+          database,
+          `crosswords/${crosswordId}/clues/${clueInput.direction}/${clueInput.row}/${clueInput.column}`
+        ),
+        clueInput.value,
+        // TODO we're getting bit in a few important places by the lax typing
+        // on object and array access with sparse data.
+        crossword.clues[clueInput.direction]?.[clueInput.row]?.[
+          clueInput.column
+        ] ?? null
+      )
+    );
+    setClueInput({
+      value: null,
+      row: 0,
+      column: 0,
+      direction: "across",
+    });
+  }, [
+    clueInput.column,
+    clueInput.direction,
+    clueInput.row,
+    clueInput.value,
+    crossword.clues,
+    crosswordId,
+    setClueInput,
+  ]);
+
   useEditorHotkeys(crosswordId, undoHistory);
 
   return (
@@ -250,10 +324,14 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       onBoxFocus={handleBoxFocus}
       isCursorAnswer={isCursorAnswer}
       labelMap={labelMap}
+      labeledAddressCatalog={labeledAddressCatalog}
+      clueInput={clueInput}
       onAfterSetContent={handleAfterSetContent}
       onModifyBox={handleModifyBox}
       onSizeChange={handleChangeSize}
       onSymmetricChange={handleSymmetricChange}
+      onSetClueInput={setClueInput}
+      onClueBlur={handleClueBlur}
     />
   );
 };

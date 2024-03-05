@@ -1,5 +1,5 @@
 import { selectorFamily } from "recoil";
-import { coerceToArray } from "../../firebase-recoil";
+import { coerceToArray, coerceToObject } from "../../firebase-recoil";
 import { crosswordAtomFamily } from "../../firebase-recoil/atoms";
 import type { FirebaseArray } from "../../firebase/types";
 import { ArrayCrossword } from "../types";
@@ -9,7 +9,7 @@ import { ArrayCrossword } from "../types";
 // provide that also. we may have to revisit this if these selectors turn
 // out to be slow
 
-export const coerceMatrixToArray = <T>(
+const coerceMatrixToArray = <T>(
   matrix: FirebaseArray<string, FirebaseArray<string, T>>,
   defaultValue: T,
   rows: number,
@@ -17,6 +17,19 @@ export const coerceMatrixToArray = <T>(
 ): T[][] => {
   const outer = coerceToArray(matrix, {}, rows);
   return outer.map((inner) => coerceToArray(inner, defaultValue, columns));
+};
+
+const coerceMatrixToObject = <T>(
+  matrix: FirebaseArray<string, FirebaseArray<string, T>>
+): Record<string, Record<string, T>> => {
+  const outer = coerceToObject(matrix);
+  return Object.keys(outer).reduce<Record<string, Record<string, T>>>(
+    (acc, key) => {
+      acc[key] = coerceToObject(outer[key]);
+      return acc;
+    },
+    {}
+  );
 };
 
 export const arrayCrosswordSelector = selectorFamily<
@@ -36,6 +49,10 @@ export const arrayCrosswordSelector = selectorFamily<
           crossword.rows,
           crossword.rows
         ),
+        clues: {
+          across: coerceMatrixToObject(crossword.clues?.across ?? {}),
+          down: coerceMatrixToObject(crossword.clues?.down ?? {}),
+        },
       };
     },
 });

@@ -1,6 +1,6 @@
 import type {
   ArrayCrossword,
-  AddressCatalog,
+  LabeledAddressCatalog,
   LabeledAddress,
   Address,
   Candidate,
@@ -10,7 +10,7 @@ import type { Box } from "../firebase/types";
 
 export const deriveClueAddresses = (
   crossword: ArrayCrossword
-): AddressCatalog => {
+): LabeledAddressCatalog => {
   const labeledAddresses: { across: LabeledAddress[]; down: LabeledAddress[] } =
     {
       across: [],

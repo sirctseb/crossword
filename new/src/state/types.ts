@@ -10,11 +10,17 @@ export interface Candidate extends Address {
 export interface LabeledAddress extends Address {
   label: number;
 }
-export type ArrayCrossword = Omit<Crossword, "boxes"> & { boxes: Box[][] };
+export type ArrayCrossword = Omit<Crossword, "boxes"> & {
+  boxes: Box[][];
+  clues: {
+    across: Record<string, Record<string, string>>;
+    down: Record<string, Record<string, string>>;
+  };
+};
 
 export type Direction = "across" | "down";
 
-export interface AddressCatalog {
+export interface LabeledAddressCatalog {
   across: LabeledAddress[];
   down: LabeledAddress[];
 }

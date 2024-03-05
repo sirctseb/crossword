@@ -1,13 +1,13 @@
 import { selectorFamily } from "recoil";
 import { arrayCrosswordSelector } from "..";
-import { LabeledAddress, type AddressCatalog } from "../types";
+import { type LabeledAddressCatalog } from "../types";
 import { deriveClueAddresses } from "../derivations";
 
 /**
  * Returns a map from directions to a list of boxes with their rows, columns, and labels
  */
 export const clueAddressesSelector = selectorFamily<
-  AddressCatalog,
+  LabeledAddressCatalog,
   { crosswordId: string }
 >({
   key: "clue-addresses",

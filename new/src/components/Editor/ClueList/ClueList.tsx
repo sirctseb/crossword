@@ -1,28 +1,14 @@
-import React, { Component } from "react";
-import propTypes from "prop-types";
-import { get } from "lodash";
+import React from "react";
 
 import "./clue-list.scss";
 import { block } from "../../../styles";
+import type { ClueInput, LabeledAddress } from "../../../state";
 const bem = block("clue-list");
 
 const displayNames = {
   across: "Across",
   down: "Down",
 };
-
-interface ClueLabel {
-  row: number;
-  column: number;
-  label: string;
-}
-
-interface ClueInput {
-  row: number;
-  column: number;
-  direction: "across" | "down";
-  value: string;
-}
 
 interface ChangeClueEvent {
   value: string;
@@ -33,9 +19,8 @@ interface ChangeClueEvent {
 
 interface ClueListProps {
   direction: "across" | "down";
-  clueLabels: ClueLabel[];
-  // might be a map
-  clueData: string[][];
+  clueLabels: LabeledAddress[];
+  clueData: Record<string, Record<string, string>>;
   clueInput: ClueInput;
   onChangeClue: (evt: ChangeClueEvent) => void;
   onClueBlur: React.FocusEventHandler;
@@ -63,7 +48,7 @@ export const ClueList: React.FC<ClueListProps> = ({
                 column === clueInput.column &&
                 clueInput.direction === direction &&
                 clueInput.value) ||
-              clueData[row][column] ||
+              clueData?.[row]?.[column] ||
               ""
             }
             onChange={(evt) => {

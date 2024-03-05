@@ -3,13 +3,7 @@ import { Database, DataSnapshot, ref, onValue, get } from "firebase/database";
 import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
 import type { FirebaseArray } from "../firebase/types";
 
-export type FirebaseValue =
-  | boolean
-  | string
-  | number
-  | Object
-  | undefined
-  | null;
+export type FirebaseValue = boolean | string | number | Object | null;
 export type { PathParameters };
 
 function fbValueSubscriptionEffect<T extends FirebaseValue>(

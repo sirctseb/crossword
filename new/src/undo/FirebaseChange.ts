@@ -1,4 +1,5 @@
 import { DatabaseReference, update, set } from "firebase/database";
+import type { FirebaseValue } from "../firebase-recoil";
 
 export abstract class FirebaseChange {
   abstract apply(): Promise<void>;
@@ -28,8 +29,8 @@ export class FirebaseUpdate implements FirebaseChange {
 export class FirebaseSet implements FirebaseChange {
   constructor(
     private readonly ref: DatabaseReference,
-    private readonly newValue: Object,
-    private readonly oldValue: Object
+    private readonly newValue: FirebaseValue,
+    private readonly oldValue: FirebaseValue
   ) {}
 
   apply() {
