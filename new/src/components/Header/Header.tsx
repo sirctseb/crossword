@@ -1,16 +1,20 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { FirebaseAuth } from "../FirebaseAuth";
+import { push, ref, update } from "firebase/database";
 import { useRecoilValue } from "recoil";
-import { getFirebaseAuth } from "../../firebase";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { FirebaseAuth } from "../FirebaseAuth";
+import { getFirebaseAuth, getFirebaseDatabase } from "../../firebase";
+import { authAtom } from "../../firebase-recoil/atoms";
 
 import "./header.scss";
-import { authAtom } from "../../firebase-recoil/atoms";
 
 interface HeaderProps {
   onLogout: () => void;
-  onCreateNew: () => Promise<void>;
+  onCreateNew: () => void;
   loggedIn: boolean;
 }
 
@@ -21,60 +25,62 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [showLogin, setShowLogin] = useState(false);
 
-  const handleShowLogin = useCallback(() => {
-    setShowLogin(true);
-  }, [setShowLogin]);
+  const handleShowLogin = useCallback(
+    (evt: React.MouseEvent<HTMLAnchorElement>) => {
+      evt.preventDefault();
+      setShowLogin(true);
+    },
+    [setShowLogin]
+  );
 
   const handleHideLogin = useCallback(() => {
     setShowLogin(false);
   }, [setShowLogin]);
 
-  const handleLogout = useCallback(() => {
-    onLogout();
-  }, [onLogout]);
+  const handleLogout = useCallback(
+    (evt: React.MouseEvent<HTMLAnchorElement>) => {
+      evt.preventDefault();
+      onLogout();
+    },
+    [onLogout]
+  );
 
-  const handleNew = useCallback(() => {
-    onCreateNew();
-    // const fbRef = this.props.firebase.ref();
-    // const cwRef = fbRef.push();
-    // const {
-    //   auth: { uid },
-    // } = this.props;
-    // fbRef
-    //   .update({
-    //     [`crosswords/${cwRef.key}`]: {
-    //       rows: 15,
-    //       symmetric: true,
-    //       title: "untitled",
-    //     },
-    //     [`users/${uid}/crosswords/${cwRef.key}`]: {
-    //       title: "Untitled",
-    //     },
-    //     [`permissions/${cwRef.key}`]: { owner: uid },
-    //   })
-    //   .then(() => this.props.router.push(`/${cwRef.key}`));
-  }, [onCreateNew]);
+  const handleNew = useCallback(
+    (evt: React.MouseEvent<HTMLAnchorElement>) => {
+      evt.preventDefault();
+      onCreateNew();
+    },
+    [onCreateNew]
+  );
 
   return (
     <header className="header">
       <h1 className="header__heading">Crossword</h1>
       <nav className="header__nav">
         {!loggedIn && !showLogin && (
-          <a className="header__nav-link" onClick={handleShowLogin}>
+          <a
+            className="header__nav-link"
+            href="/login"
+            onClick={handleShowLogin}
+          >
             login
           </a>
         )}
         {loggedIn && (
           <>
-            <a className="header__nav-link" onClick={handleLogout}>
+            <a
+              className="header__nav-link"
+              href="/logout"
+              onClick={handleLogout}
+            >
               logout
             </a>
-            <a className="header__nav-link" onClick={handleNew}>
+            <a className="header__nav-link" href="/new" onClick={handleNew}>
               new
             </a>
-            <a className="header__nav-link" href={"/user"}>
+            <Link className="header__nav-link" href="/user">
               user
-            </a>
+            </Link>
           </>
         )}
       </nav>
@@ -93,17 +99,36 @@ export const Header: React.FC<HeaderProps> = ({
 export const ConnectedHeader = () => {
   const auth = getFirebaseAuth();
   const { isEmpty } = useRecoilValue(authAtom);
+  const { push: pushRoute } = useRouter();
+
   const loggedIn = !isEmpty;
 
   const handleLogout = useCallback(() => {
     auth.signOut();
   }, [auth]);
 
+  const handleCreateNew = useCallback(() => {
+    const pushed = push(ref(getFirebaseDatabase()));
+    update(ref(getFirebaseDatabase()), {
+      [`crosswords/${pushed.key}`]: {
+        rows: 15,
+        symmetric: true,
+        title: "untitled",
+      },
+      [`users/${auth.currentUser?.uid}/crosswords/${pushed.key}`]: {
+        title: "Untitled",
+      },
+      [`permissions/${pushed.key}`]: { owner: auth.currentUser?.uid },
+    }).then(() => {
+      pushRoute(`/${pushed.key}`);
+    });
+  }, [auth.currentUser?.uid, pushRoute]);
+
   return (
     <Header
       loggedIn={loggedIn}
       onLogout={handleLogout}
-      onCreateNew={async () => await Promise.resolve()}
+      onCreateNew={handleCreateNew}
     />
   );
 };

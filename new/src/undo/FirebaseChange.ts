@@ -11,6 +11,7 @@ export class FirebaseUpdate implements FirebaseChange {
   constructor(
     private readonly ref: DatabaseReference,
     // TODO narrow this object to leaf values accepted by Firebase
+    // actually, i think a Record<string, FirebaseValue>
     private readonly update: Object,
     private readonly undoUpdate: Object
   ) {}
