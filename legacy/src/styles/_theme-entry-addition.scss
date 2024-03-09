@@ -1,8 +1,0 @@
-$block-class: 'theme-entry-addition';
-
-@at-root {
-    .#{$block-class} {
-        display: flex;
-        flex-direction: row;
-    }
-}
