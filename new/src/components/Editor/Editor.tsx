@@ -4,6 +4,8 @@ import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ref, type DatabaseReference } from "firebase/database";
 
+import { FirebaseSet, FirebaseUpdate, UndoHistory } from "../../undo";
+import { getFirebaseDatabase } from "../../firebase";
 import {
   arrayCrosswordSelector,
   labelMapSelector,
@@ -15,21 +17,20 @@ import {
   type ClueInput,
   clueAddressesSelector,
 } from "../../state";
-import UndoHistory from "../../undo/UndoHistory";
 
 import { Box as BoxModel } from "../../firebase/types";
 
 import { Box } from "./Box";
 import { ClueList } from "./ClueList";
+import { ThemeEntries } from "./ThemeEntries";
 
 import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
+import { allAnswersSelector } from "../../state/atoms/allAnswersSelector";
+import { useEditorHotkeys } from "./useEditorHotKeys";
+
 import "./editor.scss";
 import { block } from "../../styles";
-
-import { FirebaseSet, FirebaseUpdate } from "../../undo/FirebaseChange";
-import { getFirebaseDatabase } from "../../firebase";
-import { useEditorHotkeys } from "./useEditorHotKeys";
 
 const bem = block("editor");
 
@@ -41,6 +42,7 @@ export interface EditorProps {
   labelMap: Record<number, Record<number, number>>;
   labeledAddressCatalog: LabeledAddressCatalog;
   clueInput: ClueInput;
+  allAnswers: string[];
   onAfterSetContent: (newContent: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,
@@ -52,6 +54,8 @@ export interface EditorProps {
   onSymmetricChange: (symmetric: boolean) => void;
   onSetClueInput: (clueInput: ClueInput) => void;
   onClueBlur: () => void;
+  onAddThemeEntry: (entry: string) => void;
+  onDeleteThemeEntry: (entry: string) => void;
 }
 
 const emptyBox = {};
@@ -66,12 +70,15 @@ export const Editor: React.FC<EditorProps> = ({
   labelMap,
   labeledAddressCatalog,
   clueInput,
+  allAnswers,
   onAfterSetContent,
   onModifyBox,
   onSizeChange,
   onSymmetricChange,
   onSetClueInput,
   onClueBlur,
+  onAddThemeEntry,
+  onDeleteThemeEntry,
 }) => {
   const rows = [];
 
@@ -140,6 +147,12 @@ export const Editor: React.FC<EditorProps> = ({
           />
         </div>
       </div>
+      <ThemeEntries
+        entries={crossword.themeEntries}
+        currentAnswers={allAnswers}
+        onAddThemeEntry={onAddThemeEntry}
+        onDeleteThemeEntry={onDeleteThemeEntry}
+      />
     </div>
   );
 };
@@ -187,6 +200,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   const cursorAfterAdvancement = useRecoilValue(
     advancedCursorSelector({ crosswordId })
   );
+  const allAnswers = useRecoilValue(allAnswersSelector({ crosswordId }));
 
   const isCursorBox = useCallback(
     (row: number, column: number): boolean => {
@@ -315,6 +329,32 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     setClueInput,
   ]);
 
+  const onAddThemeEntry = useCallback(
+    (entry: string) => {
+      undoHistory.add(
+        new FirebaseSet(
+          ref(database, `crosswords/${crosswordId}/themeEntries/${entry}`),
+          true,
+          null
+        )
+      );
+    },
+    [crosswordId]
+  );
+
+  const onDeleteThemeEntry = useCallback(
+    (entry: string) => {
+      undoHistory.add(
+        new FirebaseSet(
+          ref(database, `crosswords/${crosswordId}/themeEntries/${entry}`),
+          null,
+          true
+        )
+      );
+    },
+    [crosswordId]
+  );
+
   useEditorHotkeys(crosswordId, undoHistory);
 
   return (
@@ -326,12 +366,15 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       labelMap={labelMap}
       labeledAddressCatalog={labeledAddressCatalog}
       clueInput={clueInput}
+      allAnswers={allAnswers}
       onAfterSetContent={handleAfterSetContent}
       onModifyBox={handleModifyBox}
       onSizeChange={handleChangeSize}
       onSymmetricChange={handleSymmetricChange}
       onSetClueInput={setClueInput}
       onClueBlur={handleClueBlur}
+      onAddThemeEntry={onAddThemeEntry}
+      onDeleteThemeEntry={onDeleteThemeEntry}
     />
   );
 };

@@ -53,6 +53,7 @@ export const arrayCrosswordSelector = selectorFamily<
           across: coerceMatrixToObject(crossword.clues?.across ?? {}),
           down: coerceMatrixToObject(crossword.clues?.down ?? {}),
         },
+        themeEntries: Object.keys(coerceToObject(crossword.themeEntries ?? {})),
       };
     },
 });

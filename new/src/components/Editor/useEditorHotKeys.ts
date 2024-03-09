@@ -7,7 +7,7 @@ import {
   type Cursor,
 } from "../../state";
 import { useRecoilState, useRecoilValue } from "recoil";
-import type UndoHistory from "../../undo/UndoHistory";
+import { type UndoHistory } from "../../undo/UndoHistory";
 
 function moveCursor(
   vector: [number, number],

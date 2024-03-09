@@ -1,6 +1,6 @@
 import { FirebaseChange } from "./FirebaseChange";
 
-export default class UndoHistory {
+export class UndoHistory {
   private index: number = 0;
   private readonly history: FirebaseChange[] = [];
 
