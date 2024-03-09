@@ -30,6 +30,5 @@ export const Basic: Story = {
     row: 0,
     cursor: false,
     cursorAnswer: false,
-    makeUndoableChange(path, newValue, oldValue) {},
   },
 };

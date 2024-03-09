@@ -28,7 +28,13 @@ export const Basic: Story = {
             "0": "zero-zero clue",
           },
         },
+        across: {
+          "0": {
+            "0": "zero-zero clue",
+          },
+        },
       },
+      themeEntries: [],
       title: "Title",
     },
     metadata: {

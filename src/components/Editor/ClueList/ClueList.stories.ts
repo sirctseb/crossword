@@ -18,11 +18,7 @@ type Story = StoryObj<typeof meta>;
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Basic: Story = {
   args: {
-    clueData: [
-      ["", "", "1", "", "2", "", "3"],
-      ["", "4", "", "5", "", "6", ""],
-      ["7", "", "8", "", "9", "", "10"],
-    ],
+    clueData: {},
     clueInput: {
       row: 0,
       column: 0,
@@ -30,16 +26,16 @@ export const Basic: Story = {
       value: "hello",
     },
     clueLabels: [
-      { row: 0, column: 0, label: "1" },
-      { row: 0, column: 4, label: "2" },
-      { row: 0, column: 6, label: "3" },
-      { row: 1, column: 1, label: "4" },
-      { row: 1, column: 3, label: "5" },
-      { row: 1, column: 5, label: "6" },
-      { row: 2, column: 0, label: "7" },
-      { row: 2, column: 2, label: "8" },
-      { row: 2, column: 4, label: "9" },
-      { row: 2, column: 6, label: "10" },
+      { row: 0, column: 0, label: 1 },
+      { row: 0, column: 4, label: 2 },
+      { row: 0, column: 6, label: 3 },
+      { row: 1, column: 1, label: 4 },
+      { row: 1, column: 3, label: 5 },
+      { row: 1, column: 5, label: 6 },
+      { row: 2, column: 0, label: 7 },
+      { row: 2, column: 2, label: 8 },
+      { row: 2, column: 4, label: 9 },
+      { row: 2, column: 6, label: 10 },
     ],
     direction: "across",
   },

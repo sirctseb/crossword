@@ -4,9 +4,10 @@ import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
 import type { FirebaseArray } from "../firebase/types";
 
 export type FirebaseValue = boolean | string | number | Object | null;
+export type FirebaseReadValue = FirebaseValue | undefined;
 export type { PathParameters };
 
-function fbValueSubscriptionEffect<T extends FirebaseValue>(
+function fbValueSubscriptionEffect<T extends FirebaseReadValue>(
   path: string,
   database: Database
 ): AtomEffect<T> {
@@ -26,7 +27,7 @@ function fbValueSubscriptionEffect<T extends FirebaseValue>(
 // logical conclusion is, i guess, generation of atom factories for paths from bolt, with typed path parameters
 // very much like graphql-tools
 
-export function makeAtom<T extends FirebaseValue>(
+export function makeAtom<T extends FirebaseReadValue>(
   path: string,
   database: Database
 ): RecoilState<T> {
@@ -40,7 +41,7 @@ export function makeAtom<T extends FirebaseValue>(
 }
 
 export function makeAtomFamily<
-  T extends FirebaseValue,
+  T extends FirebaseReadValue,
   P extends PathParameters
 >(pathSpec: string, database: Database): (param: P) => RecoilState<T> {
   // TODO if we have some unique id for the app, we can include in the key
