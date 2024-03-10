@@ -10,7 +10,10 @@ type Crossword {
     rows: Number
     symmetric: Boolean
     themeEntries: Boolean[]
-    clues: Clues
+    // Looks like a gap in Bolt where it doesn't notice that the value can be null
+    // so without specifying `| Null` here explicity, it will add a validation to require
+    // the children
+    clues: Clues | Null
     boxes: Matrix<Box>
     title: String | Null
 
