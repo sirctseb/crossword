@@ -222,6 +222,15 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [setCursor]
   );
 
+  // TODO costs "render" of each Box on cursor move or content set
+  // because cursorAfterAdvancement changes. with the class component, this
+  // was a method and had access to the cursorAfterAdvancement on the props
+  // and somehow avoided a render completely. even with the render of the boxes,
+  // however, the total render time on the editor is about the same, ~8ms, and
+  // well within the repreat rate of the keyboard (30ms). My memory of optimizing
+  // the render in the legacy implementation was a noticable delay on type, so
+  // it may not be worth trying to optimize this. if we do start seeing performance
+  // problems, this might be a place to look.
   const handleAfterSetContent = useCallback(
     (newContent: string | null) => {
       if (newContent !== null) {
