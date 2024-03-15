@@ -278,7 +278,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         );
       }
     },
-    [crossword, crosswordId, history]
+    [crossword, crosswordId, database, history]
   );
 
   const handleChangeSize = useCallback(
@@ -291,7 +291,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crossword.rows, crosswordId, history]
+    [crossword.rows, crosswordId, database, history]
   );
 
   const handleSymmetricChange = useCallback(
@@ -304,7 +304,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crossword.symmetric, crosswordId, history]
+    [crossword.symmetric, crosswordId, database, history]
   );
 
   const handleClueBlur = useCallback(() => {
@@ -329,14 +329,15 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       direction: "across",
     });
   }, [
-    clueInput.column,
+    history,
+    database,
+    crosswordId,
     clueInput.direction,
     clueInput.row,
+    clueInput.column,
     clueInput.value,
     crossword.clues,
-    crosswordId,
     setClueInput,
-    history,
   ]);
 
   const onAddThemeEntry = useCallback(
@@ -349,7 +350,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crosswordId, history]
+    [crosswordId, database, history]
   );
 
   const onDeleteThemeEntry = useCallback(
@@ -362,7 +363,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crosswordId, history]
+    [crosswordId, database, history]
   );
 
   useEditorHotkeys(crosswordId, history);
