@@ -2,16 +2,12 @@ import React from "react";
 
 import { block } from "../../../styles";
 import { ConnectedCrosswordPreview } from "../../CrosswordPreview";
-import {
-  CrosswordMetadata,
-  type FirebaseArray,
-  type User,
-} from "../../../firebase/types";
-import { coerceToObject, makeAtomFamily } from "../../../firebase-recoil";
-import { getFirebaseDatabase } from "../../../firebase";
+import { CrosswordMetadata, type FirebaseArray } from "../../../firebase/types";
+import { coerceToObject } from "../../../firebase-recoil";
 import { useRecoilValue } from "recoil";
 
 import "./preview-list.scss";
+import { userCrosswordAtom } from "../../../firebase-recoil/atoms";
 const bem = block("preview-list");
 
 interface PreviewListProps {
@@ -44,11 +40,6 @@ interface ConnectedPreviewListProps {
   userId: string;
   children: React.ReactNode;
 }
-
-const userCrosswordAtom = makeAtomFamily<
-  User["crosswords"],
-  { userId: string }
->("/users/{userId}/crosswords", getFirebaseDatabase());
 
 export const ConnectedPreviewList: React.FC<ConnectedPreviewListProps> = ({
   children,

@@ -5,7 +5,6 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { ref, type DatabaseReference } from "firebase/database";
 
 import { FirebaseSet, FirebaseUpdate, UndoHistory } from "../../undo";
-import { getFirebaseDatabase } from "../../firebase";
 import {
   arrayCrosswordSelector,
   labelMapSelector,
@@ -31,6 +30,8 @@ import { useEditorHotkeys } from "./useEditorHotKeys";
 
 import "./editor.scss";
 import { block } from "../../styles";
+import { useFirebase } from "../../firebase";
+import { useUndoHistory } from "../../undo/useUndoHistory";
 
 const bem = block("editor");
 
@@ -59,8 +60,6 @@ export interface EditorProps {
 }
 
 const emptyBox = {};
-
-const undoHistory = UndoHistory.getHistory("crossword");
 
 export const Editor: React.FC<EditorProps> = ({
   crossword,
@@ -157,8 +156,6 @@ export const Editor: React.FC<EditorProps> = ({
   );
 };
 
-const database = getFirebaseDatabase();
-
 const blockedChange = (
   row: number,
   column: number,
@@ -190,6 +187,7 @@ export interface ConnectedEditorProps {
 export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
+  const { database } = useFirebase();
   const [cursor, setCursor] = useRecoilState(cursorAtom);
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
@@ -201,6 +199,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     advancedCursorSelector({ crosswordId })
   );
   const allAnswers = useRecoilValue(allAnswersSelector({ crosswordId }));
+
+  const { history } = useUndoHistory(`crosswordId-${crosswordId}`);
 
   const isCursorBox = useCallback(
     (row: number, column: number): boolean => {
@@ -256,7 +256,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       value: BoxModel[K] | null
     ) => {
       if (key === "blocked") {
-        undoHistory.add(
+        history.add(
           blockedChange(
             row,
             column,
@@ -269,7 +269,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
           )
         );
       } else {
-        undoHistory.add(
+        history.add(
           new FirebaseUpdate(
             ref(database, `crosswords/${crosswordId}/boxes/${row}/${column}`),
             { [key]: value },
@@ -278,12 +278,12 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         );
       }
     },
-    [crossword, crosswordId]
+    [crossword, crosswordId, history]
   );
 
   const handleChangeSize = useCallback(
     (size: number) => {
-      undoHistory.add(
+      history.add(
         new FirebaseSet(
           ref(database, `crosswords/${crosswordId}/rows`),
           size,
@@ -291,12 +291,12 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crossword.rows, crosswordId]
+    [crossword.rows, crosswordId, history]
   );
 
   const handleSymmetricChange = useCallback(
     (symmetric: boolean) => {
-      undoHistory.add(
+      history.add(
         new FirebaseSet(
           ref(database, `crosswords/${crosswordId}/symmetric`),
           symmetric,
@@ -304,11 +304,11 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crossword.symmetric, crosswordId]
+    [crossword.symmetric, crosswordId, history]
   );
 
   const handleClueBlur = useCallback(() => {
-    undoHistory.add(
+    history.add(
       new FirebaseSet(
         ref(
           database,
@@ -336,11 +336,12 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     crossword.clues,
     crosswordId,
     setClueInput,
+    history,
   ]);
 
   const onAddThemeEntry = useCallback(
     (entry: string) => {
-      undoHistory.add(
+      history.add(
         new FirebaseSet(
           ref(database, `crosswords/${crosswordId}/themeEntries/${entry}`),
           true,
@@ -348,12 +349,12 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crosswordId]
+    [crosswordId, history]
   );
 
   const onDeleteThemeEntry = useCallback(
     (entry: string) => {
-      undoHistory.add(
+      history.add(
         new FirebaseSet(
           ref(database, `crosswords/${crosswordId}/themeEntries/${entry}`),
           null,
@@ -361,10 +362,10 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         )
       );
     },
-    [crosswordId]
+    [crosswordId, history]
   );
 
-  useEditorHotkeys(crosswordId, undoHistory);
+  useEditorHotkeys(crosswordId, history);
 
   return (
     <Editor

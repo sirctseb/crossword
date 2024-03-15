@@ -7,10 +7,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import { FirebaseAuth } from "../FirebaseAuth";
-import { getFirebaseAuth, getFirebaseDatabase } from "../../firebase";
 import { authAtom } from "../../firebase-recoil/atoms";
 
 import "./header.scss";
+import { useFirebase } from "../../firebase";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -97,7 +97,7 @@ export const Header: React.FC<HeaderProps> = ({
 };
 
 export const ConnectedHeader = () => {
-  const auth = getFirebaseAuth();
+  const { auth, database } = useFirebase();
   const { isEmpty } = useRecoilValue(authAtom);
   const { push: pushRoute } = useRouter();
 
@@ -108,8 +108,8 @@ export const ConnectedHeader = () => {
   }, [auth]);
 
   const handleCreateNew = useCallback(() => {
-    const pushed = push(ref(getFirebaseDatabase()));
-    update(ref(getFirebaseDatabase()), {
+    const pushed = push(ref(database, "/crosswords"));
+    update(ref(database), {
       [`crosswords/${pushed.key}`]: {
         rows: 15,
         symmetric: true,
@@ -122,7 +122,7 @@ export const ConnectedHeader = () => {
     }).then(() => {
       pushRoute(`/${pushed.key}`);
     });
-  }, [auth.currentUser?.uid, pushRoute]);
+  }, [auth.currentUser?.uid, database, pushRoute]);
 
   return (
     <Header

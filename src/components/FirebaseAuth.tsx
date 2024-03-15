@@ -1,10 +1,9 @@
 import StyledFirebaseAuth from "../firebase/ui/react-firebaseui";
-import { getFirebaseAuth } from "../firebase";
 import { firebaseAuthConfig } from "../firebase";
-
-const auth = getFirebaseAuth();
+import { useFirebase } from "../firebase";
 
 export const FirebaseAuth = () => {
+  const { auth } = useFirebase();
   return (
     <StyledFirebaseAuth firebaseAuth={auth} uiConfig={firebaseAuthConfig} />
   );

@@ -10,6 +10,8 @@ import { FirebaseApp, initializeApp } from "firebase/app";
 import { settings } from "../settings/Settings";
 import { getDatabase, type Database } from "firebase/database";
 
+export * from "./useFirebase";
+
 const globalFirebase = initializeApp(settings.firebase);
 
 export function getFirebaseApp(): FirebaseApp {
