@@ -1,5 +1,12 @@
-type Matrix<Type> extends Map<Index, Map<Index, Type>>;
-type Presence<Type> extends Map<Type, Boolean>;
+type Matrix<Type> extends Map<Index, Map<Index, Type>> {}
+type Presence<Type> extends Map<Type, Boolean> {}
+type CurrentUser extends UserId {
+  validate() { return isCurrentUser(this)}
+}
+
+isCurrentUser(userId) {
+  return auth != null && auth.uid == userId;
+}
 
 type Clues {
     across: Matrix<String>
@@ -19,11 +26,13 @@ type Crossword {
 
     read() {
         auth.uid == root.permissions[key()].owner ||
-        root.permissions[key()].collaborators[auth.uid]
+        root.permissions[key()].collaborators[auth.uid] ||
+        root.permissions[key()].global
     }
 
     create() {
-        auth.uid == root.permissions[key()].owner
+        auth.uid == root.permissions[key()].owner &&
+        root.users[auth.uid].crosswords[key()] != null
     }
 
     delete() {
@@ -31,8 +40,11 @@ type Crossword {
     }
 
     update() {
-        auth.uid == root.permissions[key()].owner ||
-        root.permissions[key()].collaborators[auth.uid]
+        !root.permissions[key()].readonly && (
+            auth.uid == root.permissions[key()].owner ||
+            root.permissions[key()].collaborators[auth.uid] ||
+            root.permissions[key()].global
+        )
     }
 }
 
@@ -84,10 +96,12 @@ type Permissions {
     owner: UserId,
     collaborators: Presence<UserId>,
     global: Boolean | Null,
+    readonly: Boolean | Null,
 
     create() {
         auth.uid != null &&
-        auth.uid == this.owner
+        auth.uid == this.owner &&
+        root.crosswords[key()] != null
     }
     update() {
         auth.uid == this.owner
@@ -96,11 +110,14 @@ type Permissions {
         auth.uid == this.owner
     }
     validate() {
+        auth.token.isAdmin == true ||
         this.owner == auth.uid &&
         (
             prior(this.owner) == null ||
             this.owner == prior(this.owner)
-        )
+        ) &&
+        this.global == prior(this.global) &&
+        this.readonly == prior(this.readonly)
     }
 }
 
@@ -114,3 +131,54 @@ type CrosswordId extends String {
 }
 
 path /permissions is Map<CrosswordId, Permissions> {}
+
+/*
+ * Cursors
+ * Note: displayName, photoUrl, and color are populated by a cloud function.
+ * They're marked as nullable here so that the client write of the other data is not blocked.
+ * TODO: confirm that we there's no way to write a cloud function that lets
+ * us mark them as non-nullable here
+ */
+type Cursor {
+    userId: CurrentUser
+
+    row: Number | Null
+    column: Number | Null
+
+    displayName: String | Null
+    photoUrl: String | Null
+    color: String | Null
+
+    write() {
+        auth.uid == this.userId || auth.uid == prior(this.userId)
+    }
+}
+
+// would rather specify the path this way, but then we can't access the cw id key
+// from the cursor key object level
+// path /cursors is Map<CrosswordId, Cursor[]> {
+path /cursors/{cwid} is Cursor[] {
+    validate() {
+        root.crosswords[key()] != null
+    }
+
+    read() {
+        auth.uid == root.permissions[cwid].owner ||
+        root.permissions[cwid].collaborators[auth.uid]
+    }
+}
+
+type CommunalCrossword {
+  current: CrosswordId
+
+  archive: CrosswordId[]
+
+  write() {
+    return false;
+  }
+  read() {
+    return true;
+  }
+}
+
+path /communalCrossword is CommunalCrossword {}
