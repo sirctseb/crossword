@@ -1,5 +1,13 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# rules.bolt is the source of truth. the build of this file is for the test suite
+rules.json
+
+# firebase emulator output
+database-debug.log
+firebase-debug.log
+ui-debug.log
+
 # dependencies
 /node_modules
 /.pnp
