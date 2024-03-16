@@ -40,6 +40,12 @@ const dumpDb = async (): Promise<void> => {
   });
 };
 
+const withAdminDatabase = (fn: (db: Database) => Promise<void>) => {
+  return testEnv.withSecurityRulesDisabled(async (adminApp) => {
+    return await fn(adminApp.database() as any as Database);
+  });
+};
+
 beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
     database: { rules, host: "localhost", port: 9000 },
@@ -76,6 +82,7 @@ describe("crossword", () => {
     const db = authedApp(alice);
 
     return expect(
+      // TODO maybe a jest plugin with matchers for these common cases
       assertFails(
         update(ref(db), {
           "crosswords/cw-id": { rows: 15, symmetric: true, title: "untitled" },
@@ -155,8 +162,8 @@ describe("crossword", () => {
   describe("collaborators", () => {
     beforeEach(async () => {
       // TODO why doesn't alice add this herself
-      await testEnv.withSecurityRulesDisabled(async (adminApp) => {
-        return await update(ref(adminApp.database()), {
+      await withAdminDatabase(async (adminDb) => {
+        return await update(ref(adminDb), {
           "crosswords/cw-id": {
             rows: 15,
             symmetric: true,
@@ -190,21 +197,20 @@ describe("crossword", () => {
   });
 
   describe("editing", () => {
-    beforeEach(
-      async () =>
-        await testEnv.withSecurityRulesDisabled(async (adminApp) => {
-          await update(ref(adminApp.database()), {
-            "crosswords/cw-id": {
-              rows: 15,
-              symmetric: true,
-              title: "untitled",
-            },
-            [`users/${alice}/crosswords/cw-id`]: {
-              title: "Untitled",
-            },
-            "permissions/cw-id": { owner: alice },
-          });
-        })
+    beforeEach(async () =>
+      withAdminDatabase(async (adminDb) => {
+        await update(ref(adminDb), {
+          "crosswords/cw-id": {
+            rows: 15,
+            symmetric: true,
+            title: "untitled",
+          },
+          [`users/${alice}/crosswords/cw-id`]: {
+            title: "Untitled",
+          },
+          "permissions/cw-id": { owner: alice },
+        });
+      })
     );
 
     it("can be edited by the owner", () => {
@@ -263,315 +269,356 @@ describe("crossword", () => {
         ).rejects.toThrow();
       });
     });
+
+    describe("global", () => {
+      beforeEach(async () =>
+        withAdminDatabase(async (adminDb) => {
+          await update(ref(adminDb), {
+            "permissions/cw-id/global": true,
+          });
+        })
+      );
+
+      it("can be edited by non-owner, non-collaborator", () =>
+        expect(
+          assertSucceeds(
+            update(ref(authedApp(charlie)), {
+              "crosswords/cw-id/boxes/0/0/content": "a",
+            })
+          )
+        ).resolves.not.toThrow());
+
+      it("cannot have invalid data written", () =>
+        expect(
+          assertFails(
+            update(ref(authedApp(alice)), {
+              "crosswords/cw-id/invalid": "a",
+            })
+          )
+        ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
+    });
+
+    describe("readonly", () => {
+      beforeEach(() =>
+        withAdminDatabase(async (adminDb) => {
+          await update(ref(adminDb), {
+            "permissions/cw-id/readonly": true,
+          });
+        })
+      );
+
+      it("can be read by owner", () =>
+        expect(
+          assertSucceeds(get(ref(authedApp(alice), "crosswords/cw-id")))
+        ).resolves.not.toThrow());
+
+      it("cannot be read by non-owner, non-collaborator", () =>
+        expect(
+          assertFails(get(ref(authedApp(charlie), "crosswords/cw-id")))
+          // the permission denied error for get operations doesn't have
+          // the code property so we just check against the message
+        ).resolves.toEqual(new Error("Permission denied")));
+
+      describe("when also global", () => {
+        beforeEach(() =>
+          withAdminDatabase(async (adminDb) => {
+            await update(ref(adminDb), {
+              "permissions/cw-id/global": true,
+            });
+          })
+        );
+
+        it("can be read by non-owner, non-collaborator", () =>
+          expect(
+            assertSucceeds(get(ref(authedApp(charlie), "crosswords/cw-id")))
+          ).resolves.not.toThrow());
+      });
+
+      it("cannot be edited by owner", () =>
+        // TODO, interesting, should the readonly flag be excepted from the write?
+        // otherwise there's no coming back from the readonly state
+        expect(
+          assertFails(
+            update(ref(authedApp(alice)), {
+              "crosswords/cw-id/boxes/0/0/content": "a",
+            })
+          )
+        ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
+
+      it("cannot have invalid data written", () =>
+        expect(
+          assertFails(
+            update(ref(authedApp(alice)), {
+              "crosswords/cw-id/invalid": "a",
+            })
+          )
+        ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
+    });
   });
 
-  //     describe("global", () => {
-  //       beforeEach(() =>
-  //         adminApp.ref().update({
-  //           "permissions/cw-id/global": true,
-  //         })
-  //       );
+  ["global", "readonly"].forEach((attribute) => {
+    describe(`${attribute} editability`, () => {
+      describe("as an admin", () => {
+        describe("when the crossword exists", () => {
+          beforeEach(() =>
+            withAdminDatabase(async (adminDb) => {
+              await update(ref(adminDb), {
+                "crosswords/cw-id": {
+                  rows: 15,
+                  symmetric: true,
+                  title: "untitled",
+                },
+                [`users/${alice}/crosswords/cw-id`]: {
+                  title: "Untitled",
+                },
+                "permissions/cw-id": { owner: bob },
+              });
+            })
+          );
 
-  //       it("can be edited by non-owner, non-collaborator", () =>
-  //         expect(
-  //           authedApp(charlie).ref().update({
-  //             "crosswords/cw-id/boxes/0/0/content": "a",
-  //           })
-  //         ).to.be.fulfilled());
+          it("can be established", () =>
+            expect(
+              assertFails(
+                update(ref(authedApp(alice)), {
+                  [`permissions/cw-id/${attribute}`]: true,
+                })
+              )
+            ).resolves.toThrow("PERMISSION_DENIED"));
 
-  //       it("cannot have invalid data written", () =>
-  //         expect(
-  //           authedApp(alice).ref().update({
-  //             "crosswords/cw-id/invalid": "a",
-  //           })
-  //         ).to.be.rejected());
-  //     });
+          // TODO we want this behavior but it looks like admin accounts
+          // are not subject to the rules. may consider making a service account
+          // that is subject to rules
+          // Update: that's true for the above rules as well, they are not
+          // testing anything
+          // describe('when the crossword does not exist', () => {
+          //   it('cannot be established', () =>
+          //     expect(adminApp.ref().update({
+          //       [`permissions/cw-id/${attribute}`]: true,
+          //     })).to.be.rejected());
+          // });
+        });
 
-  //     describe("readonly", () => {
-  //       beforeEach(() =>
-  //         adminApp.ref().update({
-  //           "permissions/cw-id/readonly": true,
-  //         })
-  //       );
+        describe("as a user when the crossword exists", () => {
+          beforeEach(() =>
+            withAdminDatabase(async (adminDb) => {
+              await update(ref(adminDb), {
+                "crosswords/cw-id": {
+                  rows: 15,
+                  symmetric: true,
+                  title: "untitled",
+                },
+                [`users/${alice}/crosswords/cw-id`]: {
+                  title: "Untitled",
+                },
+                "permissions/cw-id": { owner: bob },
+              });
+            })
+          );
 
-  //       it("can be read by owner", () =>
-  //         expect(
-  //           authedApp(alice).ref("crosswords/cw-id").once("value")
-  //         ).to.be.fulfilled());
+          it("cannot be set", () =>
+            expect(
+              assertFails(
+                update(ref(authedApp(alice)), {
+                  [`permissions/cw-id/${attribute}`]: true,
+                })
+              )
+            ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
 
-  //       it("cannot be read by non-owner, non-collaborator", () =>
-  //         expect(
-  //           authedApp(charlie).ref("crosswords/cw-id").once("value")
-  //         ).to.be.rejected());
+          describe(`when it is already ${attribute}`, () => {
+            beforeEach(() =>
+              withAdminDatabase(async (adminDb) => {
+                await update(ref(adminDb), {
+                  [`permissions/cw-id/${attribute}`]: true,
+                });
+              })
+            );
 
-  //       describe("when also global", () => {
-  //         beforeEach(() =>
-  //           adminApp.ref().update({
-  //             "permissions/cw-id/global": true,
-  //           })
-  //         );
-
-  //         it("can be read by non-owner, non-collaborator", () =>
-  //           expect(
-  //             authedApp(charlie).ref("crosswords/cw-id").once("value")
-  //           ).to.be.fulfilled());
-  //       });
-
-  //       it("cannot be edited by owner", () =>
-  //         expect(
-  //           authedApp(alice).ref().update({
-  //             "crosswords/cw-id/boxes/0/0/content": "a",
-  //           })
-  //         ).to.be.rejected());
-
-  //       it("cannot have invalid data written", () =>
-  //         expect(
-  //           authedApp(alice).ref().update({
-  //             "crosswords/cw-id/invalid": "a",
-  //           })
-  //         ).to.be.rejected());
-  //     });
-  //   });
-
-  //   ["global", "readonly"].forEach((attribute) => {
-  //     describe(`${attribute} editability`, () => {
-  //       describe("as an admin", () => {
-  //         // TODO would like to assign to an app ref here. does that break parallel tests?
-  //         describe("when the crossword exists", () => {
-  //           beforeEach(() =>
-  //             adminApp.ref().update({
-  //               "crosswords/cw-id": {
-  //                 rows: 15,
-  //                 symmetric: true,
-  //                 title: "untitled",
-  //               },
-  //               [`users/${alice}/crosswords/cw-id`]: {
-  //                 title: "Untitled",
-  //               },
-  //               "permissions/cw-id": { owner: bob },
-  //             })
-  //           );
-
-  //           it("can be established", () =>
-  //             expect(
-  //               adminApp.ref().update({
-  //                 [`permissions/cw-id/${attribute}`]: true,
-  //               })
-  //             ).to.be.fulfilled());
-
-  //           // TODO we want this behavior but it looks like admin accounts
-  //           // are not subject to the rules. may consider making a service account
-  //           // that is subject to rules
-  //           // describe('when the crossword does not exist', () => {
-  //           //   it('cannot be established', () =>
-  //           //     expect(adminApp.ref().update({
-  //           //       [`permissions/cw-id/${attribute}`]: true,
-  //           //     })).to.be.rejected());
-  //           // });
-  //         });
-
-  //         describe("as a user when the crossword exists", () => {
-  //           beforeEach(() =>
-  //             adminApp.ref().update({
-  //               "crosswords/cw-id": {
-  //                 rows: 15,
-  //                 symmetric: true,
-  //                 title: "untitled",
-  //               },
-  //               [`users/${alice}/crosswords/cw-id`]: {
-  //                 title: "Untitled",
-  //               },
-  //               "permissions/cw-id": { owner: bob },
-  //             })
-  //           );
-
-  //           it("cannot be set", () =>
-  //             expect(
-  //               authedApp(alice)
-  //                 .ref()
-  //                 .update({
-  //                   [`permissions/cw-id/${attribute}`]: true,
-  //                 })
-  //             ).to.be.rejected());
-
-  //           describe(`when it is already ${attribute}`, () => {
-  //             beforeEach(() =>
-  //               adminApp.ref().update({
-  //                 [`permissions/cw-id/${attribute}`]: true,
-  //               })
-  //             );
-
-  //             it("cannot be unset", () =>
-  //               expect(
-  //                 authedApp(alice)
-  //                   .ref()
-  //                   .update({
-  //                     [`permissions/cw-id/${attribute}`]: false,
-  //                   })
-  //               ).to.be.rejected());
-  //           });
-  //         });
-  //       });
-  //     });
-  //   });
-  // });
-
-  // describe("cursors", () => {
-  //   describe("when they exist", () => {
-  //     beforeEach(() =>
-  //       adminApp.ref().update({
-  //         "crosswords/cw-id": { rows: 15, symmetric: true, title: "untitiled " },
-  //         [`users/${alice}/crosswords/cw-id`]: {
-  //           title: "Untitled",
-  //         },
-  //         "cursors/cw-id": {
-  //           "cursor-id-alice": {
-  //             userId: alice,
-  //           },
-  //           "cursor-id-bob": {
-  //             userId: bob,
-  //           },
-  //         },
-  //         "permissions/cw-id": {
-  //           owner: alice,
-  //           collaborators: { bob: true },
-  //         },
-  //       })
-  //     );
-
-  //     it("can be read by cw owner", () => {
-  //       const app = authedApp(alice);
-  //       return expect(
-  //         app.ref().child("cursors/cw-id").once("value")
-  //       ).to.be.fulfilled();
-  //     });
-
-  //     it("can be read by collaborator", () => {
-  //       const app = authedApp(bob);
-  //       return expect(
-  //         app.ref().child("cursors/cw-id").once("value")
-  //       ).to.be.fulfilled();
-  //     });
-
-  //     it("cannot be read by non-permitted", () => {
-  //       const app = authedApp(charlie);
-  //       return expect(
-  //         app.ref().child("cursors/cw-id").once("value")
-  //       ).to.be.rejected();
-  //     });
-  //   });
-
-  //   describe("with cw in place", () => {
-  //     beforeEach(() =>
-  //       adminApp.ref().update({
-  //         "crosswords/cw-id": { rows: 15, symmetric: true, title: "untitled" },
-  //         [`users/${alice}/crosswords/cw-id`]: {
-  //           title: "Untitled",
-  //         },
-  //         "permissions/cw-id": { owner: alice, collaborators: { bob: true } },
-  //       })
-  //     );
-
-  //     it("can be created", () => {
-  //       const app = authedApp(alice);
-  //       return expect(
-  //         app.ref().update({
-  //           "cursors/cw-id/cursor-id": {
-  //             userId: alice,
-  //           },
-  //         })
-  //       ).to.be.fulfilled();
-  //     });
-
-  //     it("cannot be created under another users id", () => {
-  //       const app = authedApp(alice);
-  //       return expect(
-  //         app.ref().update({
-  //           "cursors/cw-id/cursor-id": {
-  //             userId: bob,
-  //           },
-  //         })
-  //       ).to.be.rejected();
-  //     });
-
-  //     describe("with existing cursor", () => {
-  //       beforeEach(() =>
-  //         adminApp.ref().update({
-  //           "cursors/cw-id/cursor-id": {
-  //             userId: alice,
-  //             row: 0,
-  //             column: 0,
-  //           },
-  //         })
-  //       );
-
-  //       it("cannot be deleted by another user", () => {
-  //         const app = authedApp(bob);
-  //         return expect(
-  //           app.ref("cursors/cw-id/cursor-id").set(null)
-  //         ).to.be.rejected();
-  //       });
-
-  //       it("can be deleted by owner", () => {
-  //         const app = authedApp(alice);
-  //         return expect(
-  //           app.ref("cursors/cw-id/cursor-id").set(null)
-  //         ).to.be.fulfilled();
-  //       });
-
-  //       it("can be read by owner", () => {
-  //         const app = authedApp(alice);
-  //         return expect(
-  //           app.ref("cursors/cw-id/cursor-id").once("value")
-  //         ).to.be.fulfilled();
-  //       });
-
-  //       it("can be read by collaborator", () => {
-  //         const app = authedApp(bob);
-  //         return expect(
-  //           app.ref("cursors/cw-id/cursor-id").once("value")
-  //         ).to.be.fulfilled();
-  //       });
-
-  //       it("cannot be read by non-owner non-collaborator", () => {
-  //         const app = authedApp(charlie);
-  //         return expect(
-  //           app.ref("cursors/cw-id/cursor-id").once("value")
-  //         ).to.be.rejected();
-  //       });
-  //     });
-  //   });
-
-  //   describe("with no cw in place", () => {
-  //     it("cannot be created", () => {
-  //       const app = authedApp(alice);
-  //       return expect(
-  //         app.ref().update({
-  //           "cursors/cw-id/cursor-id": {
-  //             userId: alice,
-  //           },
-  //         })
-  //       ).to.be.rejected();
-  //     });
-  //   });
-
-  //   describe("communal crossword", () => {
-  //     // TODO yeah we should really have a service account for these things
-  //     // the only interesting test here is that users can write this stuff
-  //     it("can be set by an admin", () =>
-  //       expect(
-  //         adminApp.ref().update({
-  //           "communityCrossword/current": "cw-id",
-  //         })
-  //       ).to.be.fulfilled());
-
-  //     it("cannot be set by non-admin", () =>
-  //       expect(
-  //         authedApp(alice).ref().update({
-  //           "communityCrossword/current": "cw-id",
-  //         })
-  //       ).to.be.rejected());
-
-  //     it("cannot be set by non-admin again", () => expect(5).to.equal(5));
-  //   });
+            it("cannot be unset", () =>
+              expect(
+                assertFails(
+                  update(ref(authedApp(alice)), {
+                    [`permissions/cw-id/${attribute}`]: false,
+                  })
+                )
+              ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
+          });
+        });
+      });
+    });
+  });
 });
+
+describe("cursors", () => {
+  describe("when they exist", () => {
+    beforeEach(() =>
+      withAdminDatabase(async (adminDb) => {
+        await update(ref(adminDb), {
+          "crosswords/cw-id": {
+            rows: 15,
+            symmetric: true,
+            title: "untitiled ",
+          },
+          [`users/${alice}/crosswords/cw-id`]: {
+            title: "Untitled",
+          },
+          "cursors/cw-id": {
+            "cursor-id-alice": {
+              userId: alice,
+            },
+            "cursor-id-bob": {
+              userId: bob,
+            },
+          },
+          "permissions/cw-id": {
+            owner: alice,
+            collaborators: { bob: true },
+          },
+        });
+      })
+    );
+
+    it("can be read by cw owner", () => {
+      return expect(
+        assertSucceeds(get(ref(authedApp(alice), "cursors/cw-id")))
+      ).resolves.not.toThrow();
+    });
+
+    it("can be read by collaborator", () => {
+      return expect(
+        assertSucceeds(get(ref(authedApp(bob), "cursors/cw-id")))
+      ).resolves.not.toThrow();
+    });
+
+    it("cannot be read by non-permitted", () => {
+      return expect(
+        assertFails(get(ref(authedApp(charlie), "cursors/cw-id")))
+      ).resolves.toEqual(new Error("Permission denied"));
+    });
+  });
+
+  describe("with cw in place", () => {
+    beforeEach(() =>
+      withAdminDatabase(async (adminDb) => {
+        await update(ref(adminDb), {
+          "crosswords/cw-id": { rows: 15, symmetric: true, title: "untitled" },
+          [`users/${alice}/crosswords/cw-id`]: {
+            title: "Untitled",
+          },
+          "permissions/cw-id": { owner: alice, collaborators: { bob: true } },
+        });
+      })
+    );
+
+    it("can be created", () => {
+      return expect(
+        assertSucceeds(
+          update(ref(authedApp(alice)), {
+            "cursors/cw-id/cursor-id": {
+              userId: alice,
+            },
+          })
+        )
+      ).resolves.not.toThrow();
+    });
+
+    it("cannot be created under another users id", () => {
+      return expect(
+        assertFails(
+          update(ref(authedApp(alice)), {
+            "cursors/cw-id/cursor-id": { userId: bob },
+          })
+        )
+      ).resolves.toMatchObject({ code: "PERMISSION_DENIED" });
+    });
+
+    describe("with existing cursor", () => {
+      beforeEach(() =>
+        withAdminDatabase(async (adminDb) => {
+          await update(ref(adminDb), {
+            "cursors/cw-id/cursor-id": {
+              userId: alice,
+              row: 0,
+              column: 0,
+            },
+          });
+        })
+      );
+
+      it("cannot be deleted by another user", () => {
+        return expect(
+          assertFails(
+            update(ref(authedApp(bob)), {
+              "cursors/cw-id/cursor-id": null,
+            })
+          )
+        ).resolves.toMatchObject({ code: "PERMISSION_DENIED" });
+      });
+
+      it("can be deleted by owner", () => {
+        return expect(
+          assertSucceeds(
+            update(ref(authedApp(alice)), {
+              "cursors/cw-id/cursor-id": null,
+            })
+          )
+        ).resolves.not.toThrow();
+      });
+
+      it("can be read by owner", () => {
+        return expect(
+          assertSucceeds(get(ref(authedApp(alice), "cursors/cw-id/cursor-id")))
+        ).resolves.not.toThrow();
+      });
+
+      it("can be read by collaborator", () => {
+        return expect(
+          assertSucceeds(get(ref(authedApp(bob), "cursors/cw-id/cursor-id")))
+        ).resolves.not.toThrow();
+      });
+
+      it("cannot be read by non-owner non-collaborator", () => {
+        return expect(
+          assertFails(get(ref(authedApp(charlie), "cursors/cw-id/cursor-id")))
+        ).resolves.toEqual(new Error("Permission denied"));
+      });
+    });
+  });
+
+  describe("with no cw in place", () => {
+    it("cannot be created", () => {
+      return expect(
+        assertFails(
+          update(ref(authedApp(alice)), {
+            "cursors/cw-id/cursor-id": {
+              userId: alice,
+            },
+          })
+        )
+      ).resolves.toMatchObject({ code: "PERMISSION_DENIED" });
+    });
+  });
+
+  describe("communal crossword", () => {
+    // TODO yeah we should really have a service account for these things
+    // the only interesting test here is that users can write this stuff
+    it("can be set by an admin", () =>
+      expect(
+        withAdminDatabase(async (adminDb) => {
+          await update(ref(adminDb), {
+            "communityCrossword/current": "cw-id",
+          });
+        })
+      ).resolves.not.toThrow());
+
+    it("cannot be set by non-admin", () =>
+      expect(
+        assertFails(
+          update(ref(authedApp(alice)), {
+            "communityCrossword/current": "cw-id",
+          })
+        )
+      ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
+  });
+});
+
+// I love my momma and my papa.
