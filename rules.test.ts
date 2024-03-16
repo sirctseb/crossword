@@ -14,9 +14,20 @@ import {
   assertFails,
   assertSucceeds,
 } from "@firebase/rules-unit-testing";
-let testEnv: RulesTestEnvironment;
 
 import { ref, type Database, update, get } from "firebase/database";
+
+// swallow the warns from firebase on permission denied that make test results
+// impossible to read
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  if (args.length > 1 && args[1].includes("permission_denied")) {
+  } else {
+    originalWarn(...args);
+  }
+};
+
+let testEnv: RulesTestEnvironment;
 
 const alice = "alice";
 const bob = "bob";
