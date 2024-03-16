@@ -148,27 +148,29 @@ describe("crossword", () => {
     ).rejects.toThrow();
   });
 
-  // describe("reading", () => {
-  //   beforeEach(
-  //     async () =>
-  //       await testEnv.withSecurityRulesDisabled(async (adminApp) => {
-  //         update(ref(adminApp.database()), {
-  //           "crosswords/cw-id": {
-  //             rows: 15,
-  //             symmetric: true,
-  //             title: "untitled",
-  //           },
-  //           [`users/${alice}/crosswords/cw-id`]: {
-  //             title: "Untitled",
-  //           },
-  //           "permissions/cw-id": { owner: alice, collaborators: { bob: true } },
-  //         });
-  //       })
-  //   );
+  describe("reading", () => {
+    beforeEach(
+      async () =>
+        await testEnv.withSecurityRulesDisabled(async (adminApp) => {
+          await update(ref(adminApp.database()), {
+            "crosswords/cw-id": {
+              rows: 15,
+              symmetric: true,
+              title: "untitled",
+            },
+            [`users/${alice}/crosswords/cw-id`]: {
+              title: "Untitled",
+            },
+            "permissions/cw-id": { owner: alice, collaborators: { bob: true } },
+          });
+        })
+    );
 
-  //   // TODO what's happening here? there is no assertion?
-  //   // it("can be read by the owner", async () => expect(authedApp(alice).ref()));
-  // });
+    it("can be read by the owner", async () =>
+      expect(
+        assertSucceeds(get(ref(authedApp(alice), "crosswords/cw-id")))
+      ).resolves.not.toThrow());
+  });
 
   describe("collaborators", () => {
     beforeEach(async () => {
