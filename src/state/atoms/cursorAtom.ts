@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atomFamily } from "recoil";
 
 export interface Cursor {
   row: number;
@@ -6,7 +6,7 @@ export interface Cursor {
   direction: "across" | "down";
 }
 
-export const cursorAtom = atom<Cursor>({
+export const cursorAtomFamily = atomFamily<Cursor, { crosswordId: string }>({
   key: "cursor",
   default: {
     row: 0,

@@ -2,7 +2,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 
 import {
   arrayCrosswordSelector,
-  cursorAtom,
+  cursorAtomFamily,
   type ArrayCrossword,
   type Cursor,
 } from "../../state";
@@ -40,7 +40,7 @@ export const useEditorHotkeys = (
   crosswordId: string,
   undoHistory: UndoHistory
 ) => {
-  const [cursor, setCursor] = useRecoilState(cursorAtom);
+  const [cursor, setCursor] = useRecoilState(cursorAtomFamily({ crosswordId }));
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
 
   useHotkeys(

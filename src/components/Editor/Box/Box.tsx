@@ -3,7 +3,6 @@ import { Box as BoxModel } from "../../../firebase/types";
 
 import { BoxControls } from "./BoxControls";
 import { RebusInput } from "./RebusInput";
-import type { FirebaseValue } from "../../../firebase-recoil";
 
 import { block } from "../../../styles";
 import "./box.scss";

@@ -8,7 +8,7 @@ import {
 } from "../types";
 import { findNext } from "../derivations";
 import { arrayCrosswordSelector } from "./arrayCrosswordSelector";
-import { cursorAtom } from "./cursorAtom";
+import { cursorAtomFamily } from "./cursorAtom";
 import { clueAddressesSelector } from "./clueAddressesSelector";
 
 const findNextBlank = (
@@ -38,7 +38,7 @@ export const advancedCursorSelector = selectorFamily<
     (params) =>
     ({ get }) => {
       const crossword = get(arrayCrosswordSelector(params));
-      const { row, column, direction } = get(cursorAtom);
+      const { row, column, direction } = get(cursorAtomFamily(params));
       const clueAddresses = get(clueAddressesSelector(params));
       return (
         findNextBlank(

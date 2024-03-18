@@ -1,6 +1,7 @@
 export type FirebaseArray<K extends string, T> = Record<K, T> | T[];
 export type Matrix<Type> = FirebaseArray<Index, FirebaseArray<Index, Type>>;
 export type Presence<Type extends string> = FirebaseArray<Type, boolean>;
+export type CurrentUser = UserId;
 export type Clues = {
   across?: Matrix<string>;
   down?: Matrix<string>;
@@ -36,6 +37,19 @@ export type Permissions = {
   owner: UserId;
   collaborators?: Presence<UserId>;
   global?: boolean;
+  readonly?: boolean;
 };
 export type UserId = string;
 export type CrosswordId = string;
+export type Cursor = {
+  userId: CurrentUser;
+  row?: number;
+  column?: number;
+  displayName?: string;
+  photoUrl?: string;
+  color?: string;
+};
+export type CommunalCrossword = {
+  current: CrosswordId;
+  archive?: FirebaseArray<string, CrosswordId>;
+};

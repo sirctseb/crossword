@@ -4,17 +4,17 @@ import React, { useCallback } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { ref, type DatabaseReference } from "firebase/database";
 
-import { FirebaseSet, FirebaseUpdate, UndoHistory } from "../../undo";
+import { FirebaseSet, FirebaseUpdate } from "../../undo";
 import {
   arrayCrosswordSelector,
   labelMapSelector,
-  cursorAtom,
   type ArrayCrossword,
   advancedCursorSelector,
   type LabeledAddressCatalog,
   clueInputAtom,
   type ClueInput,
   clueAddressesSelector,
+  cursorAtomFamily,
 } from "../../state";
 
 import { Box as BoxModel } from "../../firebase/types";
@@ -27,11 +27,12 @@ import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
 import { allAnswersSelector } from "../../state/atoms/allAnswersSelector";
 import { useEditorHotkeys } from "./useEditorHotKeys";
+import { useFirebase } from "../../firebase";
+import { useUndoHistory } from "../../undo/useUndoHistory";
+import { usePublishCursor } from "./Cursor/usePublishCursor";
 
 import "./editor.scss";
 import { block } from "../../styles";
-import { useFirebase } from "../../firebase";
-import { useUndoHistory } from "../../undo/useUndoHistory";
 
 const bem = block("editor");
 
@@ -188,7 +189,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
   const { database } = useFirebase();
-  const [cursor, setCursor] = useRecoilState(cursorAtom);
+
+  const [cursor, setCursor] = useRecoilState(cursorAtomFamily({ crosswordId }));
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
@@ -213,8 +215,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
 
   const handleBoxFocus = useCallback(
     (row: number, column: number) => {
-      setCursor(({ direction }) => ({
-        direction,
+      setCursor((cursorToUpdate) => ({
+        ...cursorToUpdate,
         row,
         column,
       }));
@@ -367,6 +369,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   );
 
   useEditorHotkeys(crosswordId, history);
+
+  const cursorId = usePublishCursor(crosswordId);
 
   return (
     <Editor
