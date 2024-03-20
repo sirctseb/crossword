@@ -8,9 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest --colors --env=jest-environment-node ./src",
-    "test:rules": "firebase-bolt rules.bolt && jest --colors --env=jest-environment-node ./rules.test.ts",
+    "test:rules": "firebase-bolt ../rules.bolt -o ./rules.json && jest --colors --env=jest-environment-node ./rules.test.ts",
     "storybook": "storybook dev -p 6006",
-    "generate": "bolt-typegen -r rules.bolt -o ./src/firebase/types.ts && prettier --write ./src/firebase/types.ts",
+    "generate": "bolt-typegen -r ../rules.bolt -o ./src/firebase/types.ts && prettier --write ./src/firebase/types.ts",
     "build-storybook": "storybook build"
   },
   "dependencies": {
