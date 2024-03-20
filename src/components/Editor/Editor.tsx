@@ -17,7 +17,7 @@ import {
   cursorAtomFamily,
 } from "../../state";
 
-import { Box as BoxModel } from "../../firebase/types";
+import { Box as BoxModel, type Cursor } from "../../firebase/types";
 
 import { Box } from "./Box";
 import { ClueList } from "./ClueList";
@@ -33,6 +33,7 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 
 import "./editor.scss";
 import { block } from "../../styles";
+import { useRemoteCursors, type CursorMap } from "./Cursor/useRemoteCursors";
 
 const bem = block("editor");
 
@@ -45,6 +46,7 @@ export interface EditorProps {
   labeledAddressCatalog: LabeledAddressCatalog;
   clueInput: ClueInput;
   allAnswers: string[];
+  remoteCursors: CursorMap;
   onAfterSetContent: (newContent: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,
@@ -71,6 +73,7 @@ export const Editor: React.FC<EditorProps> = ({
   labeledAddressCatalog,
   clueInput,
   allAnswers,
+  remoteCursors,
   onAfterSetContent,
   onModifyBox,
   onSizeChange,
@@ -100,6 +103,7 @@ export const Editor: React.FC<EditorProps> = ({
           onBoxFocus={onBoxFocus}
           cursor={isCursorBox(row, column)}
           onAfterSetContent={onAfterSetContent}
+          remoteCursors={remoteCursors?.[row]?.[column]}
         />
       );
     }
@@ -371,6 +375,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   useEditorHotkeys(crosswordId, history);
 
   const cursorId = usePublishCursor(crosswordId);
+  const remoteCursors = useRemoteCursors(crosswordId, cursorId);
 
   return (
     <Editor
@@ -382,6 +387,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       labeledAddressCatalog={labeledAddressCatalog}
       clueInput={clueInput}
       allAnswers={allAnswers}
+      remoteCursors={remoteCursors}
       onAfterSetContent={handleAfterSetContent}
       onModifyBox={handleModifyBox}
       onSizeChange={handleChangeSize}

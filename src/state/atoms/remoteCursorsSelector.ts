@@ -3,7 +3,7 @@ import type { Cursor } from "../../firebase/types";
 import { cursorsAtomFamily } from "../../firebase-recoil/atoms";
 
 type RemoteCursorsParams = SerializableParam & {
-  cursorId: string;
+  cursorId: string | null;
   crosswordId: string;
 };
 
@@ -17,7 +17,9 @@ export const remoteCursorsSelector = selectorFamily<
     ({ get }) => {
       const data = { ...get(cursorsAtomFamily({ crosswordId })) };
 
-      delete data[cursorId];
+      if (cursorId) {
+        delete data[cursorId];
+      }
 
       return data;
     },

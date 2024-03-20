@@ -6,7 +6,7 @@ export type Entity<T> = T & {
   id: string;
 };
 
-type CursorMap = Record<
+export type CursorMap = Record<
   number,
   Record<number, Entity<Cursor>[] | undefined> | undefined
 >;
@@ -29,7 +29,7 @@ const reduceCursors = (cursors: Record<string, Cursor>): CursorMap => {
 
 export const useRemoteCursors = (
   crosswordId: string,
-  cursorId: string
+  cursorId: string | null
 ): CursorMap => {
   const remoteCursors = useRecoilValue(
     remoteCursorsSelector({ crosswordId, cursorId })

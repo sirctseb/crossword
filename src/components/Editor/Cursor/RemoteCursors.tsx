@@ -10,7 +10,9 @@ interface RemoteCursorsProps {
   cursors?: Entity<Cursor>[];
 }
 
-const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors = null }) =>
+export const RemoteCursors: React.FC<RemoteCursorsProps> = ({
+  cursors = null,
+}) =>
   cursors && (
     <div className={bem()}>
       {cursors.map(({ id, color, displayName, photoUrl }) => (
@@ -27,5 +29,3 @@ const RemoteCursors: React.FC<RemoteCursorsProps> = ({ cursors = null }) =>
       ))}
     </div>
   );
-
-export default RemoteCursors;

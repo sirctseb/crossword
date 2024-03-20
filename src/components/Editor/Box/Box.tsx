@@ -1,11 +1,13 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Box as BoxModel } from "../../../firebase/types";
+import { Box as BoxModel, type Cursor } from "../../../firebase/types";
+import type { Entity } from "../Cursor/useRemoteCursors";
 
 import { BoxControls } from "./BoxControls";
 import { RebusInput } from "./RebusInput";
 
 import { block } from "../../../styles";
 import "./box.scss";
+import { RemoteCursors } from "../Cursor/RemoteCursors";
 const bem = block("box");
 
 const targetFocused = ({
@@ -20,6 +22,7 @@ export interface BoxProps {
   cursor: boolean;
   clueLabel?: number;
   cursorAnswer: boolean;
+  remoteCursors: Entity<Cursor>[] | undefined;
   onBoxFocus: (row: number, column: number) => void;
   onAfterSetContent: (content: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
@@ -38,6 +41,7 @@ export const Box: React.FC<BoxProps> = ({
   cursor,
   clueLabel,
   cursorAnswer: active,
+  remoteCursors,
   onAfterSetContent,
   onBoxFocus,
   onModifyBox,
@@ -107,6 +111,7 @@ export const Box: React.FC<BoxProps> = ({
       onMouseDown={handleMouseDown}
       ref={boxRef}
     >
+      <RemoteCursors cursors={remoteCursors} />
       <BoxControls onToggleAttribute={handleToggleAttribute} box={box} />
       {rebus && (
         <RebusInput

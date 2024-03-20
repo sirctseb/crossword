@@ -14,15 +14,16 @@ $block-class: 'remote-cursors';
     &__cursor {
       flex: 1;
 
-      &__details {
-        display: none;
-      }
-
       &:hover {
         .details {
           display: block;
         }
       }
     }
+
+    &__details {
+      display: none;
+    }
+
   }
 }
