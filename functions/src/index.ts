@@ -146,7 +146,7 @@ export const decorateCursor = database
           colors[Math.floor(Math.random() * colors.length)]
       )
       .then((color) => {
-        // TODO i think we do still want to do this for unathenticated users
+        // TODO i think we do still want to do this for unauthenticated users
         if (context.auth) {
           logger.info("decorating cursor", { color, id: snapshot.key });
           return admin
@@ -159,10 +159,11 @@ export const decorateCursor = database
               snapshot.ref.transaction((value) => {
                 logger.info("running transaction", { value });
                 if (value) {
-                  const photoUrl = user.photoURL;
+                  const { displayName, photoURL } = user;
                   const newValue = {
                     ...value,
-                    photoUrl,
+                    displayName,
+                    photoURL,
                     color,
                   };
                   logger.debug("value exists, returning", { newValue });

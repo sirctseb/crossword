@@ -29,11 +29,12 @@ export const User: React.FC<UserProps> = ({ userId }) => {
 };
 
 export const ConnectedUser = () => {
-  const { user } = useRecoilValue(authAtom);
+  const auth = useRecoilValue(authAtom);
   // TODO skeleton view before user (and subsequently display data)
   // is loaded
-  if (!user) {
+  if (auth.isEmpty) {
     return "Not logged in";
   }
-  return <User userId={user.uid}></User>;
+
+  return <User userId={auth.user.uid}></User>;
 };

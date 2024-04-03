@@ -11,18 +11,18 @@ $block-class: 'remote-cursors';
     display: flex;
     flex-direction: column;
 
+    &__details {
+      display: none;
+    }
+
     &__cursor {
       flex: 1;
 
       &:hover {
-        .details {
+        .#{$block-class}__details {
           display: block;
         }
       }
-    }
-
-    &__details {
-      display: none;
     }
 
   }

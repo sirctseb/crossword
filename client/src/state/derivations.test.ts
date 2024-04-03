@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { test } from "./derivations";
-import { type ArrayCrossword, coerceMatrixToArray, type Candidate } from ".";
+import { coerceMatrixToArray, type ArrayCrossword, type Candidate } from ".";
 import type { Box } from "../firebase/types";
 
 describe("tests", () => {
@@ -10,13 +10,39 @@ describe("tests", () => {
   });
 });
 
-const makeCrossword = (shorthand: string[]): ArrayCrossword => ({
-  symmetric: false,
-  rows: shorthand.length,
-  boxes: shorthand.map((row) =>
-    row.split("").map((entry) => ({ blocked: entry === "b", content: entry }))
-  ),
-});
+function makeCrossword(crossword: Partial<ArrayCrossword>): ArrayCrossword;
+function makeCrossword(shorthand: string[]): ArrayCrossword;
+function makeCrossword(
+  crosswordOrShorthand: Partial<ArrayCrossword> | string[]
+): ArrayCrossword {
+  if (!Array.isArray(crosswordOrShorthand)) {
+    return {
+      symmetric: false,
+      rows: 0,
+      boxes: [],
+      clues: {
+        across: {},
+        down: {},
+      },
+      themeEntries: [],
+      ...crosswordOrShorthand,
+    };
+  }
+
+  const shorthand = crosswordOrShorthand;
+  return {
+    symmetric: false,
+    rows: shorthand.length,
+    boxes: shorthand.map((row) =>
+      row.split("").map((entry) => ({ blocked: entry === "b", content: entry }))
+    ),
+    clues: {
+      across: {},
+      down: {},
+    },
+    themeEntries: [],
+  };
+}
 
 describe("selectors", () => {
   describe("firstBoxAddress", () => {
@@ -42,7 +68,11 @@ describe("selectors", () => {
     it("returns true with explicit false value", () => {
       expect(
         test.notBlocked(
-          { boxes: [[{ blocked: false }]], rows: 1, symmetric: false },
+          makeCrossword({
+            boxes: [[{ blocked: false }]],
+            rows: 1,
+            symmetric: false,
+          }),
           0,
           0
         )
@@ -51,7 +81,11 @@ describe("selectors", () => {
     it("returns true with absent value", () => {
       expect(
         test.notBlocked(
-          { boxes: [[{ content: "a" }]], rows: 1, symmetric: false },
+          makeCrossword({
+            boxes: [[{ content: "a" }]],
+            rows: 1,
+            symmetric: false,
+          }),
           0,
           0
         )
@@ -59,12 +93,20 @@ describe("selectors", () => {
     });
     it("returns true with no box", () => {
       expect(
-        test.notBlocked({ boxes: [[{}]], rows: 1, symmetric: false }, 0, 0)
+        test.notBlocked(
+          makeCrossword({ boxes: [[{}]], rows: 1, symmetric: false }),
+          0,
+          0
+        )
       ).toBe(true);
     });
     it("returns false with true value", () => {
       test.notBlocked(
-        { boxes: [[{ blocked: true }]], rows: 1, symmetric: false },
+        makeCrossword({
+          boxes: [[{ blocked: true }]],
+          rows: 1,
+          symmetric: false,
+        }),
         0,
         0
       );
@@ -94,7 +136,7 @@ describe("selectors", () => {
       const row = 4;
       const column = 3;
       const payload = "payload";
-      const crossword = {
+      const crossword = makeCrossword({
         boxes: coerceMatrixToArray(
           { [row]: { [column]: { payload } as Box } },
           {},
@@ -103,7 +145,7 @@ describe("selectors", () => {
         ),
         rows: 4,
         symmetric: false,
-      };
+      });
       expect((test.boxAt(crossword, row, column) as any).payload).toBe(payload);
     });
   });
@@ -116,11 +158,11 @@ describe("selectors", () => {
       const boxes: Box[][] = [];
       boxes[row] = [];
       boxes[row][column] = { payload } as Box;
-      const crossword: ArrayCrossword = {
+      const crossword: ArrayCrossword = makeCrossword({
         boxes,
         rows: 8,
         symmetric: false,
-      };
+      });
 
       const subject = test.candidateAt(crossword, row, column);
       expect((subject.box as any).payload).toBe(payload);
@@ -130,7 +172,7 @@ describe("selectors", () => {
   });
 
   describe("cycleInAnswerDown", () => {
-    const crossword = {
+    const crossword = makeCrossword({
       symmetric: false,
       rows: 4,
       boxes: coerceMatrixToArray<Box>(
@@ -155,7 +197,7 @@ describe("selectors", () => {
         4,
         4
       ),
-    };
+    });
     it("returns a candidate", () => {
       const subject = test.cycleInAnswerDown(crossword, 0, 0);
       expect((subject.box as any).payload).toBe("payload");
@@ -185,7 +227,7 @@ describe("selectors", () => {
   });
 
   describe("cycleInAnswerAcross", () => {
-    const crossword = {
+    const crossword = makeCrossword({
       symmetric: false,
       rows: 4,
       boxes: coerceMatrixToArray<Box>(
@@ -208,7 +250,7 @@ describe("selectors", () => {
         4,
         4
       ),
-    };
+    });
     it("returns a candidate", () => {
       const subject = test.cycleInAnswerAcross(crossword, 0, 0);
       expect((subject.box as any).payload).toBe("payload");
@@ -253,7 +295,7 @@ describe("selectors", () => {
   });
 
   describe("findInCycle", () => {
-    const crossword = {
+    const crossword = makeCrossword({
       symmetric: false,
       rows: 3,
       boxes: coerceMatrixToArray(
@@ -264,7 +306,7 @@ describe("selectors", () => {
         3,
         3
       ),
-    };
+    });
     it("finds when it is after the input", () => {
       const subject = test.findInCycle(
         crossword,

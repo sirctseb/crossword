@@ -15,7 +15,7 @@ export const RemoteCursors: React.FC<RemoteCursorsProps> = ({
 }) =>
   cursors && (
     <div className={bem()}>
-      {cursors.map(({ id, color, displayName, photoUrl }) => (
+      {cursors.map(({ id, color, displayName, photoURL }) => (
         <div
           key={id}
           className={bem("cursor")}
@@ -23,7 +23,7 @@ export const RemoteCursors: React.FC<RemoteCursorsProps> = ({
         >
           <div className={bem("details")}>
             <div>{displayName || "Unknown puzzler"}</div>
-            {photoUrl && <img src={photoUrl} />}
+            {photoURL && <img src={photoURL} />}
           </div>
         </div>
       ))}

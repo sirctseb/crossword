@@ -9,7 +9,7 @@ import { ArrayCrossword } from "../types";
 // provide that also. we may have to revisit this if these selectors turn
 // out to be slow
 
-const coerceMatrixToArray = <T>(
+export const coerceMatrixToArray = <T>(
   matrix: FirebaseArray<string, FirebaseArray<string, T>>,
   defaultValue: T,
   rows: number,

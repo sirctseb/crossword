@@ -17,7 +17,7 @@ import {
   cursorAtomFamily,
 } from "../../state";
 
-import { Box as BoxModel, type Cursor } from "../../firebase/types";
+import { Box as BoxModel } from "../../firebase/types";
 
 import { Box } from "./Box";
 import { ClueList } from "./ClueList";

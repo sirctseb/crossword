@@ -46,7 +46,7 @@ export type Cursor = {
   row?: number;
   column?: number;
   displayName?: string;
-  photoUrl?: string;
+  photoURL?: string;
   color?: string;
 };
 export type CommunalCrossword = {
