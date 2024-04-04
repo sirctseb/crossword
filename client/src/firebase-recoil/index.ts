@@ -12,7 +12,11 @@ function fbValueSubscriptionEffect<T extends FirebaseReadValue>(
   database: Database
 ): AtomEffect<T> {
   return ({ setSelf }) => {
-    setSelf(get(ref(database, path)).then((snapshot) => snapshot.val()));
+    // this is a very specific case, but only onValue works with this special path.
+    // get throws an exception
+    if (path !== ".info/connected") {
+      setSelf(get(ref(database, path)).then((snapshot) => snapshot.val()));
+    }
 
     const handler = (snapshot: DataSnapshot) => {
       setSelf(snapshot.val());
@@ -29,7 +33,8 @@ function fbValueSubscriptionEffect<T extends FirebaseReadValue>(
 
 export function makeAtom<T extends FirebaseReadValue>(
   path: string,
-  database: Database
+  database: Database,
+  defaultValue?: T
 ): RecoilState<T> {
   return atom<T>({
     key: `firebase-recoil:${path}`,
@@ -37,6 +42,7 @@ export function makeAtom<T extends FirebaseReadValue>(
     // TODO this is an alternative to calling setSelf synchronously in the effect
     // should figure out what, if any, the behavior differences are
     // default: get(ref(database, path)).then((snapshot) => snapshot.val()),
+    ...(defaultValue ? { default: defaultValue } : {}),
   });
 }
 

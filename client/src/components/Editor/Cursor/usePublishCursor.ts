@@ -1,8 +1,17 @@
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
-import { onDisconnect, push, ref, remove, update } from "firebase/database";
+import {
+  get,
+  onDisconnect,
+  push,
+  ref,
+  remove,
+  update,
+  onValue,
+} from "firebase/database";
 import { useFirebase } from "../../../firebase/useFirebase";
 import { cursorAtomFamily } from "../../../state";
+import { connectionAtom } from "../../../firebase-recoil/atoms";
 
 type UsePublishCursorResult = string | null;
 
@@ -16,21 +25,26 @@ export const usePublishCursor = (
     auth: { currentUser },
   } = useFirebase();
   const cursor = useRecoilValue(cursorAtomFamily({ crosswordId }));
+  // if i subscribed to the connection state here, we could probably use that
+  // to trigger these effects to reestablish the cursor in the right way
+  const connected = useRecoilValue(connectionAtom);
 
   // establish the cursor
   useEffect(() => {
-    const { key } = push(ref(database, `cursors/${crosswordId}`), {
-      userId: currentUser?.uid,
-      row: cursor.row,
-      column: cursor.column,
-    });
-    setKey(key);
-    return () => {
-      remove(ref(database, `cursors/${crosswordId}/${key}`));
-    };
+    if (connected) {
+      const { key } = push(ref(database, `cursors/${crosswordId}`), {
+        userId: currentUser?.uid,
+        row: cursor.row,
+        column: cursor.column,
+      });
+      setKey(key);
+      return () => {
+        remove(ref(database, `cursors/${crosswordId}/${key}`));
+      };
+    }
     // TODO so here's a case where I think we legitimately want to use a value
     // in the effect but don't want to include it in the dependency array
-  }, [crosswordId, currentUser?.uid, database]);
+  }, [crosswordId, currentUser?.uid, database, connected]);
 
   // update the cursor
   useEffect(() => {

@@ -1,11 +1,17 @@
 import { makeAuthAtom } from "./auth";
 import { getFirebaseApp, getFirebaseDatabase } from "../firebase";
-import { makeAtomFamily } from ".";
+import { makeAtom, makeAtomFamily } from ".";
 import type { Crossword, Cursor, User } from "../firebase/types";
 
 const database = getFirebaseDatabase();
 
 export const authAtom = makeAuthAtom(getFirebaseApp());
+
+export const connectionAtom = makeAtom<boolean>(
+  ".info/connected",
+  database,
+  false
+);
 
 export const crosswordAtomFamily = makeAtomFamily<
   Crossword,
