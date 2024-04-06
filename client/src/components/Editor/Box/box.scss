@@ -17,7 +17,6 @@ $active-color: #eee;
         display: flex;
         align-items: center;
         justify-content: center;
-        text-transform: uppercase;
 
         &--circled::after {
             content: '';
@@ -72,6 +71,11 @@ $active-color: #eee;
             z-index: 2;
             left: 0;
             top: 0;
+            line-height: 1em;
+        }
+
+        &__content {
+            text-transform: uppercase;
         }
     }
 }

@@ -123,7 +123,7 @@ export const Box: React.FC<BoxProps> = ({
       {clueLabel !== undefined && (
         <div className={bem("clue-index")}>{clueLabel}</div>
       )}
-      {content}
+      <div className={bem("content")}>{content}</div>
     </div>
   );
 };
