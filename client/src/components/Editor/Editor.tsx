@@ -215,7 +215,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
     [cursor]
   );
 
-  const isCursorAnswer = useIsCursorAnswer(crosswordId);
+  const isCursorAnswer = useIsCursorAnswer(crossword, cursor);
 
   const handleBoxFocus = useCallback(
     (row: number, column: number) => {

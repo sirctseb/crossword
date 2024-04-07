@@ -1,17 +1,18 @@
 import { useCallback } from "react";
 import { useRecoilValue } from "recoil";
-import { arrayCrosswordSelector, cursorAtomFamily } from "../../../state";
+import {
+  arrayCrosswordSelector,
+  cursorAtomFamily,
+  type ArrayCrossword,
+  type Cursor,
+} from "../../../state";
 
 type useIsCursorAnswerResult = (row: number, column: number) => boolean;
 
 export const useIsCursorAnswer = (
-  crosswordId: string
+  crossword: ArrayCrossword,
+  cursor: Cursor
 ): useIsCursorAnswerResult => {
-  // TODO or just take the crossword as an argument?
-  // this is also making me think we put all of this in selectors
-  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
-  const cursor = useRecoilValue(cursorAtomFamily({ crosswordId }));
-
   return useCallback(
     (row: number, column: number): boolean => {
       // TODO move the body below in here

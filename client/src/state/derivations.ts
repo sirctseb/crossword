@@ -37,6 +37,21 @@ export const deriveClueAddresses = (
   }
   return labeledAddresses;
 };
+
+export const deriveLabelMap = (
+  catalog: LabeledAddressCatalog
+): Record<number, Record<number, number>> => {
+  const map: Record<number, Record<number, number>> = {};
+  const directions = ["across", "down"] as const;
+  directions.forEach((direction) => {
+    catalog[direction].forEach((address) => {
+      map[address.row] = map[address.row] || {};
+      map[address.row][address.column] = address.label;
+    });
+  });
+  return map;
+};
+
 const firstBoxAddress = (
   crossword: ArrayCrossword,
   row: number,

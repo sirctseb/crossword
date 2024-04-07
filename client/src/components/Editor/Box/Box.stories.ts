@@ -33,3 +33,30 @@ export const Basic: Story = {
     remoteCursors: [],
   },
 };
+
+export const RemoteCursor: Story = {
+  args: {
+    box: {
+      blocked: false,
+      circled: false,
+      content: "x",
+      shaded: false,
+    },
+    column: 0,
+    row: 0,
+    cursor: false,
+    cursorAnswer: false,
+    remoteCursors: [
+      {
+        id: "1",
+        row: 0,
+        column: 0,
+        userId: "user-id",
+        color: "00FF00",
+        displayName: "Test User",
+        photoURL:
+          "https://lh4.googleusercontent.com/-mvYDpHAbXh8/AAAAAAAAAAI/AAAAAAAAaqM/B1qedASM3dM/photo.jpg",
+      },
+    ],
+  },
+};

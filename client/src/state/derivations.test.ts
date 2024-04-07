@@ -3,46 +3,13 @@ import { describe, it, expect } from "@jest/globals";
 import { test } from "./derivations";
 import { coerceMatrixToArray, type ArrayCrossword, type Candidate } from ".";
 import type { Box } from "../firebase/types";
+import { makeCrossword } from "./factory/makeCrossword";
 
 describe("tests", () => {
   it("should pass", () => {
     expect(true).toBe(true);
   });
 });
-
-function makeCrossword(crossword: Partial<ArrayCrossword>): ArrayCrossword;
-function makeCrossword(shorthand: string[]): ArrayCrossword;
-function makeCrossword(
-  crosswordOrShorthand: Partial<ArrayCrossword> | string[]
-): ArrayCrossword {
-  if (!Array.isArray(crosswordOrShorthand)) {
-    return {
-      symmetric: false,
-      rows: 0,
-      boxes: [],
-      clues: {
-        across: {},
-        down: {},
-      },
-      themeEntries: [],
-      ...crosswordOrShorthand,
-    };
-  }
-
-  const shorthand = crosswordOrShorthand;
-  return {
-    symmetric: false,
-    rows: shorthand.length,
-    boxes: shorthand.map((row) =>
-      row.split("").map((entry) => ({ blocked: entry === "b", content: entry }))
-    ),
-    clues: {
-      across: {},
-      down: {},
-    },
-    themeEntries: [],
-  };
-}
 
 describe("selectors", () => {
   describe("firstBoxAddress", () => {
