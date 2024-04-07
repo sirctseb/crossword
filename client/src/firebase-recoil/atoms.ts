@@ -1,7 +1,12 @@
 import { makeAuthAtom } from "./auth";
 import { getFirebaseApp, getFirebaseDatabase } from "../firebase";
 import { makeAtom, makeAtomFamily } from ".";
-import type { Crossword, Cursor, User } from "../firebase/types";
+import type {
+  CommunalCrossword,
+  Crossword,
+  Cursor,
+  User,
+} from "../firebase/types";
 
 const database = getFirebaseDatabase();
 
@@ -32,3 +37,8 @@ export const cursorsAtomFamily = makeAtomFamily<
   Record<string, Cursor>,
   { crosswordId: string }
 >("/cursors/{crosswordId}", database);
+
+export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
+  "/communalCrossword",
+  database
+);
