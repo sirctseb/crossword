@@ -1,4 +1,8 @@
+@use '../../../styles/variables' as *;
+
 $block-class: 'remote-cursors';
+
+$carat-width: 3px;
 
 @at-root {
   .#{$block-class} {
@@ -6,13 +10,24 @@ $block-class: 'remote-cursors';
     top: 0;
     bottom: 0;
     left: 0;
-    width: 3px;
+    width: $carat-width;
     z-index: 4;
     display: flex;
     flex-direction: column;
 
+    &:hover {
+      width: calc(2 * $carat-width);
+    }
+
     &__details {
       display: none;
+      position: absolute;
+      bottom: calc($box-size - 1px);
+      right: calc($carat-width + 0px);
+      width: 92px;
+      background-color: white;
+      padding: 4px;
+      border: 1px solid black;
     }
 
     &__cursor {
