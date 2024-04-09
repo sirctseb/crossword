@@ -13,7 +13,7 @@ const bem = block("crossword-preview");
 interface CrosswordPreviewProps {
   id: string;
   crossword: ArrayCrossword;
-  metadata: CrosswordMetadata;
+  metadata?: CrosswordMetadata;
 }
 
 const Boxes: React.FC<{ rows: number; boxes: ArrayCrossword["boxes"] }> = ({
@@ -46,13 +46,15 @@ export const CrosswordPreview: React.FC<CrosswordPreviewProps> = ({
         <Boxes {...crossword} />
       </div>
     )}
-    <Link href={`/${id}`}>{metadata.title || "Untitled"}</Link>
+    <Link href={`/${id}`}>
+      {metadata?.title || crossword.title || "Untitled"}
+    </Link>
   </div>
 );
 
 export interface ConnectedCrosswordPreviewProps {
   id: string;
-  metadata: CrosswordMetadata;
+  metadata?: CrosswordMetadata;
 }
 
 export const ConnectedCrosswordPreview: React.FC<
