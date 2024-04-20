@@ -509,6 +509,67 @@ describe("cursors", () => {
     });
   });
 
+  describe("in global cw", () => {
+    beforeEach(() =>
+      withAdminDatabase(async (adminDb) => {
+        await update(ref(adminDb), {
+          "crosswords/cw-id": { rows: 15, symmetric: true, title: "untitled" },
+          "permissions/cw-id": { global: true },
+        });
+      })
+    );
+
+    it("can be created", () => {
+      return expect(
+        assertSucceeds(
+          update(ref(authedApp(alice)), {
+            "cursors/cw-id/cursor-id": {
+              userId: alice,
+            },
+          })
+        )
+      ).resolves.not.toThrow();
+    });
+
+    it("cannot be created under another users id", () => {
+      return expect(
+        assertFails(
+          update(ref(authedApp(alice)), {
+            "cursors/cw-id/cursor-id": { userId: bob },
+          })
+        )
+      ).resolves.toMatchObject({ code: "PERMISSION_DENIED" });
+    });
+
+    describe("with cursor", () => {
+      beforeEach(() =>
+        withAdminDatabase(async (adminDb) => {
+          await update(ref(adminDb), {
+            "cursors/cw-id/cursor-id": {
+              userId: alice,
+              row: 0,
+              column: 0,
+            },
+          });
+        })
+      );
+
+      it("can be read by owner", () => {
+        return expect(
+          assertSucceeds(get(ref(authedApp(alice), "cursors/cw-id/cursor-id")))
+        ).resolves.not.toThrow();
+      });
+
+      it("can be read by collaborator", () => {
+        return expect(
+          assertSucceeds(
+            get(ref(authedApp(charlie), "cursors/cw-id/cursor-id"))
+          )
+        ).resolves.not.toThrow();
+      });
+    });
+  });
+
   describe("with cw in place", () => {
     beforeEach(() =>
       withAdminDatabase(async (adminDb) => {
@@ -610,28 +671,28 @@ describe("cursors", () => {
       ).resolves.toMatchObject({ code: "PERMISSION_DENIED" });
     });
   });
+});
 
-  describe("communal crossword", () => {
-    // TODO yeah we should really have a service account for these things
-    // the only interesting test here is that users can write this stuff
-    it("can be set by an admin", () =>
-      expect(
-        withAdminDatabase(async (adminDb) => {
-          await update(ref(adminDb), {
-            "communityCrossword/current": "cw-id",
-          });
+describe("communal crossword", () => {
+  // TODO yeah we should really have a service account for these things
+  // the only interesting test here is that users can write this stuff
+  it("can be set by an admin", () =>
+    expect(
+      withAdminDatabase(async (adminDb) => {
+        await update(ref(adminDb), {
+          "communityCrossword/current": "cw-id",
+        });
+      })
+    ).resolves.not.toThrow());
+
+  it("cannot be set by non-admin", () =>
+    expect(
+      assertFails(
+        update(ref(authedApp(alice)), {
+          "communityCrossword/current": "cw-id",
         })
-      ).resolves.not.toThrow());
-
-    it("cannot be set by non-admin", () =>
-      expect(
-        assertFails(
-          update(ref(authedApp(alice)), {
-            "communityCrossword/current": "cw-id",
-          })
-        )
-      ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
-  });
+      )
+    ).resolves.toMatchObject({ code: "PERMISSION_DENIED" }));
 });
 
 // I love my momma and my papa.
