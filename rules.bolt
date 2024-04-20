@@ -93,6 +93,8 @@ type User {
 path /users is User[] {}
 
 type Permissions {
+    // currently this can be Null when `global` is true
+    // but we should make that explicit
     owner: UserId,
     collaborators: Presence<UserId>,
     global: Boolean | Null,
@@ -164,7 +166,8 @@ path /cursors/{cwid} is Cursor[] {
 
     read() {
         auth.uid == root.permissions[cwid].owner ||
-        root.permissions[cwid].collaborators[auth.uid]
+        root.permissions[cwid].collaborators[auth.uid] ||
+        root.permissions[cwid].global
     }
 }
 
