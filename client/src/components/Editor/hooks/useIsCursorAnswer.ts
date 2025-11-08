@@ -1,11 +1,5 @@
 import { useCallback } from "react";
-import { useRecoilValue } from "recoil";
-import {
-  arrayCrosswordSelector,
-  cursorAtomFamily,
-  type ArrayCrossword,
-  type Cursor,
-} from "../../../state";
+import { type ArrayCrossword, type Cursor } from "../../../state";
 
 type useIsCursorAnswerResult = (row: number, column: number) => boolean;
 
