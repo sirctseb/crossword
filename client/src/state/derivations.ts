@@ -1,12 +1,14 @@
-import type {
-  ArrayCrossword,
-  LabeledAddressCatalog,
-  LabeledAddress,
-  Address,
-  Candidate,
-  Direction,
+import {
+  type ArrayCrossword,
+  type LabeledAddressCatalog,
+  type LabeledAddress,
+  type Address,
+  type Candidate,
+  type Direction,
 } from ".";
-import type { Box } from "../firebase/types";
+import { coerceMatrixToArray } from "../firebase/coerceMatrixToArray";
+import { coerceToObject } from "../firebase/coerceToObject";
+import type { Box, Crossword, FirebaseArray } from "../firebase/types";
 
 export const deriveClueAddresses = (
   crossword: ArrayCrossword
@@ -240,6 +242,36 @@ export const findNext = (
   return null;
 };
 
+const coerceMatrixToObject = <T>(
+  matrix: FirebaseArray<string, FirebaseArray<string, T>>
+): Record<string, Record<string, T>> => {
+  const outer = coerceToObject(matrix);
+  return Object.keys(outer).reduce<Record<string, Record<string, T>>>(
+    (acc, key) => {
+      acc[key] = coerceToObject(outer[key]);
+      return acc;
+    },
+    {}
+  );
+};
+
+export const deriveArrayCrossword = (crossword: Crossword): ArrayCrossword => {
+  return {
+    ...crossword,
+    boxes: coerceMatrixToArray(
+      crossword.boxes ?? [],
+      {},
+      crossword.rows,
+      crossword.rows
+    ),
+    clues: {
+      across: coerceMatrixToObject(crossword.clues?.across ?? {}),
+      down: coerceMatrixToObject(crossword.clues?.down ?? {}),
+    },
+    themeEntries: Object.keys(coerceToObject(crossword.themeEntries ?? {})),
+  };
+};
+
 export const test = {
   firstBoxAddress,
   notBlocked,
@@ -252,4 +284,5 @@ export const test = {
   findInCycle,
   findNext,
   deriveClueAddresses,
+  deriveArrayCrossword,
 };

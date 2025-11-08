@@ -3,7 +3,7 @@ import React from "react";
 import { block } from "../../../styles";
 import { ConnectedCrosswordPreview } from "../../CrosswordPreview";
 import { CrosswordMetadata, type FirebaseArray } from "../../../firebase/types";
-import { coerceToObject } from "../../../firebase-recoil";
+import { coerceToObject } from "../../../firebase/coerceToObject";
 import { useRecoilValue } from "recoil";
 
 import "./preview-list.scss";

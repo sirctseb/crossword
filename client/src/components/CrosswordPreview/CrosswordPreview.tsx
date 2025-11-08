@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useRecoilValue } from "recoil";
+import { useCrossword } from "../firebase-hooks/hooks";
 import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
@@ -7,6 +8,7 @@ import { CrosswordMetadata } from "../../firebase/types";
 import { block } from "../../styles";
 import "./crossword-preview.scss";
 import { arrayCrosswordSelector, type ArrayCrossword } from "../../state";
+import { deriveArrayCrossword } from "../../state/derivations";
 
 const bem = block("crossword-preview");
 
@@ -63,7 +65,18 @@ export const ConnectedCrosswordPreview: React.FC<
   // TODO how does this work if the value isn't already loaded? there's no
   // typing here about promises, looks like we always get it on first render
   // but that can't be true
-  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId: id }));
+  const crossword = useCrossword(id);
+  const arrayCrossword = useMemo(() => {
+    if (crossword) {
+      return deriveArrayCrossword(crossword);
+    }
+  }, [crossword]);
 
-  return <CrosswordPreview id={id} metadata={metadata} crossword={crossword} />;
+  if (!arrayCrossword) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <CrosswordPreview id={id} metadata={metadata} crossword={arrayCrossword} />
+  );
 };

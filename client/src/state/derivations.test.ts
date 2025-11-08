@@ -1,9 +1,10 @@
 import { describe, it, expect } from "@jest/globals";
 
 import { test } from "./derivations";
-import { coerceMatrixToArray, type ArrayCrossword, type Candidate } from ".";
+import { type ArrayCrossword, type Candidate } from ".";
 import type { Box } from "../firebase/types";
 import { makeCrossword } from "./factory/makeCrossword";
+import { coerceMatrixToArray } from "../firebase/coerceMatrixToArray";
 
 describe("tests", () => {
   it("should pass", () => {

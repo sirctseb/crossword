@@ -4,7 +4,7 @@ import { push, ref, remove } from "firebase/database";
 
 import { block } from "../../../styles";
 import type { User } from "../../../firebase/types";
-import { coerceToObject } from "../../../firebase-recoil";
+import { coerceToObject } from "../../../firebase/coerceToObject";
 
 import "./word-list.scss";
 import { wordListAtomFamily } from "../../../firebase-recoil/atoms";
