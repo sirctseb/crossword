@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { push, ref, remove } from "firebase/database";
 
 import { block } from "../../../styles";
@@ -7,8 +6,8 @@ import type { User } from "../../../firebase/types";
 import { coerceToObject } from "../../../firebase/coerceToObject";
 
 import "./word-list.scss";
-import { wordListAtomFamily } from "../../../firebase-recoil/atoms";
 import { useFirebase } from "../../../firebase";
+import { useWordList } from "../../firebase-hooks/hooks";
 
 const bem = block("word-list");
 
@@ -71,7 +70,7 @@ export interface ConnectedWordListProps {
 export const ConnectedWordList: React.FC<ConnectedWordListProps> = ({
   userId,
 }) => {
-  const wordlist = useRecoilValue(wordListAtomFamily({ userId }));
+  const wordlist = useWordList(userId) ?? [];
   const { database } = useFirebase();
 
   const handleAddNewValue = useCallback(
