@@ -38,23 +38,21 @@ export const useCursors = (
   )[0];
 };
 
-export function useCommunalCrossword(withDefault: true): CommunalCrossword;
-export function useCommunalCrossword(
-  withDefault?: false
-): CommunalCrossword | undefined;
-export function useCommunalCrossword(
-  withDefault = false
-): CommunalCrossword | undefined {
-  const value = useObjectVal<CommunalCrossword>(
+interface Skeletonized<T> {
+  // if we want to allow for partial data. burden on the client code though
+  // [K in keyof T]: Partial<T[K]>;
+  // [K in keyof T]: T[K];
+  data?: T;
+  skeleton: T;
+}
+
+export function useCommunalCrossword(): Skeletonized<CommunalCrossword> {
+  const data = useObjectVal<CommunalCrossword>(
     ref(database, `/communalCrossword`)
   )[0];
 
-  if (withDefault) {
-    return (
-      value || {
-        current: "",
-        archive: {},
-      }
-    );
-  }
+  return {
+    data,
+    skeleton: data ?? { current: "", archive: {} },
+  };
 }
