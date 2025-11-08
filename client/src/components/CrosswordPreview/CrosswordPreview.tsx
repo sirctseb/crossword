@@ -59,6 +59,20 @@ export interface ConnectedCrosswordPreviewProps {
   metadata?: CrosswordMetadata;
 }
 
+// TODO this shows we are pulling more than we need. we only really
+// want `boxes`. Though without rows we don't actually know how to size
+// it
+const skeletonArrayCrossword: ArrayCrossword = {
+  rows: 5,
+  clues: { across: {}, down: {} },
+  symmetric: true,
+  themeEntries: [],
+  boxes: Array.from({ length: 5 }, () =>
+    Array.from({ length: 5 }, () => ({ blocked: false, content: "" }))
+  ),
+  title: "Loading...",
+};
+
 export const ConnectedCrosswordPreview: React.FC<
   ConnectedCrosswordPreviewProps
 > = ({ id, metadata }) => {
@@ -70,11 +84,8 @@ export const ConnectedCrosswordPreview: React.FC<
     if (crossword) {
       return deriveArrayCrossword(crossword);
     }
+    return skeletonArrayCrossword;
   }, [crossword]);
-
-  if (!arrayCrossword) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <CrosswordPreview id={id} metadata={metadata} crossword={arrayCrossword} />
