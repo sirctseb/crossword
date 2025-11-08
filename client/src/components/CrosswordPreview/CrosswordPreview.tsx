@@ -1,5 +1,4 @@
 import React, { useMemo } from "react";
-import { useRecoilValue } from "recoil";
 import { useCrossword } from "../firebase-hooks/hooks";
 import Link from "next/link";
 
@@ -7,7 +6,7 @@ import { CrosswordMetadata } from "../../firebase/types";
 
 import { block } from "../../styles";
 import "./crossword-preview.scss";
-import { arrayCrosswordSelector, type ArrayCrossword } from "../../state";
+import { type ArrayCrossword } from "../../state";
 import { deriveArrayCrossword } from "../../state/derivations";
 
 const bem = block("crossword-preview");
