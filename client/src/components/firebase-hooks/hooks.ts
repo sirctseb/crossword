@@ -1,3 +1,4 @@
+import { ref } from "firebase/database";
 import { useObjectVal } from "react-firebase-hooks/database";
 
 import { getFirebaseDatabase } from "../../firebase";
@@ -7,7 +8,6 @@ import type {
   Cursor,
   User,
 } from "../../firebase/types";
-import { ref } from "firebase/database";
 
 const database = getFirebaseDatabase();
 
@@ -38,8 +38,23 @@ export const useCursors = (
   )[0];
 };
 
-export const useCommunalCrossword = (): CommunalCrossword | undefined => {
-  return useObjectVal<CommunalCrossword>(
+export function useCommunalCrossword(withDefault: true): CommunalCrossword;
+export function useCommunalCrossword(
+  withDefault?: false
+): CommunalCrossword | undefined;
+export function useCommunalCrossword(
+  withDefault = false
+): CommunalCrossword | undefined {
+  const value = useObjectVal<CommunalCrossword>(
     ref(database, `/communalCrossword`)
   )[0];
-};
+
+  if (withDefault) {
+    return (
+      value || {
+        current: "",
+        archive: {},
+      }
+    );
+  }
+}
