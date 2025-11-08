@@ -6,7 +6,6 @@ import { useRecoilValue } from "recoil";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { FirebaseAuth } from "../FirebaseAuth";
 import { authAtom } from "../../firebase-recoil/atoms";
 
 import "./header.scss";
@@ -86,7 +85,6 @@ export const Header: React.FC<HeaderProps> = ({
       </nav>
       {showLogin && (
         <div className="header__login-controls">
-          <FirebaseAuth />
           <a className="header__hide-login-button" onClick={handleHideLogin}>
             hide
           </a>

@@ -3,6 +3,7 @@ import { Root } from "../recoil";
 import "./globals.css";
 import { ConnectedHeader } from "../components/Header";
 import { LoginProtector } from "../components/LoginProtector";
+import { FirebaseUIProvider } from "../firebase/ui/FirebaseUIProvider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -18,8 +19,10 @@ export default function RootLayout({
     <Root>
       <html lang="en">
         <body>
-          <ConnectedHeader />
-          <LoginProtector>{children}</LoginProtector>
+          <FirebaseUIProvider>
+            <ConnectedHeader />
+            <LoginProtector>{children}</LoginProtector>
+          </FirebaseUIProvider>
         </body>
       </html>
     </Root>
