@@ -1,6 +1,5 @@
-import { useRecoilValue } from "recoil";
+import { useRemoteCursors as useFirebaseRemoteCursors } from "../../firebase-hooks/hooks";
 import { type Cursor } from "../../../firebase/types";
-import { remoteCursorsSelector } from "../../../state/atoms/remoteCursorsSelector";
 
 export type Entity<T> = T & {
   id: string;
@@ -31,9 +30,7 @@ export const useRemoteCursors = (
   crosswordId: string,
   cursorId: string | null
 ): CursorMap => {
-  const remoteCursors = useRecoilValue(
-    remoteCursorsSelector({ crosswordId, cursorId })
-  );
+  const remoteCursors = useFirebaseRemoteCursors(crosswordId, cursorId);
 
   if (!remoteCursors) {
     return [];

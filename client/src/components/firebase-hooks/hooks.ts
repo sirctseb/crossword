@@ -38,6 +38,23 @@ export const useCursors = (
   )[0];
 };
 
+export const useRemoteCursors = (
+  crosswordId: string,
+  cursorId: string | null
+): Record<string, Cursor> | undefined => {
+  // no need for a skeleton data views because empty cursors is just an empty object
+  // weird not to be consistent thought
+  const { ...cursors } = useCursors(crosswordId) ?? {};
+
+  // inline selector definition. we don't have a pattern anymore for this
+  // without recoil
+  if (cursorId) {
+    delete cursors[cursorId];
+  }
+
+  return cursors;
+};
+
 interface Skeletonized<T> {
   // if we want to allow for partial data. burden on the client code though
   // [K in keyof T]: Partial<T[K]>;
