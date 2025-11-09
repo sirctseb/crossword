@@ -2,14 +2,11 @@
 
 import React, { useCallback, useState } from "react";
 import { push, ref, update } from "firebase/database";
-import { useRecoilValue } from "recoil";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { authAtom } from "../../firebase-recoil/atoms";
-
 import "./header.scss";
-import { useFirebase } from "../../firebase";
+import { useAuth, useFirebase } from "../../firebase";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -96,7 +93,7 @@ export const Header: React.FC<HeaderProps> = ({
 
 export const ConnectedHeader = () => {
   const { auth, database } = useFirebase();
-  const { isEmpty } = useRecoilValue(authAtom);
+  const { isEmpty } = useAuth();
   const { push: pushRoute } = useRouter();
 
   const loggedIn = !isEmpty;
