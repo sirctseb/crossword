@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState } from "recoil";
 import { useAtom } from "jotai";
 import { ref, type DatabaseReference } from "firebase/database";
 
@@ -205,7 +204,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   const { database } = useFirebase();
 
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
-  const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
+  const [clueInput, setClueInput] = useAtom(clueInputAtom);
   const { fallback: crossword } = useArrayCrossword(crosswordId);
   const labelMap = useLabeledAddressMap(crosswordId).fallback;
   const { fallback: labeledAddressCatalog } =
@@ -351,6 +350,11 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         ] ?? null
       )
     );
+    // TODO this preps a clue input that will set 0 0 to null
+    // if we focus then blur any input without changing it.
+    // i think this bug pre-existed the state change.
+    // i guess we should set this to just null or some other sentinel
+    // value and ignore it on blur if so
     setClueInput({
       value: null,
       row: 0,

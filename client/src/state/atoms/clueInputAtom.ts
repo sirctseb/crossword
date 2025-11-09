@@ -1,4 +1,4 @@
-import { atom } from "recoil";
+import { atom } from "jotai";
 
 export interface ClueInput {
   row: number;
@@ -8,11 +8,8 @@ export interface ClueInput {
 }
 
 export const clueInputAtom = atom<ClueInput>({
-  key: "clue-input",
-  default: {
-    row: 0,
-    column: 0,
-    value: null,
-    direction: "across",
-  },
+  row: 0,
+  column: 0,
+  value: null,
+  direction: "across",
 });
