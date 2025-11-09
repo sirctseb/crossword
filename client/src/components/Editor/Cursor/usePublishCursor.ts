@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useRecoilValue } from "recoil";
 import { useAtomValue } from "jotai";
 import { onDisconnect, push, ref, remove, update } from "firebase/database";
 import { useFirebase } from "../../../firebase/useFirebase";
 import { cursorAtomFamily } from "../../../state";
-import { connectionAtom } from "../../../firebase-recoil/atoms";
+import { useConnection } from "../../firebase-hooks/hooks";
 
 type UsePublishCursorResult = string | null;
 
@@ -20,7 +19,7 @@ export const usePublishCursor = (
   const cursor = useAtomValue(cursorAtomFamily(crosswordId));
   // if i subscribed to the connection state here, we could probably use that
   // to trigger these effects to reestablish the cursor in the right way
-  const connected = useRecoilValue(connectionAtom);
+  const connected = useConnection();
 
   // establish the cursor
   useEffect(() => {

@@ -166,3 +166,7 @@ export function useCommunalCrossword(): Skeletonized<CommunalCrossword> {
     fallback: data || skeleton,
   };
 }
+
+export const useConnection = (): boolean => {
+  return !!useObjectVal<CommunalCrossword>(ref(database, `.info/connected`))[0];
+};
