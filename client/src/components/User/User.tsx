@@ -1,11 +1,10 @@
 import React from "react";
-import { useRecoilValue } from "recoil";
 
 import { block } from "../../styles/index";
 import { ConnectedPreviewList } from "./PreviewList";
 import { UserSection } from "./UserSection";
-import { authAtom } from "../../firebase-recoil/atoms";
 import { ConnectedWordList } from "./WordList";
+import { useAuth } from "../../firebase/useFirebase";
 
 const bem = block("user");
 
@@ -29,7 +28,7 @@ export const User: React.FC<UserProps> = ({ userId }) => {
 };
 
 export const ConnectedUser = () => {
-  const auth = useRecoilValue(authAtom);
+  const auth = useAuth();
   // TODO skeleton view before user (and subsequently display data)
   // is loaded
   if (auth.isEmpty) {
