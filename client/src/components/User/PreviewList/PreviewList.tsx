@@ -4,10 +4,9 @@ import { block } from "../../../styles";
 import { ConnectedCrosswordPreview } from "../../CrosswordPreview";
 import { CrosswordMetadata, type FirebaseArray } from "../../../firebase/types";
 import { coerceToObject } from "../../../firebase/coerceToObject";
-import { useRecoilValue } from "recoil";
 
 import "./preview-list.scss";
-import { userCrosswordAtom } from "../../../firebase-recoil/atoms";
+import { useUserCrosswords } from "../../firebase-hooks/hooks";
 const bem = block("preview-list");
 
 interface PreviewListProps {
@@ -45,7 +44,7 @@ export const ConnectedPreviewList: React.FC<ConnectedPreviewListProps> = ({
   children,
   userId,
 }) => {
-  const crosswords = useRecoilValue(userCrosswordAtom({ userId }));
+  const crosswords = useUserCrosswords(userId).data;
   if (!crosswords) {
     // TODO some informative message about not having made any crosswords
     // maybe CTA to make one

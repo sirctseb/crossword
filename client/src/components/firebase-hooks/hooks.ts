@@ -88,12 +88,34 @@ export const useLabeledAddressCatalog = (
       fallback: data || skeleton,
     };
   }, [crossword]);
+
+  // we lose the derivation memo if we don't add that to the skeleton hook
+  // return useSkeletonData(
+  //   crossword && deriveClueAddresses(crossword),
+  //   skeletonLabeledAddressCatalog
+  // );
 };
 
-export const useUserCrossword = (userId: string): User["crosswords"] => {
-  return useObjectVal<User["crosswords"]>(
-    ref(database, `/users/${userId}/crosswords`)
-  )[0];
+function useSkeletonData<T>(data: T | undefined, skeleton: T): Skeletonized<T> {
+  return useMemo(
+    () => ({
+      data,
+      skeleton,
+      fallback: data || skeleton,
+    }),
+    [data, skeleton]
+  );
+}
+
+export const useUserCrosswords = (
+  userId: string
+): Skeletonized<User["crosswords"]> => {
+  return useSkeletonData<User["crosswords"]>(
+    useObjectVal<User["crosswords"]>(
+      ref(database, `/users/${userId}/crosswords`)
+    )[0],
+    []
+  );
 };
 
 export const useWordList = (userId: string): User["wordlist"] => {
