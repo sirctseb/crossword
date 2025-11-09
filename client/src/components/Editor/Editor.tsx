@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { useAtom } from "jotai";
 import { ref, type DatabaseReference } from "firebase/database";
 
 import { FirebaseSet, FirebaseUpdate } from "../../undo";
@@ -9,7 +10,6 @@ import {
   arrayCrosswordSelector,
   labelMapSelector,
   type ArrayCrossword,
-  advancedCursorSelector,
   type LabeledAddressCatalog,
   clueInputAtom,
   type ClueInput,
@@ -34,6 +34,7 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 import "./editor.scss";
 import { block } from "../../styles";
 import { useRemoteCursors, type CursorMap } from "./Cursor/useRemoteCursors";
+import { deriveClueAddresses, findNextBlank } from "../../state/derivations";
 
 const bem = block("editor");
 
@@ -189,21 +190,37 @@ export interface ConnectedEditorProps {
   crosswordId: string;
 }
 
+// TODO what you were doing (a long time ago):
+// the storybook is not going to render until we supply reasonable values
+// more many of these. we produce them through the recoil layere here,
+// but we don't want that for the storybook. we can go through the
+// derivations layer, but some don't have functions defined.
+// (for example, labelMap). let's add those and just call them in the
+// storybook render function
 export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
 }) => {
   const { database } = useFirebase();
 
-  const [cursor, setCursor] = useRecoilState(cursorAtomFamily({ crosswordId }));
+  const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
   const labeledAddressCatalog = useRecoilValue(
     clueAddressesSelector({ crosswordId })
   );
-  const cursorAfterAdvancement = useRecoilValue(
-    advancedCursorSelector({ crosswordId })
-  );
+
+  const cursorAfterAdvancement = useMemo(() => {
+    return (
+      findNextBlank(
+        crossword,
+        cursor.row,
+        cursor.column,
+        cursor.direction,
+        deriveClueAddresses(crossword)[cursor.direction]
+      ) || { row: cursor.row, column: cursor.column }
+    );
+  }, [crossword, cursor]);
   const allAnswers = useRecoilValue(allAnswersSelector({ crosswordId }));
 
   const { history } = useUndoHistory(`crosswordId-${crosswordId}`);

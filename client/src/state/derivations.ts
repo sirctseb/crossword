@@ -286,3 +286,19 @@ export const test = {
   deriveClueAddresses,
   deriveArrayCrossword,
 };
+
+export const findNextBlank = (
+  crossword: ArrayCrossword,
+  row: number,
+  column: number,
+  direction: Direction,
+  clueAddresses: LabeledAddress[]
+): Candidate | null =>
+  findNext(
+    crossword,
+    row,
+    column,
+    direction,
+    clueAddresses,
+    (candidate) => !candidate.box.content
+  );

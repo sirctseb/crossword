@@ -1,4 +1,5 @@
-import { atomFamily } from "recoil";
+import { atom } from "jotai";
+import { atomFamily } from "jotai/utils";
 
 export interface Cursor {
   row: number;
@@ -6,11 +7,10 @@ export interface Cursor {
   direction: "across" | "down";
 }
 
-export const cursorAtomFamily = atomFamily<Cursor, { crosswordId: string }>({
-  key: "cursor",
-  default: {
+export const cursorAtomFamily = atomFamily((crosswordId: string) =>
+  atom<Cursor>({
     row: 0,
     column: 0,
     direction: "across",
-  },
-});
+  })
+);

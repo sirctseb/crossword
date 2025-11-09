@@ -17,13 +17,14 @@
     "start:emulators": "firebase emulators:start"
   },
   "dependencies": {
-    "@firebase/rules-unit-testing": "^4.0.0",
-    "@firebase-ui/react": "https://github.com/firebase/firebaseui-web/raw/refs/heads/v7-alpha/releases/firebase-ui-react-0.0.1.tgz",
     "@firebase-ui/core": "https://github.com/firebase/firebaseui-web/raw/refs/heads/v7-alpha/releases/firebase-ui-core-0.0.1.tgz",
+    "@firebase-ui/react": "https://github.com/firebase/firebaseui-web/raw/refs/heads/v7-alpha/releases/firebase-ui-react-0.0.1.tgz",
     "@firebase-ui/styles": "https://github.com/firebase/firebaseui-web/raw/refs/heads/v7-alpha/releases/firebase-ui-styles-0.0.1.tgz",
     "@firebase-ui/translations": "https://github.com/firebase/firebaseui-web/raw/refs/heads/v7-alpha/releases/firebase-ui-translations-0.0.1.tgz",
+    "@firebase/rules-unit-testing": "^4.0.0",
     "bem-cn": "^3.0.1",
     "firebase": "^11.0.0",
+    "jotai": "^2.15.1",
     "next": "14.1.0",
     "react": "^18",
     "react-dom": "^18",

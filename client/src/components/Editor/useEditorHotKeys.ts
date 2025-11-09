@@ -6,7 +6,8 @@ import {
   type ArrayCrossword,
   type Cursor,
 } from "../../state";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
+import { useAtom } from "jotai";
 import { type UndoHistory } from "../../undo/UndoHistory";
 
 function moveCursor(
@@ -40,7 +41,7 @@ export const useEditorHotkeys = (
   crosswordId: string,
   undoHistory: UndoHistory
 ) => {
-  const [cursor, setCursor] = useRecoilState(cursorAtomFamily({ crosswordId }));
+  const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
   const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
 
   useHotkeys(
