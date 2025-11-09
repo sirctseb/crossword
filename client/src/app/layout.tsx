@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Root } from "../recoil";
 import "./globals.css";
 import { ConnectedHeader } from "../components/Header";
 import { LoginProtector } from "../components/LoginProtector";
@@ -16,15 +15,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Root>
-      <html lang="en">
-        <body>
-          <FirebaseUIProvider>
-            <ConnectedHeader />
-            <LoginProtector>{children}</LoginProtector>
-          </FirebaseUIProvider>
-        </body>
-      </html>
-    </Root>
+    <html lang="en">
+      <body>
+        <FirebaseUIProvider>
+          <ConnectedHeader />
+          <LoginProtector>{children}</LoginProtector>
+        </FirebaseUIProvider>
+      </body>
+    </html>
   );
 }

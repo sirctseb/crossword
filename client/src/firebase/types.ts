@@ -2,6 +2,9 @@ export type FirebaseArray<K extends string, T> = Record<K, T> | T[];
 export type Matrix<Type> = FirebaseArray<Index, FirebaseArray<Index, Type>>;
 export type Presence<Type extends string> = FirebaseArray<Type, boolean>;
 export type CurrentUser = UserId;
+export type FirebaseValue = boolean | string | number | Object | null;
+export type FirebaseReadValue = FirebaseValue | undefined;
+
 export type Clues = {
   across?: Matrix<string>;
   down?: Matrix<string>;

@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { ref, type DatabaseReference } from "@firebase/database";
 
-import type { FirebaseValue } from "../firebase-recoil";
 import { UndoHistory } from "./UndoHistory";
 import {
   FirebaseSet,
@@ -9,6 +8,7 @@ import {
   FirebaseUpdate,
 } from "./FirebaseChange";
 import { useFirebase } from "../firebase";
+import type { FirebaseValue } from "../firebase/types";
 
 interface UseUndoHistoryResult {
   history: UndoHistory;

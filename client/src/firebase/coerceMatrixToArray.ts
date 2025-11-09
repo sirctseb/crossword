@@ -1,4 +1,4 @@
-import { coerceToArray } from "../firebase-recoil";
+import { coerceToArray } from "./coerceToArray";
 import type { FirebaseArray } from "../firebase/types";
 
 // alternative approach would be to have an access utility like get
