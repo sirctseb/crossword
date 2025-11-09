@@ -12,7 +12,6 @@ import {
   type LabeledAddressCatalog,
   clueInputAtom,
   type ClueInput,
-  clueAddressesSelector,
   cursorAtomFamily,
 } from "../../state";
 
@@ -32,8 +31,12 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 import "./editor.scss";
 import { block } from "../../styles";
 import { useRemoteCursors, type CursorMap } from "./Cursor/useRemoteCursors";
-import { deriveClueAddresses, findNextBlank } from "../../state/derivations";
-import { useAllAnswers, useArrayCrossword } from "../firebase-hooks/hooks";
+import { findNextBlank } from "../../state/derivations";
+import {
+  useAllAnswers,
+  useArrayCrossword,
+  useLabeledAddressCatalog,
+} from "../firebase-hooks/hooks";
 
 const bem = block("editor");
 
@@ -205,9 +208,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
   const { fallback: crossword } = useArrayCrossword(crosswordId);
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
-  const labeledAddressCatalog = useRecoilValue(
-    clueAddressesSelector({ crosswordId })
-  );
+  const { fallback: labeledAddressCatalog } =
+    useLabeledAddressCatalog(crosswordId);
 
   const cursorAfterAdvancement = useMemo(() => {
     return (
@@ -216,7 +218,12 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
         cursor.row,
         cursor.column,
         cursor.direction,
-        deriveClueAddresses(crossword)[cursor.direction]
+        // TODO something seems strange about this. why block every render
+        // on the derivation of the new cursor placement, very few of which
+        // will actually use it? why not just pay for it when we set content,
+        // the only time we do use it?
+        // should be pretty easy to see how fast it is JIT
+        labeledAddressCatalog[cursor.direction]
       ) || { row: cursor.row, column: cursor.column }
     );
   }, [crossword, cursor]);

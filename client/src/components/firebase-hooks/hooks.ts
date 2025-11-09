@@ -8,11 +8,12 @@ import type {
   Cursor,
   User,
 } from "../../firebase/types";
-import type { ArrayCrossword } from "../../state";
+import type { ArrayCrossword, LabeledAddressCatalog } from "../../state";
 import { useMemo } from "react";
 import {
   deriveAllAnswers,
   deriveArrayCrossword,
+  deriveClueAddresses,
 } from "../../state/derivations";
 
 const database = getFirebaseDatabase();
@@ -61,10 +62,32 @@ export const useArrayCrossword = (
 };
 
 export const useAllAnswers = (crosswordId: string): string[] => {
+  // TODO weird to assume we can just operated on the fallback here
+  // its not communicated in the hook. probably should make all of these
+  // skeletonized until we figure out a magic solution
   const arrayCrossword = useArrayCrossword(crosswordId).fallback;
   return useMemo(() => {
     return deriveAllAnswers(arrayCrossword);
   }, [arrayCrossword]);
+};
+
+const skeletonLabeledAddressCatalog: LabeledAddressCatalog = {
+  across: [],
+  down: [],
+};
+export const useLabeledAddressCatalog = (
+  crosswordId: string
+): Skeletonized<LabeledAddressCatalog> => {
+  const crossword = useArrayCrossword(crosswordId).fallback;
+  return useMemo(() => {
+    const data = crossword && deriveClueAddresses(crossword);
+    const skeleton = skeletonLabeledAddressCatalog;
+    return {
+      data,
+      skeleton,
+      fallback: data || skeleton,
+    };
+  }, [crossword]);
 };
 
 export const useUserCrossword = (userId: string): User["crosswords"] => {
