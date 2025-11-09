@@ -18,8 +18,9 @@ export const CommunalCrossword: React.FC = () => {
   const [selectedCrossword, setSelectedCrossword] = useState<string>(
     Selection.Current
   );
-  const { data, skeleton } = useCommunalCrossword();
-  const { current, archive } = data || skeleton;
+  const {
+    fallback: { current, archive },
+  } = useCommunalCrossword();
 
   const focusedCrossword = selectedCrossword || current;
   const editing =

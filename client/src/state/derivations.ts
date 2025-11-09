@@ -272,21 +272,6 @@ export const deriveArrayCrossword = (crossword: Crossword): ArrayCrossword => {
   };
 };
 
-export const test = {
-  firstBoxAddress,
-  notBlocked,
-  isAt,
-  boxAt,
-  candidateAt,
-  cycleInAnswerDown,
-  cycleInAnswerAcross,
-  cycleInAnswer,
-  findInCycle,
-  findNext,
-  deriveClueAddresses,
-  deriveArrayCrossword,
-};
-
 export const findNextBlank = (
   crossword: ArrayCrossword,
   row: number,
@@ -302,3 +287,54 @@ export const findNextBlank = (
     clueAddresses,
     (candidate) => !candidate.box.content
   );
+
+const MISSING_VALUE = { blocked: true };
+const coordsToSignifier = (
+  row: number,
+  column: number,
+  crossword: ArrayCrossword
+): string => {
+  const { content, blocked } = crossword.boxes[row][column] || MISSING_VALUE;
+  return blocked ? "|" : content || ".";
+};
+const range = (n: number) => Array.from({ length: n }, (_, i) => i);
+const flatten = <T>(arr: T[][]) =>
+  arr.reduce((acc, val) => acc.concat(val), []);
+const lineToAnswers = (line: string[]) =>
+  line
+    .join("")
+    .split("|")
+    .filter((answer) => answer.length > 0)
+    .filter((answer) => !answer.includes("."));
+export const deriveAllAnswers = (crossword: ArrayCrossword) => {
+  return flatten(
+    range(crossword.rows).map((row) => [
+      ...lineToAnswers(
+        range(crossword.rows).map((column) =>
+          coordsToSignifier(row, column, crossword)
+        )
+      ),
+      // TODO this is not working correctly for columns
+      ...lineToAnswers(
+        range(crossword.rows).map((column) =>
+          coordsToSignifier(column, row, crossword)
+        )
+      ),
+    ])
+  );
+};
+
+export const test = {
+  firstBoxAddress,
+  notBlocked,
+  isAt,
+  boxAt,
+  candidateAt,
+  cycleInAnswerDown,
+  cycleInAnswerAcross,
+  cycleInAnswer,
+  findInCycle,
+  findNext,
+  deriveClueAddresses,
+  deriveArrayCrossword,
+};

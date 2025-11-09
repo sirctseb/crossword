@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { useCrossword } from "../firebase-hooks/hooks";
+import React from "react";
+import { useArrayCrossword } from "../firebase-hooks/hooks";
 import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
@@ -7,7 +7,6 @@ import { CrosswordMetadata } from "../../firebase/types";
 import { block } from "../../styles";
 import "./crossword-preview.scss";
 import { type ArrayCrossword } from "../../state";
-import { deriveArrayCrossword } from "../../state/derivations";
 
 const bem = block("crossword-preview");
 
@@ -58,33 +57,10 @@ export interface ConnectedCrosswordPreviewProps {
   metadata?: CrosswordMetadata;
 }
 
-// TODO this shows we are pulling more than we need. we only really
-// want `boxes`. Though without rows we don't actually know how to size
-// it
-const skeletonArrayCrossword: ArrayCrossword = {
-  rows: 5,
-  clues: { across: {}, down: {} },
-  symmetric: true,
-  themeEntries: [],
-  boxes: Array.from({ length: 5 }, () =>
-    Array.from({ length: 5 }, () => ({ blocked: false, content: "" }))
-  ),
-  title: "Loading...",
-};
-
 export const ConnectedCrosswordPreview: React.FC<
   ConnectedCrosswordPreviewProps
 > = ({ id, metadata }) => {
-  // TODO how does this work if the value isn't already loaded? there's no
-  // typing here about promises, looks like we always get it on first render
-  // but that can't be true
-  const crossword = useCrossword(id);
-  const arrayCrossword = useMemo(() => {
-    if (crossword) {
-      return deriveArrayCrossword(crossword);
-    }
-    return skeletonArrayCrossword;
-  }, [crossword]);
+  const { fallback: arrayCrossword } = useArrayCrossword(id);
 
   return (
     <CrosswordPreview id={id} metadata={metadata} crossword={arrayCrossword} />

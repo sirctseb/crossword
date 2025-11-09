@@ -1,14 +1,13 @@
 import { useHotkeys } from "react-hotkeys-hook";
 
 import {
-  arrayCrosswordSelector,
   cursorAtomFamily,
   type ArrayCrossword,
   type Cursor,
 } from "../../state";
-import { useRecoilValue } from "recoil";
 import { useAtom } from "jotai";
 import { type UndoHistory } from "../../undo/UndoHistory";
+import { useArrayCrossword } from "../firebase-hooks/hooks";
 
 function moveCursor(
   vector: [number, number],
@@ -42,7 +41,7 @@ export const useEditorHotkeys = (
   undoHistory: UndoHistory
 ) => {
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
-  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
+  const { fallback: crossword } = useArrayCrossword(crosswordId);
 
   useHotkeys(
     ";",

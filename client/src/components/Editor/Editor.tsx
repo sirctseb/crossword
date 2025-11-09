@@ -7,7 +7,6 @@ import { ref, type DatabaseReference } from "firebase/database";
 
 import { FirebaseSet, FirebaseUpdate } from "../../undo";
 import {
-  arrayCrosswordSelector,
   labelMapSelector,
   type ArrayCrossword,
   type LabeledAddressCatalog,
@@ -25,7 +24,6 @@ import { ThemeEntries } from "./ThemeEntries";
 
 import { useIsCursorAnswer } from "./hooks/useIsCursorAnswer";
 
-import { allAnswersSelector } from "../../state/atoms/allAnswersSelector";
 import { useEditorHotkeys } from "./useEditorHotKeys";
 import { useFirebase } from "../../firebase";
 import { useUndoHistory } from "../../undo/useUndoHistory";
@@ -35,6 +33,7 @@ import "./editor.scss";
 import { block } from "../../styles";
 import { useRemoteCursors, type CursorMap } from "./Cursor/useRemoteCursors";
 import { deriveClueAddresses, findNextBlank } from "../../state/derivations";
+import { useAllAnswers, useArrayCrossword } from "../firebase-hooks/hooks";
 
 const bem = block("editor");
 
@@ -204,7 +203,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
 
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
-  const crossword = useRecoilValue(arrayCrosswordSelector({ crosswordId }));
+  const { fallback: crossword } = useArrayCrossword(crosswordId);
   const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
   const labeledAddressCatalog = useRecoilValue(
     clueAddressesSelector({ crosswordId })
@@ -221,7 +220,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       ) || { row: cursor.row, column: cursor.column }
     );
   }, [crossword, cursor]);
-  const allAnswers = useRecoilValue(allAnswersSelector({ crosswordId }));
+  const allAnswers = useAllAnswers(crosswordId);
 
   const { history } = useUndoHistory(`crosswordId-${crosswordId}`);
 
