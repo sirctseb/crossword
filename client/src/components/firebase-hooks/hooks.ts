@@ -14,6 +14,7 @@ import {
   deriveAllAnswers,
   deriveArrayCrossword,
   deriveClueAddresses,
+  deriveLabeledAddressMap,
 } from "../../state/derivations";
 
 const database = getFirebaseDatabase();
@@ -94,6 +95,23 @@ export const useLabeledAddressCatalog = (
   //   crossword && deriveClueAddresses(crossword),
   //   skeletonLabeledAddressCatalog
   // );
+};
+
+const skeletonLabeledAddressMap: Record<number, Record<number, number>> = {};
+export const useLabeledAddressMap = (
+  crosswordId: string
+): Skeletonized<Record<number, Record<number, number>>> => {
+  const labeledAddressCatalog = useLabeledAddressCatalog(crosswordId).data;
+
+  return useMemo(() => {
+    const data =
+      labeledAddressCatalog && deriveLabeledAddressMap(labeledAddressCatalog);
+    return {
+      data,
+      skeleton: skeletonLabeledAddressMap,
+      fallback: data || skeletonLabeledAddressMap,
+    };
+  }, [labeledAddressCatalog]);
 };
 
 function useSkeletonData<T>(data: T | undefined, skeleton: T): Skeletonized<T> {

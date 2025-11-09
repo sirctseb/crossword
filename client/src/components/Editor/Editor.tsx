@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useCallback, useMemo } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState } from "recoil";
 import { useAtom } from "jotai";
 import { ref, type DatabaseReference } from "firebase/database";
 
 import { FirebaseSet, FirebaseUpdate } from "../../undo";
 import {
-  labelMapSelector,
   type ArrayCrossword,
   type LabeledAddressCatalog,
   clueInputAtom,
@@ -36,6 +35,7 @@ import {
   useAllAnswers,
   useArrayCrossword,
   useLabeledAddressCatalog,
+  useLabeledAddressMap,
 } from "../firebase-hooks/hooks";
 
 const bem = block("editor");
@@ -207,7 +207,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
   const [clueInput, setClueInput] = useRecoilState(clueInputAtom);
   const { fallback: crossword } = useArrayCrossword(crosswordId);
-  const labelMap = useRecoilValue(labelMapSelector({ crosswordId }));
+  const labelMap = useLabeledAddressMap(crosswordId).fallback;
   const { fallback: labeledAddressCatalog } =
     useLabeledAddressCatalog(crosswordId);
 

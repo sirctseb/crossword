@@ -324,6 +324,20 @@ export const deriveAllAnswers = (crossword: ArrayCrossword) => {
   );
 };
 
+export const deriveLabeledAddressMap = (
+  labeledAddressCatalog: LabeledAddressCatalog
+): Record<number, Record<number, number>> => {
+  const map: Record<number, Record<number, number>> = {};
+  const directions = ["across", "down"] as const;
+  directions.forEach((direction) => {
+    labeledAddressCatalog[direction].forEach((address) => {
+      map[address.row] = map[address.row] || {};
+      map[address.row][address.column] = address.label;
+    });
+  });
+  return map;
+};
+
 export const test = {
   firstBoxAddress,
   notBlocked,
