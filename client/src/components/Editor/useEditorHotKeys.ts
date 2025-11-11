@@ -54,6 +54,8 @@ export const useEditorHotkeys = (
     [setCursor]
   );
 
+  // i think we should be able to put the crossword in a ref
+  // and provide that to the hotkey handlers to avoid re-registering them
   useHotkeys("up", () => moveCursor([-1, 0], crossword, cursor), [
     crossword,
     cursor,

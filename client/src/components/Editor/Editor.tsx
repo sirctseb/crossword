@@ -91,6 +91,8 @@ export const Editor: React.FC<EditorProps> = ({
     const boxes = [];
     for (let column = 0; column < crossword.rows; column += 1) {
       const box = crossword.boxes[row][column] || emptyBox;
+      // TODO Marlo's bug: if the whole row is blocked out, labelMap has no entries for the row,
+      // and we try to access `column` on undefined
       const label = labelMap[row][column];
 
       boxes.push(

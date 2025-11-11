@@ -22,6 +22,8 @@ export const ThemeEntries: React.FC<ThemeEntriesProps> = ({
 }) => {
   const annotatedEntries = entries.map((entry) => ({
     text: entry,
+    // TODO need to handle case insensitivity here or in the derivation
+    // of current answers
     used: currentAnswers.includes(entry),
   }));
 

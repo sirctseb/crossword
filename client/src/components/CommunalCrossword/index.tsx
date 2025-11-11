@@ -5,7 +5,8 @@ import CommunalEditLayout from "./Layout/CommunalEditLayout";
 import { ConnectedCrosswordPreview } from "../CrosswordPreview";
 import { ConnectedEditor } from "../Editor/Editor";
 import { DebugValue } from "../Debug/Debug";
-import { useCommunalCrossword } from "../firebase-hooks/hooks";
+import { communalCrosswordAtom } from "../../firebase-recoil";
+import { useAtomValue } from "jotai";
 
 const bem = block("communal-crossword");
 
@@ -18,9 +19,8 @@ export const CommunalCrossword: React.FC = () => {
   const [selectedCrossword, setSelectedCrossword] = useState<string>(
     Selection.Current
   );
-  const {
-    fallback: { current, archive },
-  } = useCommunalCrossword();
+
+  const { current, archive } = useAtomValue(communalCrosswordAtom);
 
   const focusedCrossword = selectedCrossword || current;
   const editing =

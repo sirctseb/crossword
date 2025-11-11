@@ -7,7 +7,8 @@ import { coerceToObject } from "../../../firebase/coerceToObject";
 
 import "./word-list.scss";
 import { useFirebase } from "../../../firebase";
-import { useWordList } from "../../firebase-hooks/hooks";
+import { wordListAtomFamily } from "../../../firebase-recoil";
+import { useAtomValue } from "jotai";
 
 const bem = block("word-list");
 
@@ -70,7 +71,7 @@ export interface ConnectedWordListProps {
 export const ConnectedWordList: React.FC<ConnectedWordListProps> = ({
   userId,
 }) => {
-  const wordlist = useWordList(userId) ?? [];
+  const wordlist = useAtomValue(wordListAtomFamily({ userId }));
   const { database } = useFirebase();
 
   const handleAddNewValue = useCallback(
