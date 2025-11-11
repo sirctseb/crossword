@@ -5,8 +5,8 @@ import CommunalEditLayout from "./Layout/CommunalEditLayout";
 import { ConnectedCrosswordPreview } from "../CrosswordPreview";
 import { ConnectedEditor } from "../Editor/Editor";
 import { DebugValue } from "../Debug/Debug";
-import { communalCrosswordAtom } from "../../firebase-recoil";
 import { useAtomValue } from "jotai";
+import { communalCrosswordAtom } from "../../state/atoms/firebaseAtoms";
 
 const bem = block("communal-crossword");
 

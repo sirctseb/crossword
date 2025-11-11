@@ -1,5 +1,5 @@
 import { DatabaseReference, update, set } from "firebase/database";
-import type { FirebaseValue } from "../firebase-recoil";
+import type { FirebaseValue } from "../jotai-firebase";
 
 export abstract class FirebaseChange {
   abstract apply(): Promise<void>;

@@ -7,8 +7,8 @@ import { coerceToObject } from "../../../firebase/coerceToObject";
 
 import "./word-list.scss";
 import { useFirebase } from "../../../firebase";
-import { wordListAtomFamily } from "../../../firebase-recoil";
 import { useAtomValue } from "jotai";
+import { wordListAtomFamily } from "../../../state/atoms/firebaseAtoms";
 
 const bem = block("word-list");
 

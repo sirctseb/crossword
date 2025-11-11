@@ -6,10 +6,8 @@ import {
   get,
   set,
   remove,
-  getDatabase,
 } from "firebase/database";
 import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
-import type { CommunalCrossword, FirebaseArray, User } from "../firebase/types";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import type { AsyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 import deepEqual from "fast-deep-equal";
@@ -73,13 +71,6 @@ export function makeAtom<T extends FirebaseReadValue>(
   );
 }
 
-export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
-  "/communalCrossword",
-  getDatabase(),
-  // you can't skeleton data this, there is string value that is a key
-  { current: "", archive: {} }
-);
-
 export function makeAtomFamily<
   T extends FirebaseReadValue,
   P extends PathParameters
@@ -93,63 +84,4 @@ export function makeAtomFamily<
       ),
     deepEqual
   );
-}
-
-export const wordListAtomFamily = makeAtomFamily<
-  User["wordlist"],
-  { userId: string }
->("/users/{userId}/wordlist", getDatabase(), []);
-
-function fillBlanksWithValue<T>(
-  value: T[],
-  defaultValue: T,
-  length: number
-): T[] {
-  const result = [...value];
-  for (let i = 0; i < length; i++) {
-    if (result[i] === undefined) {
-      result[i] = defaultValue;
-    }
-  }
-  return result;
-}
-
-/**
- * Take an arbitrary FirebaseArray value and return an array form in case
- * it is an object with number keys instead of a native array.
- *
- * If a defaultValue and length are provided, any absent values in the resulting
- * array (array access returns undefined), will be assigned the defaultValue by
- * reference.
- */
-export function coerceToArray<T>(value: FirebaseArray<string, T>): T[];
-export function coerceToArray<T>(
-  value: FirebaseArray<string, T>,
-  defaultValue: T,
-  length: number
-): T[];
-export function coerceToArray<T>(
-  value: Record<string, T> | T[],
-  defaultValue?: T,
-  length?: number
-): T[] {
-  if (!Array.isArray(value)) {
-    const result: T[] = [];
-    Object.entries(value).forEach(([key, valueAtKey]) => {
-      const index = Number(key);
-      if (isNaN(index)) {
-        throw new Error(`Cannot coerce to array, key (${key}) is not a number`);
-      }
-      result[index] = valueAtKey;
-    });
-
-    if (defaultValue !== undefined && length !== undefined) {
-      return fillBlanksWithValue(result, defaultValue, length);
-    }
-    return result;
-  }
-  if (defaultValue !== undefined && length !== undefined) {
-    return fillBlanksWithValue(value, defaultValue, length);
-  }
-  return value;
 }
