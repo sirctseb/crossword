@@ -6,7 +6,8 @@ import { CrosswordMetadata, type FirebaseArray } from "../../../firebase/types";
 import { coerceToObject } from "../../../firebase/coerceToObject";
 
 import "./preview-list.scss";
-import { useUserCrosswords } from "../../firebase-hooks/hooks";
+import { userCrosswordsAtomFamily } from "../../../state/atoms/firebaseAtoms";
+import { useAtomValue } from "jotai";
 const bem = block("preview-list");
 
 interface PreviewListProps {
@@ -44,7 +45,7 @@ export const ConnectedPreviewList: React.FC<ConnectedPreviewListProps> = ({
   children,
   userId,
 }) => {
-  const crosswords = useUserCrosswords(userId).data;
+  const crosswords = useAtomValue(userCrosswordsAtomFamily({ userId }));
   if (!crosswords) {
     // TODO some informative message about not having made any crosswords
     // maybe CTA to make one

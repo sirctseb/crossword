@@ -28,6 +28,7 @@ function firebaseStorage<T extends FirebaseReadValue>(
       }
       // TODO this is a shallow concept of an initial value if we simply return it here.
       // we should have to set the location in fb to it
+      // how would we determine whether we _should_ set it on get? if the get value doesn't exist?
       return initialValue;
     },
     setItem: async (key, value) => {

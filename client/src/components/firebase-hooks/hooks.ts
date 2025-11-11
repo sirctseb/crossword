@@ -186,5 +186,6 @@ export function useCommunalCrossword(): Skeletonized<CommunalCrossword> {
 }
 
 export const useConnection = (): boolean => {
+  // TODO we have this type wrong
   return !!useObjectVal<CommunalCrossword>(ref(database, `.info/connected`))[0];
 };

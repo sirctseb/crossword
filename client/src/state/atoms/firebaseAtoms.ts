@@ -14,4 +14,9 @@ export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
 export const wordListAtomFamily = makeAtomFamily<
   User["wordlist"],
   { userId: string }
->("/users/{userId}/wordlist", getDatabase(), []);
+>("/users/{userId}/wordlist", database, []);
+
+export const userCrosswordsAtomFamily = makeAtomFamily<
+  User["crosswords"],
+  { userId: string }
+>("/users/{userId}/crosswords", database, []);
