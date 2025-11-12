@@ -16,6 +16,8 @@ import {
   deriveClueAddresses,
   deriveLabeledAddressMap,
 } from "../../state/derivations";
+import { useAtomValue } from "jotai";
+import { remoteCursorAtomFamily } from "../../state/atoms/firebaseAtoms";
 
 const database = getFirebaseDatabase();
 
@@ -114,57 +116,11 @@ export const useLabeledAddressMap = (
   }, [labeledAddressCatalog]);
 };
 
-function useSkeletonData<T>(data: T | undefined, skeleton: T): Skeletonized<T> {
-  return useMemo(
-    () => ({
-      data,
-      skeleton,
-      fallback: data || skeleton,
-    }),
-    [data, skeleton]
-  );
-}
-
-export const useUserCrosswords = (
-  userId: string
-): Skeletonized<User["crosswords"]> => {
-  return useSkeletonData<User["crosswords"]>(
-    useObjectVal<User["crosswords"]>(
-      ref(database, `/users/${userId}/crosswords`)
-    )[0],
-    []
-  );
-};
-
-export const useWordList = (userId: string): User["wordlist"] => {
-  return useObjectVal<User["wordlist"]>(
-    ref(database, `/users/${userId}/wordlist`)
-  )[0];
-};
-
-export const useCursors = (
-  crosswordId: string
-): Record<string, Cursor> | undefined => {
-  return useObjectVal<Record<string, Cursor>>(
-    ref(database, `/cursors/${crosswordId}`)
-  )[0];
-};
-
 export const useRemoteCursors = (
   crosswordId: string,
   cursorId: string | null
-): Record<string, Cursor> | undefined => {
-  // no need for a skeleton data views because empty cursors is just an empty object
-  // weird not to be consistent thought
-  const { ...cursors } = useCursors(crosswordId) ?? {};
-
-  // inline selector definition. we don't have a pattern anymore for this
-  // without recoil
-  if (cursorId) {
-    delete cursors[cursorId];
-  }
-
-  return cursors;
+): Record<string, Cursor> => {
+  return useAtomValue(remoteCursorAtomFamily({ crosswordId, cursorId })) || {};
 };
 
 const communalCrosswordSkeleton: CommunalCrossword = {

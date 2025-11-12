@@ -10,6 +10,8 @@ export type CursorMap = Record<
   Record<number, Entity<Cursor>[] | undefined> | undefined
 >;
 
+// TODO why isn't this in another selector or just inline in the
+// remoteCursors atom?
 const reduceCursors = (cursors: Record<string, Cursor>): CursorMap => {
   const result: CursorMap = {};
   Object.entries(cursors).forEach(([id, cursor]) => {
@@ -31,11 +33,6 @@ export const useRemoteCursors = (
   cursorId: string | null
 ): CursorMap => {
   const remoteCursors = useFirebaseRemoteCursors(crosswordId, cursorId);
-
-  if (!remoteCursors) {
-    return [];
-  }
-
   return reduceCursors(remoteCursors);
 };
 
