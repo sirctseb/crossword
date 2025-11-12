@@ -119,13 +119,6 @@ export const useLabeledAddressMap = (
   }, [labeledAddressCatalog]);
 };
 
-export const useRemoteCursors = (
-  crosswordId: string,
-  cursorId: string | null
-): CursorMap => {
-  return useAtomValue(remoteCursorAtomFamily({ crosswordId, cursorId })) || {};
-};
-
 const communalCrosswordSkeleton: CommunalCrossword = {
   current: "",
   archive: {},

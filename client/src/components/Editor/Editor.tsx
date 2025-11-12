@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useMemo } from "react";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { ref, type DatabaseReference } from "firebase/database";
 
 import { FirebaseSet, FirebaseUpdate } from "../../undo";
@@ -36,7 +36,10 @@ import {
   useLabeledAddressCatalog,
   useLabeledAddressMap,
 } from "../firebase-hooks/hooks";
-import type { CursorMap } from "../../state/atoms/firebaseAtoms";
+import {
+  remoteCursorAtomFamily,
+  type CursorMap,
+} from "../../state/atoms/firebaseAtoms";
 
 const bem = block("editor");
 
@@ -405,7 +408,9 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   useEditorHotkeys(crosswordId, history);
 
   const cursorId = usePublishCursor(crosswordId);
-  const remoteCursors = useRemoteCursors(crosswordId, cursorId);
+  const remoteCursors = useAtomValue(
+    remoteCursorAtomFamily({ crosswordId, cursorId })
+  );
 
   return (
     <Editor
