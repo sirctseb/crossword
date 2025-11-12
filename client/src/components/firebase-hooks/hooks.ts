@@ -17,7 +17,10 @@ import {
   deriveLabeledAddressMap,
 } from "../../state/derivations";
 import { useAtomValue } from "jotai";
-import { remoteCursorAtomFamily } from "../../state/atoms/firebaseAtoms";
+import {
+  remoteCursorAtomFamily,
+  type CursorMap,
+} from "../../state/atoms/firebaseAtoms";
 
 const database = getFirebaseDatabase();
 
@@ -119,7 +122,7 @@ export const useLabeledAddressMap = (
 export const useRemoteCursors = (
   crosswordId: string,
   cursorId: string | null
-): Record<string, Cursor> => {
+): CursorMap => {
   return useAtomValue(remoteCursorAtomFamily({ crosswordId, cursorId })) || {};
 };
 
