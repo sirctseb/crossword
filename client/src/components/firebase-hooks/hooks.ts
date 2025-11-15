@@ -2,12 +2,7 @@ import { ref } from "firebase/database";
 import { useObjectVal } from "react-firebase-hooks/database";
 
 import { getFirebaseDatabase } from "../../firebase";
-import type {
-  CommunalCrossword,
-  Crossword,
-  Cursor,
-  User,
-} from "../../firebase/types";
+import type { CommunalCrossword, Crossword } from "../../firebase/types";
 import type { ArrayCrossword, LabeledAddressCatalog } from "../../state";
 import { useMemo } from "react";
 import {
@@ -16,11 +11,6 @@ import {
   deriveClueAddresses,
   deriveLabeledAddressMap,
 } from "../../state/derivations";
-import { useAtomValue } from "jotai";
-import {
-  remoteCursorAtomFamily,
-  type CursorMap,
-} from "../../state/atoms/firebaseAtoms";
 
 const database = getFirebaseDatabase();
 

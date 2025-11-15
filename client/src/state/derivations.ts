@@ -8,7 +8,7 @@ import {
 } from ".";
 import { coerceMatrixToArray } from "../firebase/coerceMatrixToArray";
 import { coerceToObject } from "../firebase/coerceToObject";
-import type { Box, Crossword, FirebaseArray } from "../firebase/types";
+import type { Box, Crossword, Cursor, FirebaseArray } from "../firebase/types";
 
 export const deriveClueAddresses = (
   crossword: ArrayCrossword
@@ -336,6 +336,29 @@ export const deriveLabeledAddressMap = (
     });
   });
   return map;
+};
+
+export type Entity<T> = T & {
+  id: string;
+};
+export type CursorMap = Record<
+  number,
+  Record<number, Entity<Cursor>[] | undefined> | undefined
+>;
+export const reduceCursors = (cursors: Record<string, Cursor>): CursorMap => {
+  const result: CursorMap = {};
+  Object.entries(cursors).forEach(([id, cursor]) => {
+    if (cursor.row !== undefined && cursor.column !== undefined) {
+      const vector = (result[cursor.row] ||= {});
+      // TODO this part with adding the id to the object data is probably something
+      // we want to support in firebase-recoil
+      vector[cursor.column] = [
+        ...(vector[cursor.column] || []),
+        { ...cursor, id },
+      ];
+    }
+  });
+  return result;
 };
 
 export const test = {

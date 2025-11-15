@@ -28,7 +28,6 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 
 import "./editor.scss";
 import { block } from "../../styles";
-import { useRemoteCursors } from "./Cursor/useRemoteCursors";
 import { findNextBlank } from "../../state/derivations";
 import {
   useAllAnswers,
@@ -36,10 +35,8 @@ import {
   useLabeledAddressCatalog,
   useLabeledAddressMap,
 } from "../firebase-hooks/hooks";
-import {
-  remoteCursorAtomFamily,
-  type CursorMap,
-} from "../../state/atoms/firebaseAtoms";
+import { remoteCursorAtomFamily } from "../../state/atoms/firebaseAtoms";
+import { type CursorMap } from "@/state/derivations";
 
 const bem = block("editor");
 
