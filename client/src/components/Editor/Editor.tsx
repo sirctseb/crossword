@@ -29,8 +29,8 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 import "./editor.scss";
 import { block } from "../../styles";
 import { findNextBlank } from "../../state/derivations";
-import { useAllAnswers } from "../firebase-hooks/hooks";
 import {
+  allAnswersAtomFamily,
   arrayCrosswordAtomFamily,
   labeledAddressCatalogAtomFamily,
   labeledAddressMapAtomFamily,
@@ -230,7 +230,7 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       ) || { row: cursor.row, column: cursor.column }
     );
   }, [crossword, cursor]);
-  const allAnswers = useAllAnswers(crosswordId);
+  const allAnswers = useAtomValue(allAnswersAtomFamily({ crosswordId }));
 
   const { history } = useUndoHistory(`crosswordId-${crosswordId}`);
 

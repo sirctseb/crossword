@@ -5,9 +5,9 @@ import {
   type ArrayCrossword,
   type Cursor,
 } from "../../state";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { type UndoHistory } from "../../undo/UndoHistory";
-import { useArrayCrossword } from "../firebase-hooks/hooks";
+import { arrayCrosswordAtomFamily } from "../../state/atoms/firebaseAtoms";
 
 function moveCursor(
   vector: [number, number],
@@ -41,7 +41,7 @@ export const useEditorHotkeys = (
   undoHistory: UndoHistory
 ) => {
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
-  const { fallback: crossword } = useArrayCrossword(crosswordId);
+  const crossword = useAtomValue(arrayCrosswordAtomFamily({ crosswordId }));
 
   useHotkeys(
     ";",
