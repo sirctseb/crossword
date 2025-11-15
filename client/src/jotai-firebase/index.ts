@@ -12,6 +12,8 @@ import { atomFamily, atomWithStorage } from "jotai/utils";
 import type { AsyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 import deepEqual from "fast-deep-equal";
 import type { FirebaseReadValue } from "../firebase/types";
+import type { AtomFamily } from "jotai/vanilla/utils/atomFamily";
+import type { Atom } from "jotai";
 
 export type { PathParameters };
 
@@ -71,18 +73,83 @@ export function makeAtom<T extends FirebaseReadValue>(
   );
 }
 
-export function makeAtomFamily<
-  T extends FirebaseReadValue,
-  P extends PathParameters
->(pathSpec: string, database: Database, initialValue: T) {
-  return atomFamily(
-    (params: P) =>
-      atomWithStorage<T>(
-        interpolatePathSpec(pathSpec, params),
-        initialValue,
-        firebaseStorage<T>(database),
-        { getOnInit: true }
-      ),
-    deepEqual
-  );
+/**
+ * @type PathParams - Recursively extracts parameter keys (e.g., 'key' from '/path/{key}/...')
+ * @template Path - The full string literal path (e.g., '/users/{userId}/posts/{postId}')
+ */
+type PathParams<Path extends string> =
+  // Base case: If the remaining Path is an empty string, we stop.
+  Path extends ""
+    ? {}
+    : // Case 1: The path starts with a parameter {Key}
+    Path extends `{${infer Key}}${infer End}`
+    ? // Combine the current Key with the parameters from the rest of the path
+      { [K in Key]: string } & PathParams<End>
+    : // Case 2: The path does NOT start with a parameter (it's plain text)
+    // Find the next occurrence of '{' and discard the text up to that point
+    Path extends `${infer Start}{${infer Rest}`
+    ? PathParams<`{${Rest}`> // Recurse on the rest of the string, starting from the next '{'
+    : {}; // Case 3: No more parameters found in the rest of the path
+
+// we curry a function to produce the actualy atom family because a detail of Typescript
+// we haven't otherwise found a way around. We want the param type to be derived from the
+// specific pathSpec type (value), but we've got a first type param in the signature.
+// We can't type both in a single function because clients can't provide only one of the
+// two type params, so they would have to redundantly provide the pathspec type (or,
+// equivalently, provide a redundant param type).
+export function makeAtomFamily<T extends FirebaseReadValue>(
+  database: Database,
+  initialValue: T
+): <S extends string>(
+  pathSpec: S
+) => AtomFamily<PathParams<S>, Atom<T | Promise<T>>> {
+  return <S extends string>(pathSpec: S) =>
+    atomFamily(
+      (params: PathParams<S>) =>
+        atomWithStorage<T>(
+          interpolatePathSpec(pathSpec, params),
+          initialValue,
+          firebaseStorage<T>(database),
+          { getOnInit: true }
+        ),
+      deepEqual
+    );
 }
+
+//  A version of this that doesn't work is as follows:
+// export function makeAtomFamily<
+//   T extends FirebaseReadValue,
+//   S extends string
+// >(
+//   pathSpec: S,
+//   database: Database,
+//   initialValue: T
+// ): AtomFamily<PathParams<S>, Atom<T | Promise<T>>> {
+//   return atomFamily(
+//     (params: PathParams<S>) =>
+//       atomWithStorage<T>(
+//         interpolatePathSpec(pathSpec, params),
+//         initialValue,
+//         firebaseStorage<T>(database),
+//         { getOnInit: true }
+//       ),
+//     deepEqual
+//   );
+// }
+
+// A form that requires a redundant type param from clients is as follows:
+// export function makeAtomFamily<
+//   T extends FirebaseReadValue,
+//   P extends PathParameters
+// >(pathSpec: string, database: Database, initialValue: T) {
+//   return atomFamily(
+//     (params: P) =>
+//       atomWithStorage<T>(
+//         interpolatePathSpec(pathSpec, params),
+//         initialValue,
+//         firebaseStorage<T>(database),
+//         { getOnInit: true }
+//       ),
+//     deepEqual
+//   );
+// }

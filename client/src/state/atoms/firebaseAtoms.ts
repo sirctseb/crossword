@@ -31,21 +31,21 @@ export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
   { current: "", archive: {} }
 );
 
-export const wordListAtomFamily = makeAtomFamily<
-  User["wordlist"],
-  { userId: string }
->("/users/{userId}/wordlist", database, {});
+export const wordListAtomFamily = makeAtomFamily<User["wordlist"]>(
+  database,
+  {}
+)("/users/{userId}/wordlist");
 
-export const userCrosswordsAtomFamily = makeAtomFamily<
-  User["crosswords"],
-  { userId: string }
->("/users/{userId}/crosswords", database, {});
+export const userCrosswordsAtomFamily = makeAtomFamily<User["crosswords"]>(
+  database,
+  {}
+)("/users/{userId}/crosswords");
 
 type Cursors = FirebaseReadValue<FirebaseList<Cursor>>;
-export const cursorAtomFamily = makeAtomFamily<
-  Cursors,
-  { crosswordId: string }
->("/cursors/{crosswordId}", database, {});
+export const cursorAtomFamily = makeAtomFamily<Cursors>(
+  database,
+  {}
+)("/cursors/{crosswordId}");
 
 export const remoteCursorAtomFamily = atomFamily<
   { crosswordId: string; cursorId: string | null },
@@ -78,15 +78,12 @@ export const remoteCursorAtomFamily = atomFamily<
   });
 }, deepEqual);
 
-export const crosswordAtomFamily = makeAtomFamily<
-  Crossword,
-  { crosswordId: string }
->("/crosswords/{crosswordId}", database, {
+export const crosswordAtomFamily = makeAtomFamily<Crossword>(database, {
   clues: { across: {}, down: {} },
   title: "skeleton title",
   rows: 1,
   symmetric: true,
-});
+})("/crosswords/{crosswordId}");
 
 // TODO we should make an atomFamily wrapper that uses deepEqual
 export const arrayCrosswordAtomFamily = atomFamily<

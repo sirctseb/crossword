@@ -1,4 +1,12 @@
-import { SerializableParam } from "recoil";
+// lifted from recoil
+export type Primitive = undefined | null | boolean | number | symbol | string;
+export type SerializableParam =
+  | Primitive
+  // | HasToJSON
+  | ReadonlyArray<SerializableParam>
+  | ReadonlySet<SerializableParam>
+  | ReadonlyMap<SerializableParam, SerializableParam>
+  | Readonly<{ [key: string]: SerializableParam }>;
 
 export class OverspecError extends Error {
   constructor(pathSpec: string, params: SerializableParam, notFound: string) {
