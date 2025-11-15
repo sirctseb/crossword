@@ -1,4 +1,3 @@
-import { getDatabase } from "firebase/database";
 import type {
   CommunalCrossword,
   Crossword,
@@ -19,8 +18,9 @@ import {
   reduceCursors,
 } from "../derivations";
 import type { ArrayCrossword, LabeledAddressCatalog } from "../types";
+import { getFirebaseDatabase } from "../../firebase";
 
-const database = getDatabase();
+const database = getFirebaseDatabase();
 
 export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
   "/communalCrossword",
