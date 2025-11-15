@@ -11,9 +11,8 @@ import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import type { AsyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 import deepEqual from "fast-deep-equal";
+import type { FirebaseReadValue } from "../firebase/types";
 
-export type FirebaseValue = boolean | string | number | Object | null;
-export type FirebaseReadValue = FirebaseValue | undefined;
 export type { PathParameters };
 
 function firebaseStorage<T extends FirebaseReadValue>(
