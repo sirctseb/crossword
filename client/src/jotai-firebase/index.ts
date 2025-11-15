@@ -81,7 +81,8 @@ export function makeAtomFamily<
       atomWithStorage<T>(
         interpolatePathSpec(pathSpec, params),
         initialValue,
-        firebaseStorage<T>(database)
+        firebaseStorage<T>(database),
+        { getOnInit: true }
       ),
     deepEqual
   );
