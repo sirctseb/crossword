@@ -55,22 +55,28 @@ const reduceCursors = (cursors: Record<string, Cursor>): CursorMap => {
 
 export const remoteCursorAtomFamily = atomFamily<
   { crosswordId: string; cursorId: string | null },
-  // we fall back into some promises here but it remains transparent
-  // above the useAtomValue level in the component
   Atom<CursorMap | Promise<CursorMap>>
-  // Atom<Indexable<CursorMap>>
 >((params) => {
   return atom((get) => {
-    const cursors = get(cursorAtomFamily({ crosswordId: params.crosswordId }));
-    if (cursors instanceof Promise) {
-      return cursors.then((resolvedCursors) => {
-        const { [params.cursorId ?? ""]: _, ...remoteCursors } =
-          resolvedCursors;
-        return reduceCursors(remoteCursors);
-      });
-    }
+    return Promise.resolve(
+      get(cursorAtomFamily({ crosswordId: params.crosswordId }))
+    ).then((resolvedCursors) => {
+      const { [params.cursorId ?? ""]: _, ...remoteCursors } = resolvedCursors;
+      return reduceCursors(remoteCursors);
+    });
 
-    const { [params.cursorId ?? ""]: _, ...remoteCursors } = cursors ?? {};
-    return reduceCursors(remoteCursors);
+    // simple version above by collapsing both cases to a promise.
+    // if we benefit from keeping the synchronous case synchronous, we can
+    // split it out like this:
+    // if (cursors instanceof Promise) {
+    //   return cursors.then((resolvedCursors) => {
+    //     const { [params.cursorId ?? ""]: _, ...remoteCursors } =
+    //       resolvedCursors;
+    //     return reduceCursors(remoteCursors);
+    //   });
+    // }
+
+    // const { [params.cursorId ?? ""]: _, ...remoteCursors } = cursors ?? {};
+    // return reduceCursors(remoteCursors);
   });
 }, deepEqual);
