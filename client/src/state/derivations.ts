@@ -8,7 +8,7 @@ import {
 } from ".";
 import { coerceMatrixToArray } from "../firebase/coerceMatrixToArray";
 import { coerceToObject } from "../firebase/coerceToObject";
-import type { Box, Crossword, Cursor, FirebaseArray } from "../firebase/types";
+import type { Box, Crossword, Cursor, Matrix } from "../firebase/types";
 
 export const deriveClueAddresses = (
   crossword: ArrayCrossword
@@ -243,7 +243,7 @@ export const findNext = (
 };
 
 const coerceMatrixToObject = <T>(
-  matrix: FirebaseArray<string, FirebaseArray<string, T>>
+  matrix: Matrix<T>
 ): Record<string, Record<string, T>> => {
   const outer = coerceToObject(matrix);
   return Object.keys(outer).reduce<Record<string, Record<string, T>>>(
@@ -374,4 +374,5 @@ export const test = {
   findNext,
   deriveClueAddresses,
   deriveArrayCrossword,
+  reduceCursors,
 };
