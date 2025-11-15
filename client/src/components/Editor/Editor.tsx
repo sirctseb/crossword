@@ -29,13 +29,13 @@ import { usePublishCursor } from "./Cursor/usePublishCursor";
 import "./editor.scss";
 import { block } from "../../styles";
 import { findNextBlank } from "../../state/derivations";
+import { useAllAnswers } from "../firebase-hooks/hooks";
 import {
-  useAllAnswers,
-  useArrayCrossword,
-  useLabeledAddressCatalog,
-  useLabeledAddressMap,
-} from "../firebase-hooks/hooks";
-import { remoteCursorAtomFamily } from "../../state/atoms/firebaseAtoms";
+  arrayCrosswordAtomFamily,
+  labeledAddressCatalogAtomFamily,
+  labeledAddressMapAtomFamily,
+  remoteCursorAtomFamily,
+} from "../../state/atoms/firebaseAtoms";
 import { type CursorMap } from "@/state/derivations";
 
 const bem = block("editor");
@@ -208,10 +208,11 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
 
   const [cursor, setCursor] = useAtom(cursorAtomFamily(crosswordId));
   const [clueInput, setClueInput] = useAtom(clueInputAtom);
-  const { fallback: crossword } = useArrayCrossword(crosswordId);
-  const labelMap = useLabeledAddressMap(crosswordId).fallback;
-  const { fallback: labeledAddressCatalog } =
-    useLabeledAddressCatalog(crosswordId);
+  const crossword = useAtomValue(arrayCrosswordAtomFamily({ crosswordId }));
+  const labelMap = useAtomValue(labeledAddressMapAtomFamily({ crosswordId }));
+  const labeledAddressCatalog = useAtomValue(
+    labeledAddressCatalogAtomFamily({ crosswordId })
+  );
 
   const cursorAfterAdvancement = useMemo(() => {
     return (

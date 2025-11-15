@@ -1,5 +1,4 @@
 import React from "react";
-import { useArrayCrossword } from "../firebase-hooks/hooks";
 import Link from "next/link";
 
 import { CrosswordMetadata } from "../../firebase/types";
@@ -7,6 +6,8 @@ import { CrosswordMetadata } from "../../firebase/types";
 import { block } from "../../styles";
 import "./crossword-preview.scss";
 import { type ArrayCrossword } from "../../state";
+import { useAtomValue } from "jotai";
+import { arrayCrosswordAtomFamily } from "../../state/atoms/firebaseAtoms";
 
 const bem = block("crossword-preview");
 
@@ -60,7 +61,9 @@ export interface ConnectedCrosswordPreviewProps {
 export const ConnectedCrosswordPreview: React.FC<
   ConnectedCrosswordPreviewProps
 > = ({ id, metadata }) => {
-  const { fallback: arrayCrossword } = useArrayCrossword(id);
+  const arrayCrossword = useAtomValue(
+    arrayCrosswordAtomFamily({ crosswordId: id })
+  );
 
   return (
     <CrosswordPreview id={id} metadata={metadata} crossword={arrayCrossword} />
