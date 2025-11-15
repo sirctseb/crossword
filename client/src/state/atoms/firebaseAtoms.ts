@@ -2,6 +2,8 @@ import type {
   CommunalCrossword,
   Crossword,
   Cursor,
+  FirebaseList,
+  FirebaseReadValue,
   Matrix,
   User,
 } from "../../firebase/types";
@@ -32,14 +34,14 @@ export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
 export const wordListAtomFamily = makeAtomFamily<
   User["wordlist"],
   { userId: string }
->("/users/{userId}/wordlist", database, []);
+>("/users/{userId}/wordlist", database, {});
 
 export const userCrosswordsAtomFamily = makeAtomFamily<
   User["crosswords"],
   { userId: string }
->("/users/{userId}/crosswords", database, []);
+>("/users/{userId}/crosswords", database, {});
 
-type Cursors = Record<string, Cursor> | null;
+type Cursors = FirebaseReadValue<FirebaseList<Cursor>>;
 export const cursorAtomFamily = makeAtomFamily<
   Cursors,
   { crosswordId: string }
