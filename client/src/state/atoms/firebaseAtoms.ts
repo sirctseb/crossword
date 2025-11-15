@@ -156,3 +156,9 @@ export const labeledAddressMapAtomFamily = atomFamily<
     // return deriveLabeledAddressMap(labeledAddressCatalog);
   });
 }, deepEqual);
+
+export const connectionAtom = makeAtom<boolean>(
+  ".info/connected",
+  database,
+  false
+);
