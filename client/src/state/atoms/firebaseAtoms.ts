@@ -39,7 +39,7 @@ export const userCrosswordsAtomFamily = makeAtomFamily<
   { userId: string }
 >("/users/{userId}/crosswords", database, []);
 
-type Cursors = Record<string, Cursor>;
+type Cursors = Record<string, Cursor> | null;
 export const cursorAtomFamily = makeAtomFamily<
   Cursors,
   { crosswordId: string }
@@ -47,12 +47,15 @@ export const cursorAtomFamily = makeAtomFamily<
 
 export const remoteCursorAtomFamily = atomFamily<
   { crosswordId: string; cursorId: string | null },
-  Atom<CursorMap | Promise<CursorMap>>
+  Atom<CursorMap | null | Promise<CursorMap | null>>
 >((params) => {
   return atom((get) => {
     return Promise.resolve(
       get(cursorAtomFamily({ crosswordId: params.crosswordId }))
     ).then((resolvedCursors) => {
+      if (!resolvedCursors) {
+        return {};
+      }
       const { [params.cursorId ?? ""]: _, ...remoteCursors } = resolvedCursors;
       return reduceCursors(remoteCursors);
     });
