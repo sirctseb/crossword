@@ -7,7 +7,7 @@ import type { FirebaseArray } from "../firebase/types";
 // out to be slow
 
 export const coerceMatrixToArray = <T>(
-  matrix: FirebaseArray<string, FirebaseArray<string, T>>,
+  matrix: FirebaseArray<FirebaseArray<T>>,
   defaultValue: T,
   rows: number,
   columns: number

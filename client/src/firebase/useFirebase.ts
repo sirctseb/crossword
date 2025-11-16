@@ -1,5 +1,5 @@
 import type { FirebaseApp } from "firebase/app";
-import type { Auth, User } from "firebase/auth";
+import type { Auth } from "firebase/auth";
 import type { Database } from "firebase/database";
 import { useMemo } from "react";
 import { getFirebaseApp, getFirebaseAuth, getFirebaseDatabase } from ".";
