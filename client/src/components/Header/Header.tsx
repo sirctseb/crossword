@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 import "./header.scss";
 import { useFirebase } from "../../firebase";
-import { authAtom } from "../../jotai-firebase/auth";
+import { authAtom } from "../../jotai-firebase/atoms/authAtom";
 import { useAtomValue } from "jotai";
 
 interface HeaderProps {

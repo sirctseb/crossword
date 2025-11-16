@@ -21,6 +21,7 @@ import {
 } from "../derivations";
 import type { ArrayCrossword, LabeledAddressCatalog } from "../types";
 import { getFirebaseDatabase } from "../../firebase";
+import { makeConnectionAtom } from "../../jotai-firebase/atoms/connectionAtom";
 
 const database = getFirebaseDatabase();
 
@@ -159,8 +160,4 @@ export const labeledAddressMapAtomFamily = atomFamily<
   });
 }, deepEqual);
 
-export const connectionAtom = makeAtom<boolean>(
-  ".info/connected",
-  database,
-  false
-);
+export const connectionAtom = makeConnectionAtom(database);

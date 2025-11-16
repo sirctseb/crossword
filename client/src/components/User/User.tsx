@@ -4,7 +4,7 @@ import { block } from "../../styles/index";
 import { ConnectedPreviewList } from "./PreviewList";
 import { UserSection } from "./UserSection";
 import { ConnectedWordList } from "./WordList";
-import { authAtom } from "../../jotai-firebase/auth";
+import { authAtom } from "../../jotai-firebase/atoms/authAtom";
 import { useAtomValue } from "jotai";
 
 const bem = block("user");
