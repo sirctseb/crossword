@@ -1,6 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
 import { Box as BoxModel, type Cursor } from "../../../firebase/types";
-import type { Entity } from "../Cursor/useRemoteCursors";
 
 import { BoxControls } from "./BoxControls";
 import { RebusInput } from "./RebusInput";
@@ -8,6 +7,7 @@ import { RebusInput } from "./RebusInput";
 import { block } from "../../../styles";
 import "./box.scss";
 import { RemoteCursors } from "../Cursor/RemoteCursors";
+import type { Entity } from "../../../state/derivations";
 const bem = block("box");
 
 const targetFocused = ({

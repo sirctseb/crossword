@@ -3,7 +3,7 @@ import React from "react";
 import { block } from "../../../styles";
 import "./remote-cursors.scss";
 import type { Cursor } from "../../../firebase/types";
-import type { Entity } from "./useRemoteCursors";
+import type { Entity } from "../../../state/derivations";
 const bem = block("remote-cursors");
 
 interface RemoteCursorsProps {

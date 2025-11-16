@@ -49,7 +49,7 @@ export interface EditorProps {
   labeledAddressCatalog: LabeledAddressCatalog;
   clueInput: ClueInput;
   allAnswers: string[];
-  remoteCursors: CursorMap;
+  remoteCursors: CursorMap | null;
   onAfterSetContent: (newContent: string | null) => void;
   onModifyBox: <K extends keyof BoxModel>(
     row: number,

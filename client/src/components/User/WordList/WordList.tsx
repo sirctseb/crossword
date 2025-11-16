@@ -26,7 +26,7 @@ export const WordList: React.FC<WordListProps> = ({
   const [newValue, setNewValue] = useState("");
 
   const wordlistObject = useMemo(() => {
-    return coerceToObject(wordlist || []);
+    return wordlist ? coerceToObject(wordlist || []) : {};
   }, [wordlist]);
 
   const handleNewValueChange = useCallback<
