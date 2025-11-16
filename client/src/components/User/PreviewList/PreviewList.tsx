@@ -2,12 +2,13 @@ import React from "react";
 
 import { block } from "../../../styles";
 import { ConnectedCrosswordPreview } from "../../CrosswordPreview";
-import { CrosswordMetadata, type FirebaseArray } from "../../../firebase/types";
-import { coerceToObject } from "../../../firebase/coerceToObject";
+import { CrosswordMetadata } from "../../../firebase/types";
+import { coerceToObject } from "../../../jotai-firebase/utils/coerceToObject";
 
 import "./preview-list.scss";
 import { userCrosswordsAtomFamily } from "../../../state/atoms/firebaseAtoms";
 import { useAtomValue } from "jotai";
+import type { FirebaseArray } from "../../../jotai-firebase/types";
 const bem = block("preview-list");
 
 interface PreviewListProps {

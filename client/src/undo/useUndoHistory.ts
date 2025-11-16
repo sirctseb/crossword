@@ -8,7 +8,7 @@ import {
   FirebaseUpdate,
 } from "./FirebaseChange";
 import { useFirebase } from "../firebase";
-import type { FirebaseValue } from "../firebase/types";
+import type { FirebaseValue } from "../jotai-firebase/types";
 
 interface UseUndoHistoryResult {
   history: UndoHistory;

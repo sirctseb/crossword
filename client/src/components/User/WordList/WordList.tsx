@@ -3,7 +3,7 @@ import { push, ref, remove } from "firebase/database";
 
 import { block } from "../../../styles";
 import type { User } from "../../../firebase/types";
-import { coerceToObject } from "../../../firebase/coerceToObject";
+import { coerceToObject } from "../../../jotai-firebase/utils/coerceToObject";
 
 import "./word-list.scss";
 import { useFirebase } from "../../../firebase";

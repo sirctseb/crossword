@@ -2,8 +2,6 @@ import type {
   CommunalCrossword,
   Crossword,
   Cursor,
-  FirebaseList,
-  FirebaseReadValue,
   Matrix,
   User,
 } from "../../firebase/types";
@@ -22,6 +20,10 @@ import {
 import type { ArrayCrossword, LabeledAddressCatalog } from "../types";
 import { getFirebaseDatabase } from "../../firebase";
 import { makeConnectionAtom } from "../../jotai-firebase/atoms/connectionAtom";
+import type {
+  FirebaseList,
+  FirebaseReadValue,
+} from "../../jotai-firebase/types";
 
 const database = getFirebaseDatabase();
 

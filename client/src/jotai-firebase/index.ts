@@ -11,9 +11,9 @@ import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import type { AsyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 import deepEqual from "fast-deep-equal";
-import type { FirebaseReadValue } from "../firebase/types";
 import type { AtomFamily } from "jotai/vanilla/utils/atomFamily";
 import type { Atom } from "jotai";
+import type { FirebaseReadValue } from "./types";
 
 export type { PathParameters };
 

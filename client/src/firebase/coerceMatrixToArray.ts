@@ -1,5 +1,5 @@
-import { coerceToArray } from "./coerceToArray";
-import type { FirebaseArray } from "../firebase/types";
+import type { FirebaseArray } from "../jotai-firebase/types";
+import { coerceToArray } from "../jotai-firebase/utils/coerceToArray";
 
 // alternative approach would be to have an access utility like get
 // to gracefully degrade to null / default value on value absence. lib could

@@ -7,7 +7,7 @@ import {
   type Direction,
 } from ".";
 import { coerceMatrixToArray } from "../firebase/coerceMatrixToArray";
-import { coerceToObject } from "../firebase/coerceToObject";
+import { coerceToObject } from "../jotai-firebase/utils/coerceToObject";
 import type { Box, Crossword, Cursor, Matrix } from "../firebase/types";
 
 export const deriveClueAddresses = (

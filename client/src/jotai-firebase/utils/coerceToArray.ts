@@ -1,6 +1,6 @@
-import type { FirebaseArray } from "../firebase/types";
+import type { FirebaseArray } from "../types";
 
-export function fillBlanksWithValue<T>(
+function fillBlanksWithValue<T>(
   value: T[],
   defaultValue: T,
   length: number
