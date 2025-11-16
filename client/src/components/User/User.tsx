@@ -4,7 +4,8 @@ import { block } from "../../styles/index";
 import { ConnectedPreviewList } from "./PreviewList";
 import { UserSection } from "./UserSection";
 import { ConnectedWordList } from "./WordList";
-import { useAuth } from "../../firebase/useFirebase";
+import { authAtom } from "../../jotai-firebase/auth";
+import { useAtomValue } from "jotai";
 
 const bem = block("user");
 
@@ -28,7 +29,7 @@ export const User: React.FC<UserProps> = ({ userId }) => {
 };
 
 export const ConnectedUser = () => {
-  const auth = useAuth();
+  const auth = useAtomValue(authAtom);
   // TODO skeleton view before user (and subsequently display data)
   // is loaded
   if (auth.isEmpty) {

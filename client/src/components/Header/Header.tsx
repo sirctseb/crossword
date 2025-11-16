@@ -6,7 +6,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 import "./header.scss";
-import { useAuth, useFirebase } from "../../firebase";
+import { useFirebase } from "../../firebase";
+import { authAtom } from "../../jotai-firebase/auth";
+import { useAtomValue } from "jotai";
 
 interface HeaderProps {
   onLogout: () => void;
@@ -93,7 +95,7 @@ export const Header: React.FC<HeaderProps> = ({
 
 export const ConnectedHeader = () => {
   const { auth, database } = useFirebase();
-  const { isEmpty } = useAuth();
+  const { isEmpty } = useAtomValue(authAtom);
   const { push: pushRoute } = useRouter();
 
   const loggedIn = !isEmpty;
