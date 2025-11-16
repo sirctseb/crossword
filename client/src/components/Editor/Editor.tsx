@@ -35,7 +35,7 @@ import {
   labeledAddressCatalogAtomFamily,
   labeledAddressMapAtomFamily,
   remoteCursorAtomFamily,
-} from "../../state/atoms/firebaseAtoms";
+} from "../../state/atoms/selectors";
 import { type CursorMap } from "@/state/derivations";
 
 const bem = block("editor");

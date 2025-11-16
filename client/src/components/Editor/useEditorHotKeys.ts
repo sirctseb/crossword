@@ -7,7 +7,7 @@ import {
 } from "../../state";
 import { useAtom, useAtomValue } from "jotai";
 import { type UndoHistory } from "../../undo/UndoHistory";
-import { arrayCrosswordAtomFamily } from "../../state/atoms/firebaseAtoms";
+import { arrayCrosswordAtomFamily } from "../../state/atoms/selectors";
 
 function moveCursor(
   vector: [number, number],

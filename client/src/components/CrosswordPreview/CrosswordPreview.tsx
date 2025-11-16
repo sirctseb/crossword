@@ -7,7 +7,7 @@ import { block } from "../../styles";
 import "./crossword-preview.scss";
 import { type ArrayCrossword } from "../../state";
 import { useAtomValue } from "jotai";
-import { arrayCrosswordAtomFamily } from "../../state/atoms/firebaseAtoms";
+import { arrayCrosswordAtomFamily } from "../../state/atoms/selectors";
 
 const bem = block("crossword-preview");
 
