@@ -1,10 +1,7 @@
-import type { FirebaseArray } from "../jotai-firebase/types";
-
-export type Matrix<Type> = FirebaseArray<string, FirebaseArray<string, Type>>;
+export type FirebaseArray<K extends string, T> = Record<K, T> | T[];
+export type Matrix<Type> = FirebaseArray<Index, FirebaseArray<Index, Type>>;
 export type Presence<Type extends string> = FirebaseArray<Type, boolean>;
-
 export type CurrentUser = UserId;
-
 export type Clues = {
   across?: Matrix<string>;
   down?: Matrix<string>;
@@ -12,7 +9,7 @@ export type Clues = {
 export type Crossword = {
   rows: number;
   symmetric: boolean;
-  themeEntries?: Presence<string>;
+  themeEntries?: FirebaseArray<string, boolean>;
   clues?: Clues;
   boxes?: Matrix<Box>;
   title?: string;
