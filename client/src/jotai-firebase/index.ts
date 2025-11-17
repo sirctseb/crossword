@@ -7,17 +7,15 @@ import {
   set,
   remove,
 } from "firebase/database";
-import { interpolatePathSpec, PathParameters } from "./interpolatePathSpec";
+import { interpolatePathSpec } from "./interpolatePathSpec";
 import { atomFamily, atomWithStorage } from "jotai/utils";
 import type { AsyncStorage } from "jotai/vanilla/utils/atomWithStorage";
 import deepEqual from "fast-deep-equal";
 import type { AtomFamily } from "jotai/vanilla/utils/atomFamily";
 import type { Atom } from "jotai";
-import type { FirebaseReadValue } from "./types";
+import type { FirebaseValue } from "./types";
 
-export type { PathParameters };
-
-function firebaseStorage<T extends FirebaseReadValue>(
+function firebaseStorage<T extends FirebaseValue>(
   database: Database
 ): AsyncStorage<T> {
   return {
@@ -57,7 +55,7 @@ function firebaseStorage<T extends FirebaseReadValue>(
 // options.getOnInit is true
 // the other place you have to account for it is on RESET
 
-export function makeAtom<T extends FirebaseReadValue>(
+export function makeAtom<T extends FirebaseValue>(
   path: string,
   database: Database,
   initialValue: T
@@ -97,7 +95,7 @@ type PathParams<Path extends string> =
 // We can't type both in a single function because clients can't provide only one of the
 // two type params, so they would have to redundantly provide the pathspec type (or,
 // equivalently, provide a redundant param type).
-export function makeAtomFamily<T extends FirebaseReadValue>(
+export function makeAtomFamily<T extends FirebaseValue>(
   database: Database,
   initialValue: T
 ): <S extends string>(

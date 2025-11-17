@@ -1,11 +1,13 @@
-import type { CommunalCrossword, Cursor, User } from "../../firebase/types";
+import type {
+  FirebaseArray,
+  CommunalCrossword,
+  Crossword,
+  Cursor,
+  WordlistEntry,
+} from "../../firebase/types";
 import { makeAtom, makeAtomFamily } from "../../jotai-firebase";
 import { getFirebaseDatabase } from "../../firebase";
 import { makeConnectionAtom } from "../../jotai-firebase/atoms/connectionAtom";
-import type {
-  FirebaseArray,
-  FirebaseReadValue,
-} from "../../jotai-firebase/types";
 
 const database = getFirebaseDatabase();
 
@@ -16,18 +18,22 @@ export const communalCrosswordAtom = makeAtom<CommunalCrossword>(
   { current: "", archive: {} }
 );
 
-export const wordListAtomFamily = makeAtomFamily<User["wordlist"]>(
+export const wordListAtomFamily = makeAtomFamily<
+  FirebaseArray<string, WordlistEntry>
+>(
   database,
   {}
 )("/users/{userId}/wordlist");
 
-export const userCrosswordsAtomFamily = makeAtomFamily<User["crosswords"]>(
+export const userCrosswordsAtomFamily = makeAtomFamily<
+  FirebaseArray<string, Crossword>
+>(
   database,
   {}
 )("/users/{userId}/crosswords");
 
-type Cursors = FirebaseReadValue<FirebaseArray<string, Cursor>>;
-export const cursorsAtomFamily = makeAtomFamily<Cursors>(
+type Cursors = FirebaseArray<string, Cursor>;
+export const cursorsAtomFamily = makeAtomFamily<Cursors | null>(
   database,
   {}
 )("/cursors/{crosswordId}");
