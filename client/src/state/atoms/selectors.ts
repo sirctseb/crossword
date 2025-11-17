@@ -15,6 +15,7 @@ import { makeAtomFamily } from "../../jotai-firebase";
 import type { Crossword, Matrix } from "../../firebase/types";
 import { getFirebaseDatabase } from "../../firebase";
 import type { ArrayCrossword, LabeledAddressCatalog } from "../types";
+import { coerceToObject } from "../../jotai-firebase/utils/coerceToObject";
 
 const database = getFirebaseDatabase();
 
@@ -29,7 +30,8 @@ export const remoteCursorAtomFamily = atomFamily<
       if (!resolvedCursors) {
         return {};
       }
-      const { [params.cursorId ?? ""]: _, ...remoteCursors } = resolvedCursors;
+      const { [params.cursorId ?? ""]: _, ...remoteCursors } =
+        coerceToObject(resolvedCursors);
       return reduceCursors(remoteCursors);
     });
 

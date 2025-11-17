@@ -13,7 +13,7 @@ const bem = block("preview-list");
 
 interface PreviewListProps {
   children: React.ReactNode;
-  crosswords: FirebaseArray<CrosswordMetadata>;
+  crosswords: FirebaseArray<string, CrosswordMetadata>;
 }
 
 export const PreviewList: React.FC<PreviewListProps> = ({

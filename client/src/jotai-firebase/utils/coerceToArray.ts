@@ -23,9 +23,9 @@ function fillBlanksWithValue<T>(
  * reference.
  */
 
-export function coerceToArray<T>(value: FirebaseArray<T>): T[];
+export function coerceToArray<T>(value: FirebaseArray<string, T>): T[];
 export function coerceToArray<T>(
-  value: FirebaseArray<T>,
+  value: FirebaseArray<string, T>,
   defaultValue: T,
   length: number
 ): T[];

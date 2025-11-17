@@ -1,7 +1,7 @@
-import type { FirebaseArray, FirebaseList } from "../jotai-firebase/types";
+import type { FirebaseArray } from "../jotai-firebase/types";
 
-export type Matrix<Type> = FirebaseArray<FirebaseArray<Type>>;
-export type Presence<Type extends string> = FirebaseArray<boolean, Type>;
+export type Matrix<Type> = FirebaseArray<string, FirebaseArray<string, Type>>;
+export type Presence<Type extends string> = FirebaseArray<Type, boolean>;
 
 export type CurrentUser = UserId;
 
@@ -33,8 +33,8 @@ export type WordlistEntry = {
   usedBy?: Presence<CrosswordId>;
 };
 export type User = {
-  crosswords?: FirebaseList<CrosswordMetadata>;
-  wordlist?: FirebaseList<WordlistEntry>;
+  crosswords?: FirebaseArray<string, CrosswordMetadata>;
+  wordlist?: FirebaseArray<string, WordlistEntry>;
 };
 export type Permissions = {
   owner: UserId;
@@ -54,5 +54,5 @@ export type Cursor = {
 };
 export type CommunalCrossword = {
   current: CrosswordId;
-  archive?: FirebaseList<CrosswordId>;
+  archive?: FirebaseArray<string, CrosswordId>;
 };

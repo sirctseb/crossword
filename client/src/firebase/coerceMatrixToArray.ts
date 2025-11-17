@@ -7,7 +7,7 @@ import { coerceToArray } from "../jotai-firebase/utils/coerceToArray";
 // out to be slow
 
 export const coerceMatrixToArray = <T>(
-  matrix: FirebaseArray<FirebaseArray<T>>,
+  matrix: FirebaseArray<string, FirebaseArray<string, T>>,
   defaultValue: T,
   rows: number,
   columns: number

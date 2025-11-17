@@ -3,7 +3,7 @@ import { makeAtom, makeAtomFamily } from "../../jotai-firebase";
 import { getFirebaseDatabase } from "../../firebase";
 import { makeConnectionAtom } from "../../jotai-firebase/atoms/connectionAtom";
 import type {
-  FirebaseList,
+  FirebaseArray,
   FirebaseReadValue,
 } from "../../jotai-firebase/types";
 
@@ -26,7 +26,7 @@ export const userCrosswordsAtomFamily = makeAtomFamily<User["crosswords"]>(
   {}
 )("/users/{userId}/crosswords");
 
-type Cursors = FirebaseReadValue<FirebaseList<Cursor>>;
+type Cursors = FirebaseReadValue<FirebaseArray<string, Cursor>>;
 export const cursorsAtomFamily = makeAtomFamily<Cursors>(
   database,
   {}
