@@ -19,7 +19,7 @@ $block-class: 'crossword-preview';
 
             @for $size from 1 to 30 {
                 &--size-#{$size} {
-                    font-size: ($base-preview-box-size * 15) / $size;
+                    font-size: calc($base-preview-box-size * 15 / $size);
                 }
             }
         }
