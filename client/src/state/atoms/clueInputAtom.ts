@@ -3,7 +3,7 @@ import { atom } from "jotai";
 export interface ClueInput {
   row: number;
   column: number;
-  value: string | null;
+  value: string;
   direction: "across" | "down";
 }
 
@@ -13,9 +13,4 @@ export interface ClueInput {
 // The state captures the fields needed to address the clue (row, column, direction) in the
 // data model, and the value the user has entered.
 // If no clue is being edited, the value is null.
-export const clueInputAtom = atom<ClueInput | null>({
-  row: 0,
-  column: 0,
-  value: null,
-  direction: "across",
-});
+export const clueInputAtom = atom<ClueInput | null>(null);

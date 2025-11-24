@@ -26,6 +26,20 @@ interface ClueListProps {
   onClueBlur: React.FocusEventHandler;
 }
 
+const clueIsBeingEdited = (
+  clueInput: ClueInput | null,
+  row: number,
+  column: number,
+  direction: "across" | "down"
+): clueInput is ClueInput => {
+  return (
+    clueInput !== null &&
+    clueInput.row === row &&
+    clueInput.column === column &&
+    clueInput.direction === direction
+  );
+};
+
 export const ClueList: React.FC<ClueListProps> = ({
   clueData,
   clueInput,
@@ -44,13 +58,9 @@ export const ClueList: React.FC<ClueListProps> = ({
             type="text"
             className={bem("clue-input")}
             value={
-              (clueInput !== null &&
-                row === clueInput.row &&
-                column === clueInput.column &&
-                clueInput.direction === direction &&
-                clueInput.value) ||
-              clueData?.[row]?.[column] ||
-              ""
+              clueIsBeingEdited(clueInput, row, column, direction)
+                ? clueInput.value
+                : clueData?.[row]?.[column] || ""
             }
             onChange={(evt) => {
               onChangeClue({
