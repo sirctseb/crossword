@@ -53,7 +53,9 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="header">
-      <h1 className="header__heading">Crossword</h1>
+      <h1 className="header__heading">
+        <Link href="/">Crossword</Link>
+      </h1>
       <nav className="header__nav">
         {!loggedIn && !showLogin && (
           <a
