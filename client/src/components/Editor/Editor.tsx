@@ -47,7 +47,7 @@ export interface EditorProps {
   onBoxFocus: (row: number, column: number) => void;
   labelMap: Record<number, Record<number, number>>;
   labeledAddressCatalog: LabeledAddressCatalog;
-  clueInput: ClueInput;
+  clueInput: ClueInput | null;
   allAnswers: string[];
   remoteCursors: CursorMap | null;
   onAfterSetContent: (newContent: string | null) => void;
@@ -340,39 +340,28 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   );
 
   const handleClueBlur = useCallback(() => {
-    history.add(
-      new FirebaseSet(
-        ref(
-          database,
-          `crosswords/${crosswordId}/clues/${clueInput.direction}/${clueInput.row}/${clueInput.column}`
-        ),
-        clueInput.value,
-        // TODO we're getting bit in a few important places by the lax typing
-        // on object and array access with sparse data.
-        crossword.clues[clueInput.direction]?.[clueInput.row]?.[
-          clueInput.column
-        ] ?? null
-      )
-    );
-    // TODO this preps a clue input that will set 0 0 to null
-    // if we focus then blur any input without changing it.
-    // i think this bug pre-existed the state change.
-    // i guess we should set this to just null or some other sentinel
-    // value and ignore it on blur if so
-    setClueInput({
-      value: null,
-      row: 0,
-      column: 0,
-      direction: "across",
-    });
+    if (clueInput !== null) {
+      history.add(
+        new FirebaseSet(
+          ref(
+            database,
+            `crosswords/${crosswordId}/clues/${clueInput.direction}/${clueInput.row}/${clueInput.column}`
+          ),
+          clueInput.value,
+          // TODO we're getting bit in a few important places by the lax typing
+          // on object and array access with sparse data.
+          crossword.clues[clueInput.direction]?.[clueInput.row]?.[
+            clueInput.column
+          ] ?? null
+        )
+      );
+      setClueInput(null);
+    }
   }, [
     history,
     database,
     crosswordId,
-    clueInput.direction,
-    clueInput.row,
-    clueInput.column,
-    clueInput.value,
+    clueInput,
     crossword.clues,
     setClueInput,
   ]);

@@ -21,7 +21,7 @@ interface ClueListProps {
   direction: "across" | "down";
   clueLabels: LabeledAddress[];
   clueData: Record<string, Record<string, string>>;
-  clueInput: ClueInput;
+  clueInput: ClueInput | null;
   onChangeClue: (evt: ChangeClueEvent) => void;
   onClueBlur: React.FocusEventHandler;
 }
@@ -44,7 +44,8 @@ export const ClueList: React.FC<ClueListProps> = ({
             type="text"
             className={bem("clue-input")}
             value={
-              (row === clueInput.row &&
+              (clueInput !== null &&
+                row === clueInput.row &&
                 column === clueInput.column &&
                 clueInput.direction === direction &&
                 clueInput.value) ||
