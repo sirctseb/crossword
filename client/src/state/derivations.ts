@@ -361,6 +361,16 @@ export const reduceCursors = (cursors: Record<string, Cursor>): CursorMap => {
   return result;
 };
 
+export const crosswordFull = (crossword: ArrayCrossword): boolean => {
+  const range = [...Array(crossword.rows).keys()];
+  return range.every((row) =>
+    range.every((column) => {
+      const { blocked, content } = crossword.boxes?.[row]?.[column];
+      return blocked || content;
+    })
+  );
+};
+
 export const test = {
   firstBoxAddress,
   notBlocked,

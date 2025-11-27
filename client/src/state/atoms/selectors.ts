@@ -3,6 +3,7 @@ import { atom, type Atom } from "jotai";
 import deepEqual from "fast-deep-equal";
 
 import {
+  crosswordFull,
   deriveAllAnswers,
   deriveArrayCrossword,
   deriveClueAddresses,
@@ -129,5 +130,22 @@ export const labeledAddressMapAtomFamily = atomFamily<
     // }
 
     // return deriveLabeledAddressMap(labeledAddressCatalog);
+  });
+}, deepEqual);
+
+export const crosswordFullAtomFamily = atomFamily<
+  { crosswordId: string },
+  Atom<boolean | Promise<boolean>>
+>((params) => {
+  return atom((get) => {
+    const arrayCrossword = get(
+      arrayCrosswordAtomFamily({ crosswordId: params.crosswordId })
+    );
+    if (arrayCrossword instanceof Promise) {
+      return arrayCrossword.then((resolvedArrayCrossword) => {
+        return crosswordFull(resolvedArrayCrossword);
+      });
+    }
+    return crosswordFull(arrayCrossword);
   });
 }, deepEqual);
