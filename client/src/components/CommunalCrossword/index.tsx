@@ -9,6 +9,7 @@ import { useAtomValue } from "jotai";
 import { communalCrosswordAtom } from "../../state/atoms/firebaseAtoms";
 
 const bem = block("communal-crossword");
+import "./communal-crossword.scss";
 
 enum Selection {
   None = "None",
