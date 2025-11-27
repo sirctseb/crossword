@@ -7,6 +7,7 @@ import { ConnectedEditor } from "../Editor/Editor";
 import { DebugValue } from "../Debug/Debug";
 import { useAtomValue } from "jotai";
 import { communalCrosswordAtom } from "../../state/atoms/firebaseAtoms";
+import { Extras } from "./Extras";
 
 const bem = block("communal-crossword");
 import "./communal-crossword.scss";
@@ -40,20 +41,21 @@ export const CommunalCrossword: React.FC = () => {
 
   return (
     <div className={bem()}>
-      <DebugValue value={current} />
       <h2>Communal Crossword</h2>
-      {editing && (
+      {editing ? (
         <CommunalEditLayout onPreviousClick={onPreviousClick}>
           <ConnectedCrosswordPreview id={archiveList[archiveList.length - 1]} />
-          {/* <ConnectedEditor crosswordId={current} /> */}
-          <> </>
+          <Extras id={current}>
+            <ConnectedEditor crosswordId={current} />
+          </Extras>
         </CommunalEditLayout>
+      ) : (
+        <ArchiveList
+          archiveList={archiveList}
+          current={current}
+          onCurrentClick={onCurrentClick}
+        />
       )}
-      <ArchiveList
-        archiveList={archiveList}
-        current={current}
-        onCurrentClick={onCurrentClick}
-      />
     </div>
   );
 };

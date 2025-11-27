@@ -9,6 +9,7 @@ import {
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { settings } from "../settings/Settings";
 import { getDatabase, type Database } from "firebase/database";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export * from "./useFirebase";
 
@@ -25,6 +26,14 @@ export function getFirebaseAuth(): Auth {
 export function getFirebaseDatabase(): Database {
   return getDatabase(globalFirebase);
 }
+
+// TODO Declare the args and return types so the functions and client
+// code can both refer to them
+const functions = getFunctions();
+export const finishCommunalCrossword = httpsCallable<{}, {}>(
+  functions,
+  "finishCommunalCrossword"
+);
 
 export const firebaseAuthConfig = {
   autoUpgradeAnonymousUsers: true,
