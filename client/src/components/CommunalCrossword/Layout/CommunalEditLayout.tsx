@@ -1,5 +1,6 @@
 import React from "react";
-import PropTypes from "prop-types";
+
+import "./communal-edit-layout.scss";
 
 interface CommunalEditLayoutProps {
   children: React.ReactNode[];
@@ -20,9 +21,5 @@ const CommunalEditLayout: React.FC<CommunalEditLayoutProps> = ({
     <div className="communal-edit-layout__editor-container">{children[1]}</div>
   </div>
 );
-
-CommunalEditLayout.propTypes = {
-  onPreviousClick: PropTypes.func.isRequired,
-};
 
 export default CommunalEditLayout;
