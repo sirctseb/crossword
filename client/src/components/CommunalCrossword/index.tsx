@@ -46,7 +46,11 @@ export const CommunalCrossword: React.FC = () => {
         <CommunalEditLayout onPreviousClick={onPreviousClick}>
           <ConnectedCrosswordPreview id={archiveList[archiveList.length - 1]} />
           <Extras id={current}>
-            <ConnectedEditor crosswordId={current} />
+            <ConnectedEditor
+              crosswordId={current}
+              showClues={false}
+              showThemeEntries={false}
+            />
           </Extras>
         </CommunalEditLayout>
       ) : (

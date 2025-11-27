@@ -63,6 +63,8 @@ export interface EditorProps {
   onClueBlur: () => void;
   onAddThemeEntry: (entry: string) => void;
   onDeleteThemeEntry: (entry: string) => void;
+  showClues: boolean;
+  showThemeEntries: boolean;
 }
 
 const emptyBox = {};
@@ -85,6 +87,8 @@ export const Editor: React.FC<EditorProps> = ({
   onClueBlur,
   onAddThemeEntry,
   onDeleteThemeEntry,
+  showClues,
+  showThemeEntries,
 }) => {
   const rows = [];
 
@@ -134,34 +138,40 @@ export const Editor: React.FC<EditorProps> = ({
         onChange={(evt) => onSymmetricChange(evt.target.checked)}
       />
       <div className={bem("clues-and-grid")}>
-        <div className={bem("clues-wrapper")}>
-          <ClueList
-            direction={"across"}
-            clueLabels={labeledAddressCatalog.across}
-            clueData={crossword.clues.across}
-            clueInput={clueInput}
-            onChangeClue={onSetClueInput}
-            onClueBlur={onClueBlur}
-          />
-        </div>
+        {showClues && (
+          <div className={bem("clues-wrapper")}>
+            <ClueList
+              direction={"across"}
+              clueLabels={labeledAddressCatalog.across}
+              clueData={crossword.clues.across}
+              clueInput={clueInput}
+              onChangeClue={onSetClueInput}
+              onClueBlur={onClueBlur}
+            />
+          </div>
+        )}
         <div className={bem("grid")}>{rows}</div>
-        <div className={bem("clues-wrapper")}>
-          <ClueList
-            direction={"down"}
-            clueLabels={labeledAddressCatalog.down}
-            clueData={crossword.clues.down}
-            clueInput={clueInput}
-            onChangeClue={onSetClueInput}
-            onClueBlur={onClueBlur}
-          />
-        </div>
+        {showClues && (
+          <div className={bem("clues-wrapper")}>
+            <ClueList
+              direction={"down"}
+              clueLabels={labeledAddressCatalog.down}
+              clueData={crossword.clues.down}
+              clueInput={clueInput}
+              onChangeClue={onSetClueInput}
+              onClueBlur={onClueBlur}
+            />
+          </div>
+        )}
       </div>
-      <ThemeEntries
-        entries={crossword.themeEntries}
-        currentAnswers={allAnswers}
-        onAddThemeEntry={onAddThemeEntry}
-        onDeleteThemeEntry={onDeleteThemeEntry}
-      />
+      {showThemeEntries && (
+        <ThemeEntries
+          entries={crossword.themeEntries}
+          currentAnswers={allAnswers}
+          onAddThemeEntry={onAddThemeEntry}
+          onDeleteThemeEntry={onDeleteThemeEntry}
+        />
+      )}
     </div>
   );
 };
@@ -192,6 +202,8 @@ const blockedChange = (
 
 export interface ConnectedEditorProps {
   crosswordId: string;
+  showClues?: boolean;
+  showThemeEntries?: boolean;
 }
 
 // TODO what you were doing (a long time ago):
@@ -203,6 +215,8 @@ export interface ConnectedEditorProps {
 // storybook render function
 export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   crosswordId,
+  showClues = true,
+  showThemeEntries = true,
 }) => {
   const { database } = useFirebase();
 
@@ -418,6 +432,8 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
       onClueBlur={handleClueBlur}
       onAddThemeEntry={onAddThemeEntry}
       onDeleteThemeEntry={onDeleteThemeEntry}
+      showClues={showClues}
+      showThemeEntries={showThemeEntries}
     />
   );
 };
