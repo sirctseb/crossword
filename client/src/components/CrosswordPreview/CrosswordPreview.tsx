@@ -19,17 +19,20 @@ interface CrosswordPreviewProps {
 
 const Boxes: React.FC<{ rows: number; boxes: ArrayCrossword["boxes"] }> = ({
   boxes,
+  rows,
 }) => {
-  return boxes.map((boxesRow, row) => (
+  // if we let these stray boxes to be populated, we must always iterative over
+  // rows by count and not the boxes values
+  return [...Array(rows).keys()].map((row) => (
     <div key={`row-${row}`} className={bem("row")}>
-      {boxesRow.map((box, column) => (
+      {[...Array(rows).keys()].map((column) => (
         <div
           key={`box-${row}-${column}`}
           className={bem("box", {
-            blocked: box.blocked,
+            blocked: boxes[row][column].blocked,
           })}
         >
-          {box.content}
+          {boxes[row][column].content}
         </div>
       ))}
     </div>
