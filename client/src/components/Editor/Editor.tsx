@@ -123,20 +123,42 @@ export const Editor: React.FC<EditorProps> = ({
     );
   }
 
+  // how to support different modes of the editor display?
+  // current mode requirements:
+  // * own crossword: include clue lists, theme entries
+  // * communal crossword: grid, symmetric, size
+  //
+  // options:
+  // boolean props to show/hide the components
+  // define components for the bits, compose one level up
+  // composition sounds nice but styling coupling might make it
+  // anemic.
+  // if we, for example, don't show theme entries, do we also not want
+  // to prepare the theme entry evvent handlers at the connection level?
+  // composition is a static collection of components. if statements
+  // on boolean props for the sections is actually more flexible.
+  // doesn't allow you to skip out on prepping the event handler props, unless
+  // you do something fancy with the props types
   return (
     <div className={bem({ [`size-${crossword.rows}`]: true })}>
-      <input
-        type="number"
-        className="editor__input"
-        value={crossword.rows}
-        onChange={(evt) => onSizeChange(evt.target.valueAsNumber)}
-      />
-      <input
-        type="checkbox"
-        className="editor__symmetric"
-        checked={crossword.symmetric}
-        onChange={(evt) => onSymmetricChange(evt.target.checked)}
-      />
+      <label className="editor__size-label">
+        Size:
+        <input
+          type="number"
+          className="editor__input"
+          value={crossword.rows}
+          onChange={(evt) => onSizeChange(evt.target.valueAsNumber)}
+        />
+      </label>
+      <label>
+        Symmetric:
+        <input
+          type="checkbox"
+          className="editor__symmetric"
+          checked={crossword.symmetric}
+          onChange={(evt) => onSymmetricChange(evt.target.checked)}
+        />
+      </label>
       <div className={bem("clues-and-grid")}>
         {showClues && (
           <div className={bem("clues-wrapper")}>
