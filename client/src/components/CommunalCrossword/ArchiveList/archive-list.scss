@@ -1,13 +1,21 @@
 .archive-list {
   display: flex;
   align-items: center;
+  // this is a child in a center-aligned column flexbox, but we want
+  // the archive list to be left-aligned. this is a strange coupling and
+  // maybe we don't need the flexbox on the parent at all, just to center
+  // align text on the title
+  align-self: start;
+  // we need to limit the width of this root component to the parent with (body width)
+  // so that the __list can be set to scroll
+  max-width: 100%;
   justify-content: space-between;
-  overflow-x: scroll;
   margin-right: 80px;
 
   &__list {
     display: flex;
     justify-content: space-evenly;
+    overflow-x: scroll;
   }
 
   &__current {
