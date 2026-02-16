@@ -55,12 +55,6 @@ $block-class: 'editor';
                     }
                 }
             }
-
-            &--size-#{$size} {
-                .#{$block-class}__clues-wrapper {
-                    max-height: ($box-size + 1) * $size;
-                }
-            }
         }
     }
 }
