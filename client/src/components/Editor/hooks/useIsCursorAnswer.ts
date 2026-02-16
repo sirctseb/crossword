@@ -5,10 +5,12 @@ type useIsCursorAnswerResult = (row: number, column: number) => boolean;
 
 export const useIsCursorAnswer = (
   crossword: ArrayCrossword,
-  cursor: Cursor
+  cursor: Cursor | null
 ): useIsCursorAnswerResult => {
   return useCallback(
     (row: number, column: number): boolean => {
+      if (!cursor) return false;
+
       // TODO move the body below in here
       const box = crossword.boxes[cursor.row][cursor.column];
       if (box.blocked) return false;

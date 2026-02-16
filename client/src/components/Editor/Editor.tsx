@@ -251,38 +251,41 @@ export const ConnectedEditor: React.FC<ConnectedEditorProps> = ({
   );
 
   const cursorAfterAdvancement = useMemo(() => {
-    return (
-      findNextBlank(
-        crossword,
-        cursor.row,
-        cursor.column,
-        cursor.direction,
-        // TODO something seems strange about this. why block every render
-        // on the derivation of the new cursor placement, very few of which
-        // will actually use it? why not just pay for it when we set content,
-        // the only time we do use it?
-        // should be pretty easy to see how fast it is JIT
-        labeledAddressCatalog[cursor.direction]
-      ) || { row: cursor.row, column: cursor.column }
-    );
-  }, [crossword, cursor]);
+    return cursor !== null
+      ? findNextBlank(
+          crossword,
+          cursor.row,
+          cursor.column,
+          cursor.direction,
+          // TODO something seems strange about this. why block every render
+          // on the derivation of the new cursor placement, very few of which
+          // will actually use it? why not just pay for it when we set content,
+          // the only time we do use it?
+          // should be pretty easy to see how fast it is JIT
+          labeledAddressCatalog[cursor.direction]
+        ) || { row: cursor.row, column: cursor.column }
+      : { row: 0, column: 0 };
+  }, [crossword, cursor, labeledAddressCatalog]);
   const allAnswers = useAtomValue(allAnswersAtomFamily({ crosswordId }));
 
   const { history } = useUndoHistory(`crosswordId-${crosswordId}`);
 
   const isCursorBox = useCallback(
     (row: number, column: number): boolean => {
-      return cursor.row === row && cursor.column === column;
+      return cursor?.row === row && cursor?.column === column;
     },
     [cursor]
   );
 
   const isCursorAnswer = useIsCursorAnswer(crossword, cursor);
 
+  // TODO could this also go into a handler established in the atom mount?
+  // yes it could, and would be a purer reflection of DOM focus as the source of truth
+  // but i don't know the jotai pattern for that, and this is ok for now.
   const handleBoxFocus = useCallback(
     (row: number, column: number) => {
       setCursor((cursorToUpdate) => ({
-        ...cursorToUpdate,
+        ...(cursorToUpdate ?? { direction: "across" }),
         row,
         column,
       }));

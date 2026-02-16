@@ -12,9 +12,9 @@ import { arrayCrosswordAtomFamily } from "../../state/atoms/selectors";
 function moveCursor(
   vector: [number, number],
   crossword: ArrayCrossword,
-  cursor: Cursor
+  cursor: Cursor | null
 ): void {
-  if (!document.activeElement?.classList.contains("box")) return;
+  if (cursor === null) return;
 
   let { row, column } = cursor;
 
@@ -46,10 +46,12 @@ export const useEditorHotkeys = (
   useHotkeys(
     ";",
     () => {
-      setCursor((cursor) => ({
-        ...cursor,
-        direction: cursor.direction === "across" ? "down" : "across",
-      }));
+      if (cursor) {
+        setCursor({
+          ...cursor,
+          direction: cursor.direction === "across" ? "down" : "across",
+        });
+      }
     },
     [setCursor]
   );
