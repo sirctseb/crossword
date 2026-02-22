@@ -49,7 +49,7 @@ describe("Cursor Decoration", () => {
 
     it("adds a user's photo url to the cursor", () => {
       const newCursor = test.database.makeDataSnapshot(
-        { userid: aliceAuth.uid, row: 0, colum: 0 },
+        { userId: aliceAuth.uid, row: 0, column: 0 },
         "/cursors/cw-id/cursor-id"
       );
       return wrapped(newCursor, aliceContext).then(() =>
@@ -66,7 +66,7 @@ describe("Cursor Decoration", () => {
     describe("colors", () => {
       it("adds a color to the cursor", () => {
         const newCursor = test.database.makeDataSnapshot(
-          { userid: aliceAuth.uid, row: 0, colum: 0 },
+          { userId: aliceAuth.uid, row: 0, column: 0 },
           "/cursors/cw-id/cursor-id"
         );
         return wrapped(newCursor, aliceContext).then(() =>
@@ -85,7 +85,7 @@ describe("Cursor Decoration", () => {
           .set({ "cursor-id": { color: "FFFF00" } })
           .then(() => {
             const newCursor = test.database.makeDataSnapshot(
-              { userid: aliceAuth.uid, row: 0, colum: 0 },
+              { userId: aliceAuth.uid, row: 0, column: 0 },
               "/cursors/cw-id/cursor-id2"
             );
             return wrapped(newCursor, aliceContext).then(() =>
@@ -104,7 +104,7 @@ describe("Cursor Decoration", () => {
           .set({ "cursor-id": { color: "1CE6FF" } })
           .then(() => {
             const newCursor = test.database.makeDataSnapshot(
-              { userid: aliceAuth.uid, row: 0, colum: 0 },
+              { userId: aliceAuth.uid, row: 0, column: 0 },
               "/cursors/cw-id/cursor-id3"
             );
             return wrapped(newCursor, aliceContext).then(() =>
