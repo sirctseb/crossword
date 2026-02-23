@@ -1,4 +1,6 @@
 import functionsTest from "firebase-functions-test";
+import admin from "firebase-admin";
+import type { DataSnapshot } from "firebase-admin/database";
 
 export default functionsTest(
   {
@@ -12,3 +14,7 @@ export default functionsTest(
   },
   "./crossword-test-1149f-firebase-adminsdk-a6urz-88519fa46e.json"
 );
+
+export const prepForOnCreate = (snapshot: DataSnapshot): Promise<void> => {
+  return admin.database().ref(snapshot.ref).set(snapshot.val());
+};

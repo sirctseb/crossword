@@ -156,7 +156,7 @@ export const decorateCursor = database
               logger.info("got user details, beginning transaction");
               // we run this in a transactin to avoid a race condition where
               // we end up decorating a cursor that has already been deleted
-              snapshot.ref.transaction((value) => {
+              return snapshot.ref.transaction((value) => {
                 logger.info("running transaction", { value });
                 if (value) {
                   const { displayName, photoURL } = user;
