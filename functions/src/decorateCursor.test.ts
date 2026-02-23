@@ -77,7 +77,7 @@ describe("Cursor Decoration", () => {
       return wrapped(newCursor, aliceContext).then(() =>
         admin
           .database()
-          .ref("/cursors/cw-id/cursor-id/photoUrl")
+          .ref("/cursors/cw-id/cursor-id/photoURL")
           .once("value")
           .then((createdSnap) =>
             expect(createdSnap.val()).toBe(aliceAuth.photoUrl)
