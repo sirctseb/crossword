@@ -1,3 +1,23 @@
+# Project
+
+## Client
+Run client unit tests with `yarn test`
+
+## Rules
+This client directory manages the realtime database concerns as a pragmatic way of saving on creating a new project with all the configuration needed to run them.
+
+### Tests
+To run the rules tests:
+1. Start the emulator: `yarn start:emulators`
+1. Run the tests: `yarn test:rules`
+The latter will build the rule.bolt file to the .json format used by the database and then run the tests.
+
+### Deployment
+`yarn deploy` pushes the rules.bolt (TODO right? or.json?) file to the firebase project.
+If the command fails with "Error: Failed to get details for project: crossword-dev." you likely need to log out and back in with `yarn firebase logout` and `yarn firebase login`.
+
+# Next.js bootstrap README content
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
