@@ -59,7 +59,7 @@ const withAdminDatabase = (fn: (db: Database) => Promise<void>) => {
 
 beforeAll(async () => {
   testEnv = await initializeTestEnvironment({
-    database: { rules, host: "localhost", port: 9000 },
+    database: { rules, host: "127.0.0.1", port: 9000 },
     projectId: "test-crossword",
   });
 });
