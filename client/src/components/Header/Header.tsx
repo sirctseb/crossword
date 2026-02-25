@@ -58,13 +58,9 @@ export const Header: React.FC<HeaderProps> = ({
       </h1>
       <nav className="header__nav">
         {!loggedIn && !showLogin && (
-          <a
-            className="header__nav-link"
-            href="/login"
-            onClick={handleShowLogin}
-          >
+          <Link className="header__nav-link" href="/sign-in">
             login
-          </a>
+          </Link>
         )}
         {loggedIn && (
           <>

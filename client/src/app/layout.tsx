@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ConnectedHeader } from "../components/Header";
-import { LoginProtector } from "../components/LoginProtector";
 import { FirebaseUIProvider } from "../firebase/ui/FirebaseUIProvider";
 
 export const metadata: Metadata = {
@@ -19,7 +18,7 @@ export default function RootLayout({
       <body>
         <FirebaseUIProvider>
           <ConnectedHeader />
-          <LoginProtector>{children}</LoginProtector>
+          {children}
         </FirebaseUIProvider>
       </body>
     </html>

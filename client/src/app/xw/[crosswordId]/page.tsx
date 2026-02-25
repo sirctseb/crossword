@@ -1,7 +1,7 @@
-import { ConnectedEditor } from "../../components/Editor/Editor";
+import { ConnectedEditor } from "../../../components/Editor/Editor";
 
 export default async function CrosswordEditor(
-  props: PageProps<"/[crosswordId]">
+  props: PageProps<"/xw/[crosswordId]">
 ) {
   const { crosswordId } = await props.params;
   return <ConnectedEditor crosswordId={crosswordId} />;
