@@ -1,11 +1,12 @@
-import { database, https } from "firebase-functions";
+import { onCall } from "firebase-functions/v2/https";
+import { onValueCreated } from "firebase-functions/v2/database";
 import * as logger from "firebase-functions/logger";
 import admin from "firebase-admin";
 import type { DataSnapshot } from "firebase-admin/database";
 
 admin.initializeApp();
 
-export const helloWorld = https.onCall(() => "hello world");
+export const helloWorld = onCall(() => "hello world");
 
 const words = ["bat", "bar", "bit", "car", "cat", "cab"];
 
@@ -116,7 +117,7 @@ const colors = [
   "000000",
 ];
 
-export const matchingAnswers = https.onCall(({ data: { regex } }) =>
+export const matchingAnswers = onCall(({ data: { regex } }) =>
   words.filter((word) => word.match(regex))
 );
 
@@ -132,9 +133,9 @@ interface Cursor {
   color?: string;
 }
 
-export const decorateCursor = database
-  .ref("/cursors/{crosswordId}/{cursorId}")
-  .onCreate((snapshot, context) => {
+export const decorateCursor = onValueCreated(
+  "/cursors/{crosswordId}/{cursorId}",
+  ({ data: snapshot }) => {
     return snapshot.ref.parent
       ?.once("value")
       .then(snapVal)
@@ -146,42 +147,41 @@ export const decorateCursor = database
           colors[Math.floor(Math.random() * colors.length)]
       )
       .then((color) => {
-        // TODO i think we do still want to do this for unauthenticated users
-        if (context.auth) {
-          logger.info("decorating cursor", { color, id: snapshot.key });
-          return admin
-            .auth()
-            .getUser(context.auth.uid)
-            .then((user) => {
-              logger.info("got user details, beginning transaction");
-              // we run this in a transactin to avoid a race condition where
-              // we end up decorating a cursor that has already been deleted
-              return snapshot.ref.transaction((value) => {
-                logger.info("running transaction", { value });
-                if (value) {
-                  const { displayName, photoURL } = user;
-                  const newValue = {
-                    ...value,
-                    displayName,
-                    photoURL,
-                    color,
-                  };
-                  logger.debug("value exists, returning", { newValue });
-                  return newValue;
-                } else {
-                  logger.debug(
-                    "value does not exist, returning existing value"
-                  );
-                  return value;
-                }
-              });
-            });
-        }
-        return null;
-      });
-  });
+        logger.info("decorating cursor", { color, id: snapshot.key });
 
-export const finishCommunalCrossword = https.onCall(() =>
+        const userId = (snapshot.val() as Cursor)?.userId;
+
+        // TODO handle case where userId doesn't produce a user with getUser
+        return admin
+          .auth()
+          .getUser(userId)
+          .then((user) => {
+            logger.info("got user details, beginning transaction");
+            // we run this in a transaction to avoid a race condition where
+            // we end up decorating a cursor that has already been deleted
+            return snapshot.ref.transaction((value) => {
+              logger.info("running transaction", { value });
+              if (value) {
+                const { displayName, photoURL } = user;
+                const newValue = {
+                  ...value,
+                  displayName,
+                  photoURL,
+                  color,
+                };
+                logger.debug("value exists, returning", { newValue });
+                return newValue;
+              } else {
+                logger.debug("value does not exist, returning existing value");
+                return value;
+              }
+            });
+          });
+      });
+  }
+);
+
+export const finishCommunalCrossword = onCall(() =>
   admin
     .database()
     .ref("/communalCrossword/current")

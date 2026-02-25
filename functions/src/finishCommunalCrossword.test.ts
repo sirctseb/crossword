@@ -11,15 +11,6 @@ import { finishCommunalCrossword } from "./index";
 const wrapped = test.wrap(finishCommunalCrossword);
 const snapVal = (snap: DataSnapshot) => snap.val();
 
-const aliceAuth = {
-  uid: "alice",
-  displayName: "Alice Inwonderland",
-  photoUrl: "photoUrl",
-};
-const aliceContext = {
-  auth: aliceAuth,
-};
-
 const nonFullCrossword = {
   rows: 2,
   symmetric: true,
@@ -58,7 +49,9 @@ describe("finishCommunalCrossword", () => {
 
     it("refuses if the crossword is not full", () =>
       Promise.all([
-        expect(wrapped({})).rejects.toThrow(),
+        expect(
+          wrapped({ data: {}, rawRequest: {} as any, acceptsStreaming: false })
+        ).rejects.toThrow(),
         expect(
           admin
             .database()
@@ -84,7 +77,13 @@ describe("finishCommunalCrossword", () => {
     );
 
     it("sets the readonly flag on the current puzzle", () =>
-      expect(wrapped({}, aliceContext))
+      expect(
+        wrapped({
+          data: {},
+          rawRequest: {} as any,
+          acceptsStreaming: false,
+        })
+      )
         .resolves.not.toThrow()
         .then(() =>
           expect(
@@ -100,7 +99,13 @@ describe("finishCommunalCrossword", () => {
       const added = fn();
       const crosswordsRef = admin.database().ref("communalCrossword/archive");
       crosswordsRef.on("child_added", added);
-      return expect(wrapped({}, aliceContext))
+      return expect(
+        wrapped({
+          data: {},
+          rawRequest: {} as any,
+          acceptsStreaming: false,
+        })
+      )
         .resolves.not.toThrow()
         .then(() =>
           Promise.all([
@@ -125,7 +130,13 @@ describe("finishCommunalCrossword", () => {
       const added = fn();
       const crosswordsRef = admin.database().ref("crosswords");
       crosswordsRef.on("child_added", added);
-      return expect(wrapped({}, aliceContext))
+      return expect(
+        wrapped({
+          data: {},
+          rawRequest: {} as any,
+          acceptsStreaming: false,
+        })
+      )
         .resolves.not.toThrow()
         .then(() => expect(added).toHaveBeenCalledTimes(2))
         .then(() => crosswordsRef.off());
@@ -136,7 +147,13 @@ describe("finishCommunalCrossword", () => {
       const added = fn((data: DataSnapshot) => (newKey = data.key));
       const crosswordsRef = admin.database().ref("crosswords");
       crosswordsRef.on("child_added", added);
-      return expect(wrapped({}, aliceContext))
+      return expect(
+        wrapped({
+          data: {},
+          rawRequest: {} as any,
+          acceptsStreaming: false,
+        })
+      )
         .resolves.not.toThrow()
         .then(() =>
           Promise.all([

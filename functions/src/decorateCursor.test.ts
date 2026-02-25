@@ -13,9 +13,6 @@ const aliceAuth = {
   displayName: "Alice Inwonderland",
   photoUrl: "https://example.com",
 };
-const aliceContext = {
-  auth: aliceAuth,
-};
 
 // In a test context, we get the snapshot made with the firebase-functions-test utility,
 // and the context we provide. but the value is not actually present in the database,
@@ -57,7 +54,11 @@ describe("Cursor Decoration", () => {
         "/cursors/cw-id/cursor-id"
       );
       await prepForOnCreate(newCursor);
-      return wrapped(newCursor, aliceContext).then(() =>
+      return wrapped({
+        data: newCursor,
+        location: "us-central1",
+        params: { crosswordId: "cw-id", cursorId: "cursor-id" },
+      }).then(() =>
         admin
           .database()
           .ref("/cursors/cw-id/cursor-id/displayName")
@@ -74,7 +75,11 @@ describe("Cursor Decoration", () => {
         "/cursors/cw-id/cursor-id"
       );
       await prepForOnCreate(newCursor);
-      return wrapped(newCursor, aliceContext).then(() =>
+      return wrapped({
+        data: newCursor,
+        location: "us-central1",
+        params: { crosswordId: "cw-id", cursorId: "cursor-id" },
+      }).then(() =>
         admin
           .database()
           .ref("/cursors/cw-id/cursor-id/photoURL")
@@ -92,7 +97,11 @@ describe("Cursor Decoration", () => {
           "/cursors/cw-id/cursor-id"
         );
         await prepForOnCreate(newCursor);
-        return wrapped(newCursor, aliceContext).then(() =>
+        return wrapped({
+          data: newCursor,
+          location: "us-central1",
+          params: { crosswordId: "cw-id", cursorId: "cursor-id" },
+        }).then(() =>
           admin
             .database()
             .ref("/cursors/cw-id/cursor-id/color")
@@ -112,7 +121,11 @@ describe("Cursor Decoration", () => {
           "/cursors/cw-id/cursor-id2"
         );
         await prepForOnCreate(newCursor);
-        return wrapped(newCursor, aliceContext).then(() =>
+        return wrapped({
+          data: newCursor,
+          location: "us-central1",
+          params: { crosswordId: "cw-id", cursorId: "cursor-id2" },
+        }).then(() =>
           admin
             .database()
             .ref("/cursors/cw-id/cursor-id2/color")
@@ -132,7 +145,11 @@ describe("Cursor Decoration", () => {
           "/cursors/cw-id/cursor-id3"
         );
         await prepForOnCreate(newCursor);
-        return wrapped(newCursor, aliceContext).then(() =>
+        return wrapped({
+          data: newCursor,
+          location: "us-central1",
+          params: { crosswordId: "cw-id", cursorId: "cursor-id3" },
+        }).then(() =>
           admin
             .database()
             .ref("/cursors/cw-id/cursor-id3/color")
