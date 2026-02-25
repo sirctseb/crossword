@@ -105,6 +105,7 @@ export function makeAtomFamily<T extends FirebaseValue>(
     atomFamily(
       (params: PathParams<S>) =>
         atomWithStorage<T>(
+          // @ts-ignore-next-line
           interpolatePathSpec(pathSpec, params),
           initialValue,
           firebaseStorage<T>(database),
