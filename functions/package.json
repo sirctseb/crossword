@@ -2,7 +2,7 @@
   "name": "crossword-functions",
   "description": "Cloud Functions for Crosswords",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
